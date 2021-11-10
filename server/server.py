@@ -55,5 +55,70 @@ def galleries():
         conn.commit()
         return f"All rows removed from Gallery"
 
+
+@app.route("/templates", methods=["GET"])
+def templates():
+    conn = db_connection()
+    cursor = conn.cursor()
+
+    if request.method == "GET":
+        cursor.execute("Select * FROM Template")
+    templates = [
+        dict(
+            template_id = row['template_id'],
+            tamplate_file = row['tamplate_file'],
+            Company_company_id = row['Company_company_id']
+            )
+            for row in cursor.fetchall()
+    ]
+    if galleries is not None:
+        return jsonify(templates)
+    else:
+        return {"Data:": "None"}
+
+@app.route("/template/<id>", methods=["GET"])
+def template(id):
+    conn = db_connection()
+    cursor = conn.cursor()
+
+    if request.method == "GET":
+        cursor.execute(f"Select * FROM Template where template_id = {id}")
+        result = cursor.fetchone()
+        if result is not None:
+            return jsonify(result)
+        return {"Data:": "None"}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)

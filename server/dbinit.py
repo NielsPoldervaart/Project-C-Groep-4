@@ -158,7 +158,19 @@ ENGINE = InnoDB;
 """
 ]
 
+sql_query2 = """Select * from `Template`"""
+cursor.execute(sql_query2)
+temps = [
+            dict(
+                template_id = row['template_id'],
+                tamplate_file = row['tamplate_file'],
+                Company_company_id = row['Company_company_id']
+                )
+                for row in cursor.fetchall()
+ ]
+#for query in sql_query2:
+#    cursor.execute(query)
+for i in temps:
+  print(i)
 
-for query in sql_query:
-    cursor.execute(query)
 conn.close()
