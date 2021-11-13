@@ -56,33 +56,46 @@ def galleries():
         return f"All rows removed from Gallery"
 
 
-@app.route("/templates", methods=["GET"])
-def templates():
+@app.route("/templates/<company_id>", methods=["GET"])
+def templates(company_id):
     conn = db_connection()
     cursor = conn.cursor()
 
     if request.method == "GET":
-        cursor.execute("Select * FROM Template")
+        sql = f"""Select T.template_id, T.tamplate_file, C.company_name From Template T
+                    join Company C
+                        on T.company_company_id = C.company_id
+                    where C.company_id = {company_id};
+        """
+        cursor.execute(sql)
     templates = [
         dict(
             template_id = row['template_id'],
             tamplate_file = row['tamplate_file'],
-            Company_company_id = row['Company_company_id']
+            company_name = row['company_name']
             )
             for row in cursor.fetchall()
     ]
-    if galleries is not None:
+    if len(templates) is not 0: #If list is not empty
         return jsonify(templates)
     else:
         return {"Data:": "None"}
 
-@app.route("/template/<id>", methods=["GET"])
-def template(id):
+@app.route("/template/<company_id>/<id>", methods=["GET"])
+def template(company_id, id):
     conn = db_connection()
     cursor = conn.cursor()
 
-    if request.method == "GET":
-        cursor.execute(f"Select * FROM Template where template_id = {id}")
+    if request.method == "GET": ##TODO: Query something from Company as well ? (e.g Name for display)
+        sql = f"""Select * From Template T
+                    join Company C on 
+                        C.company_id = T.company_company_id
+                    where T.template_id = {id}
+                    and
+                        C.company_id = {company_id};
+                        
+        """
+        cursor.execute(sql)
         result = cursor.fetchone()
         if result is not None:
             return jsonify(result)
