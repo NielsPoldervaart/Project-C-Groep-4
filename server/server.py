@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+import json
 import pymysql
 import os
 
@@ -72,25 +73,28 @@ def templates(company_id):
         templates = [
             dict(
                 template_id = row['template_id'],
-                template_file = row['template_file'],
+              template_file = row['template_file'],
                 company_name = row['company_name']
                 )
                 for row in cursor.fetchall()
-        ]
+        ]  
         if len(templates) is not 0: #If list is not empty
             return jsonify(templates)
         else:
             return {"Data:": "None"}
     if request.method == "POST":
-        template_id = request.form["template_id"]
-        sql = f"""Select template_file from Template where template_id = {template_id} and company_company_id = {company_id}
+        requested_template_id = request.form["template_id"]
+        sql = f"""Select template_file from Template where template_id = {requested_template_id} and company_company_id = {company_id}
         """
-        sql2 = f"""Delete from Template where template_id = {template_id} and company_company_id = {company_id}
-        """
+        #sql2 = f"""Delete from Template where template_id = {requested_template_id} and company_company_id = {company_id}
+        #"""
         cursor.execute(sql)
-        os.remove(cursor.fetchone)
-        cursor.execute(sql2)
-
+        result = cursor.fetchone()
+        path = result.get("template_file")
+        os.remove(path)
+        #cursor.execute(sql2)
+        #conn.commit()
+        return "Deleted File succesfully"
 
 
 @app.route("/template/<company_id>/<id>", methods=["GET"])

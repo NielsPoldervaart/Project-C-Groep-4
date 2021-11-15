@@ -158,7 +158,7 @@ ENGINE = InnoDB;
 """
 ]
 
-sql_query2 = """Alter table `Template` change `Tamplate_file` `Template_file` varchar(255)"""
+sql_query2 = """Update `Template` Set `Template_file` = "database\\templates\\template1.html" where `Template_id` = 1"""
 
 
 cursor.execute(sql_query2)
