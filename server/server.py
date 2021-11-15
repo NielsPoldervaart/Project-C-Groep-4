@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import pymysql
+import os
 
 app = Flask(__name__)
 
@@ -56,41 +57,55 @@ def galleries():
         return f"All rows removed from Gallery"
 
 
-@app.route("/templates/<company_id>", methods=["GET"])
+@app.route("/templates/<company_id>", methods=["GET", "POST"])
 def templates(company_id):
     conn = db_connection()
     cursor = conn.cursor()
 
     if request.method == "GET":
-        sql = f"""Select T.template_id, T.template_file, C.company_name From Template T
+        sql = f"""Select T.template_id, T.tamplate_file, C.company_name From Template T
                     join Company C
                         on T.company_company_id = C.company_id
                     where C.company_id = {company_id};
         """
         cursor.execute(sql)
-    templates = [
-        dict(
-            template_id = row['template_id'],
-            template_file = row['template_file'],
-            company_name = row['company_name']
-            )
-            for row in cursor.fetchall()
-    ]
-    if len(templates) is not 0: #If list is not empty
-        return jsonify(templates)
-    else:
-        return {"Data:": "None"}
+        templates = [
+            dict(
+                template_id = row['template_id'],
+                tamplate_file = row['tamplate_file'],
+                company_name = row['company_name']
+                )
+                for row in cursor.fetchall()
+        ]
+        if len(templates) is not 0: #If list is not empty
+            return jsonify(templates)
+        else:
+            return {"Data:": "None"}
+    if request.method == "POST":
+        template_id = request.form["template_id"]
+        sql = f"""Select template_file from Template where template_id = {template_id} and company_company_id = {company_id}
+        """
+        sql2 = f"""Delete from Template where template_id = {template_id} and company_company_id = {company_id}
+        """
+        cursor.execute(sql)
+        os.remove(cursor.fetchone)
+        cursor.execute(sql2)
 
-@app.route("/template/<company_id>/<template_id>", methods=["GET"])
-def template(company_id, template_id):
+
+
+@app.route("/template/<company_id>/<id>", methods=["GET"])
+def template(company_id, id):
     conn = db_connection()
     cursor = conn.cursor()
 
-    if request.method == "GET": 
-        sql = f"""Select * From Template
-                    where template_id = {template_id}
+    if request.method == "GET": ##TODO: Query something from Company as well ? (e.g Name for display)
+        sql = f"""Select * From Template T
+                    join Company C on 
+                        C.company_id = T.company_company_id
+                    where T.template_id = {id}
                     and
-                        company_company_id = {company_id};
+                        C.company_id = {company_id};
+                        
         """
         cursor.execute(sql)
         result = cursor.fetchone()
@@ -98,12 +113,7 @@ def template(company_id, template_id):
             return jsonify(result)
         return {"Data:": "None"}
 
-#    elif request.method == "POST": ##Adding a new template as a company employee
-#        new_template_file = request.form["template_file"]
-#        sql = """INSERT INTO Template (template_id, template_file, company_company_id)
-#                    VALUES (default, %s, %s);
-#        """
-#        cursor = cursor.execute(sql, (new_template_file, company_id))
+
 
 
 
