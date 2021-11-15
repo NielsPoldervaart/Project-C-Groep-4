@@ -158,19 +158,13 @@ ENGINE = InnoDB;
 """
 ]
 
-sql_query2 = """Select * from `Template`"""
+sql_query2 = """Update `Template` Set `Template_file` = "database\\templates\\template1.html" where `Template_id` = 1"""
+
+
 cursor.execute(sql_query2)
-temps = [
-            dict(
-                template_id = row['template_id'],
-                tamplate_file = row['tamplate_file'],
-                Company_company_id = row['Company_company_id']
-                )
-                for row in cursor.fetchall()
- ]
 #for query in sql_query2:
 #    cursor.execute(query)
-for i in temps:
-  print(i)
+#for i in temps:
+#  print(i)
 
 conn.close()
