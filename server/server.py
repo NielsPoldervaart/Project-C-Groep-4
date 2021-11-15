@@ -63,7 +63,7 @@ def templates(company_id):
     cursor = conn.cursor()
 
     if request.method == "GET":
-        sql = f"""Select T.template_id, T.tamplate_file, C.company_name From Template T
+        sql = f"""Select T.template_id, T.template_file, C.company_name From Template T
                     join Company C
                         on T.company_company_id = C.company_id
                     where C.company_id = {company_id};
@@ -72,7 +72,7 @@ def templates(company_id):
         templates = [
             dict(
                 template_id = row['template_id'],
-                tamplate_file = row['tamplate_file'],
+                template_file = row['template_file'],
                 company_name = row['company_name']
                 )
                 for row in cursor.fetchall()
