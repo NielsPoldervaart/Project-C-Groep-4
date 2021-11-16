@@ -7,8 +7,8 @@ function App() {
   return (
     <Router>
       <nav>
-        <Link to="/">Templates</Link>
-        <Link to="/template">Tamplate :)</Link>
+        <Link to="/">Tamplates</Link>
+        <Link to="/">Tamplate</Link>
         <Link to="/login">Login</Link>
       </nav>
       <Routes>
