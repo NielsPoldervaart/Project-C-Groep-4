@@ -20,9 +20,9 @@ const Template = () => {
         <div>
             <h1>Template - {template_id}</h1>
             <p>
-                Company Name = {template.company_name} - Company ID = {template.company_id}
+                {/* Company Name = {template.company_name} - Company ID = {template.company_id} */}
                 <br/>
-                File Path = {template.Template_file} - Template ID = {template.template_id}
+                {/* File Path = {template.Template_file} - Template ID = {template.template_id} */}
                 <br/>
             </p>
         </div>
