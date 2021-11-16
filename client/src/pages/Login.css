@@ -116,10 +116,20 @@ element.style {
     font-size: medium;
 }
 
+.registerLink {
+    text-decoration: none;
+    color: black;
+}
+
 .forgotPassword {
     position: absolute;
     top: 85%;
     left: 70%;
     transform: translate(-50%, -50%);
     font-size: medium;
+}
+
+.passwordLink {
+    text-decoration: none;
+    color: black;
 }
