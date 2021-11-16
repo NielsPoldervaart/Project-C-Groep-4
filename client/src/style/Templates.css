@@ -1,0 +1,55 @@
+body {
+    background-color: #FE04FF;
+}
+
+.Body {
+    padding-left: 5%;
+    padding-right: 5%;
+    padding-top: 2.5%;
+    padding-bottom: 2.5%;
+    font-family: "Raleway", sans-serif; 
+}
+
+.CompanyName {
+    font-weight: bold;
+    color: #FFFFFF;
+}
+
+.TemplateList {
+    margin: 0;
+    padding: 0;
+}
+
+.TitleCard {
+    margin: 0;
+    margin-top: 25px;
+    color: #FFFFFF;
+}
+
+.TemplateCard {
+    width: 300px;
+    height: 350px;
+    background-color: #ffffff;
+    position: relative;
+}
+
+.CardIcon {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.View {
+    position: absolute;
+    bottom: 10px;
+    left: 15px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.Delete {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    margin: 0;
+    cursor: pointer;
+}
