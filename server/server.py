@@ -95,8 +95,6 @@ def templates(company_id):
         conn.commit()
         return "Template added succesfully"
 
-
-
 @app.route("/template/<company_id>/<template_id>", methods=["GET", "DELETE"])
 def template(company_id, template_id):
     conn = db_connection()
@@ -129,6 +127,18 @@ def template(company_id, template_id):
         return "Deleted File succesfully"
 
 
+@app.route("/company/<company_id>", methods=["GET"])
+def company(company_id):
+    conn = db_connection()
+    cursor = conn.cursor()
+
+    if request.method == "GET":
+        sql = f"""SELECT Company_id, Company_name FROM `Company` WHERE Company_id = {company_id}"""
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        if result is not None:
+            return jsonify(result)
+        return "Company does not exist"
 
 
 
