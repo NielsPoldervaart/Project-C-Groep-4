@@ -9,12 +9,11 @@ const Navbar = () => {
     return (
         <Router>
             <header className="Navbar">
-                <h1 className="NavLogo"><Link className="Link" to="/">Kynda</Link></h1>
+                <h1 className="NavLogo"><Link className="Link" to="/1">Kynda</Link></h1>
                 <nav>
                     <ul className="NavLinks">
-                        <li><Link className="Link" to="/">Tamplates</Link></li>
-                        <li><Link className="Link" to="/">Template</Link></li>
-                        <li><Link className="Link" to="/">Login</Link></li>
+                        <li><Link className="Link" to="/1">Tamplates</Link></li>
+                        <li><Link className="Link" to="/login">Login</Link></li>
                     </ul>
                 </nav>
             </header>
