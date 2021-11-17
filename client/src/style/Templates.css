@@ -1,13 +1,4 @@
-:root {
-    --TempCardWidth: 250px;
-    --TempCardHeight: 300px;
-    --Wit: #FFFFFF;
-    --Zwart: #000000;
-    --Grijs: #4D4D4D;
-    --Magenta: #FE04FF;
-    --Rood: #DB0000;
-    --Blauw: #0000FF;
-}
+@import "Variables.css";
 
 .Body {
     padding-left: 5%;
