@@ -1,5 +1,10 @@
 @import "Variables.css";
 
+:root {
+    --TempCardWidth: 250px;
+    --TempCardHeight: 300px;
+}
+
 .Body {
     padding-left: 5%;
     padding-right: 5%;
