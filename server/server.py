@@ -63,7 +63,7 @@ def templates(company_id):
     conn = db_connection()
     cursor = conn.cursor()
 
-    if request.method == "GET":
+    if request.method == "GET": #View ALL templates from a company
         sql = f"""Select T.template_id, T.template_file, C.company_name From Template T
                     join Company C
                         on T.company_company_id = C.company_id
@@ -78,15 +78,45 @@ def templates(company_id):
                 )
                 for row in cursor.fetchall()
         ]  
-        if len(templates) is not 0: #If list is not empty
+        if len(templates) is not 0:
             return jsonify(templates)
         else:
             return {"Data:": "None"}
-    if request.method == "POST":
-        requested_template_id = request.form["template_id"]
-        sql = f"""Select template_file from Template where template_id = {requested_template_id} and company_company_id = {company_id}
+
+    if request.method == "POST": #Add a template to DB
+        #TODO: ACTUAL TEMPLATE NEEDS TO BE ADDED TO STORAGE
+
+        new_template_path = request.form["template_path"]
+
+        sql = """INSERT INTO `Template` (Template_id, Template_file, Company_company_id)
+                    Values(default, %s, %s)
         """
-        #sql2 = f"""Delete from Template where template_id = {requested_template_id} and company_company_id = {company_id}
+        cursor = cursor.execute(sql, (new_template_path, company_id))
+        conn.commit()
+        return "Template added succesfully"
+
+@app.route("/template/<company_id>/<template_id>", methods=["GET", "DELETE"])
+def template(company_id, template_id):
+    conn = db_connection()
+    cursor = conn.cursor()
+
+    if request.method == "GET": #View a specific template
+        sql = f"""Select * From Template
+                    where template_id = {template_id}
+                    and
+                        company_company_id = {company_id};               
+        """
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        if result is not None:
+            return jsonify(result)
+        return {"Data:": "None"}
+
+
+    if request.method == "Delete" : #Delete a specific template
+        sql = f"""Select template_file from Template where template_id = {template_id} and company_company_id = {company_id}
+        """
+        #sql2 = f"""Delete from Template where template_id = {template_id} and company_company_id = {company_id}
         #"""
         cursor.execute(sql)
         result = cursor.fetchone()
@@ -97,27 +127,18 @@ def templates(company_id):
         return "Deleted File succesfully"
 
 
-@app.route("/template/<company_id>/<id>", methods=["GET"])
-def template(company_id, id):
+@app.route("/company/<company_id>", methods=["GET"])
+def company(company_id):
     conn = db_connection()
     cursor = conn.cursor()
 
-    if request.method == "GET": ##TODO: Query something from Company as well ? (e.g Name for display)
-        sql = f"""Select * From Template T
-                    join Company C on 
-                        C.company_id = T.company_company_id
-                    where T.template_id = {id}
-                    and
-                        C.company_id = {company_id};
-                        
-        """
+    if request.method == "GET":
+        sql = f"""SELECT Company_id, Company_name FROM `Company` WHERE Company_id = {company_id}"""
         cursor.execute(sql)
         result = cursor.fetchone()
         if result is not None:
             return jsonify(result)
-        return {"Data:": "None"}
-
-
+        return "Company does not exist"
 
 
 
