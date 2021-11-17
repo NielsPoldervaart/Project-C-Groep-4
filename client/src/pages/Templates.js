@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
+import { FaRegTrashAlt, FaRegEye, FaPlusCircle } from 'react-icons/fa';
 import '../style/Templates.css';
 
 const Templates = () => {
@@ -25,15 +26,18 @@ const Templates = () => {
             <ul className="TemplateList">
                 {
                     templates.map((template) => 
-                        <div>
+                        <div className="TemplateComp">
                             <h2 className="TitleCard">Template {template.template_id}</h2>
                             <div key={template.template_id} className="TemplateCard">
-                                <p className="CardIcon View" onClick={() => navigate(`/${company_id}/${template.template_id}`)}>V</p>
-                                <p className="CardIcon Delete">D</p>
+                                <p className="CardIcon View" onClick={() => navigate(`/${company_id}/${template.template_id}`)}><FaRegEye /></p>
+                                <p className="CardIcon Delete"><FaRegTrashAlt /></p>
                             </div>
                         </div>
                     )
                 }
+                <div className="NewTempBox">
+                    <FaPlusCircle className="NewTempButton" onClick={() => console.log("Select new template")}/>
+                </div>
             </ul>
 
         </div>
