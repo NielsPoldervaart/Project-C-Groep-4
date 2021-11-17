@@ -6,24 +6,25 @@ import Template from '../pages/Template';
 import Templates from '../pages/Templates';
 
 const Navbar = () => {
-
-    //          <Router>
-    //             <nav>
-    //                 <Link to="/">Tamplates</Link>
-    //                 <Link to="/">Tamplate</Link>
-    //                 <Link to="/login">Login</Link>
-    //             </nav>
-    //             <Routes>
-    //                 <Route path="/:company_id" element={<Templates />}/>
-    //                 <Route path="/:company_id/:template_id" element={<Template />}/>
-    //                 <Route path="/login" element={<Login />}/>
-    //             </Routes>
-    //         </Router>
-
     return (
-        <div className="Navbar">
-            
-        </div>
+        <Router>
+            <header className="Navbar">
+                <h1 className="NavLogo"><Link className="Link" to="/">Kynda</Link></h1>
+                <nav>
+                    <ul className="NavLinks">
+                        <li><Link className="Link" to="/">Tamplates</Link></li>
+                        <li><Link className="Link" to="/">Template</Link></li>
+                        <li><Link className="Link" to="/">Login</Link></li>
+                    </ul>
+                </nav>
+            </header>
+            <Routes>
+                <Route path="/:company_id" element={<Templates />}/>
+                <Route path="/:company_id/:template_id" element={<Template />}/>
+                <Route path="/login" element={<Login />}/>
+            </Routes>
+        </Router>
+        
     )
 }
 
