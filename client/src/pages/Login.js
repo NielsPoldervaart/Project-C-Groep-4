@@ -21,7 +21,7 @@ const Login = () => {
                                 <label className="inputLabel" for="email">
                                 E-mail
                                 </label>
-                                <input className="inputInput" type="text" name="email" id="email" required="required" maxLength="20" tabIndex="1" autoFocus="autofocus" />
+                                <input className="inputInput" type="text" name="email" id="email" required="required" maxLength="100" tabIndex="1" autoFocus="autofocus" />
                             </div>
                         </div>
                         <div className="password">
