@@ -1,5 +1,31 @@
 @import "Variables.css";
 
-.Body { 
+:root {
+    --EditBoxWidth: 25%;
+}
 
+.EditTempComp { 
+    display: flex;
+    position: absolute;
+    padding: 0;
+    top: 0;
+    width: 100%;
+    height: -webkit-calc(100% - var(--NavBarHeight));
+    height:    -moz-calc(100% - var(--NavBarHeight));
+    height:         calc(100% - var(--NavBarHeight));
+    margin-top: var(--NavBarHeight);
+}
+
+.EditBox {
+    width: var(--EditBoxWidth);
+    height: 100%;
+    background-color: var(--Wit);
+}
+
+.TemplateBox {
+    width: -webkit-calc(100% - var(--EditBoxWidth));
+    width:    -moz-calc(100% - var(--EditBoxWidth));
+    width:         calc(100% - var(--EditBoxWidth));
+    height: 100%;
+    background-color: var(--Zwart);
 }
