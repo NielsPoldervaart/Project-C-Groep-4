@@ -8,7 +8,9 @@ const Templates = () => {
     let navigate = useNavigate();
 
     const { company_id } = useParams()
+
     const [templates, setTemplates] = useState([])
+    const [company, setCompany] = useState([])
 
     useEffect(() => {
         fetch(`/templates/${company_id}`).then(
@@ -18,17 +20,25 @@ const Templates = () => {
               setTemplates(data)
             }
           )
+
+          fetch(`/company/${company_id}`).then(
+            res => res.json()
+          ).then(
+            data => {
+              setCompany(data)
+            }
+          )
     }, [company_id])
 
     return (
         <div className="Body">
-            <h1 className="CompanyName">Company Name</h1>
+            <h1 className="CompanyName">{company.Company_name}</h1>
             <ul className="TemplateList">
                 {
                     templates.map((template) => 
-                        <div className="TemplateComp">
+                        <div className="TemplateComp"  key={template.template_id}>
                             <h2 className="TitleCard">Template {template.template_id}</h2>
-                            <div key={template.template_id} className="TemplateCard">
+                            <div className="TemplateCard">
                                 <p className="CardIcon View" onClick={() => navigate(`/${company_id}/${template.template_id}`)}><FaRegEye /></p>
                                 <p className="CardIcon Delete"><FaRegTrashAlt /></p>
                             </div>
