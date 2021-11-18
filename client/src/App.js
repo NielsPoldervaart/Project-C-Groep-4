@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import Template from './pages/Template';
 import Templates from './pages/Templates';
+import Register from './pages/Register';
+import Password from './pages/Password';
 
 function App() {
 
@@ -25,6 +27,8 @@ function App() {
         <Route path="/" element={<Templates />}/>
         <Route path="/template" element={<Template />}/>
         <Route path="/login" element={<Login />}/>
+        <Route path="/register" element={<Register />}/>
+        <Route path="/forgotpassword" element={<Password />}/>
       </Routes>
     </Router>
   );

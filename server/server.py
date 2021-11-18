@@ -140,6 +140,35 @@ def company(company_id):
             return jsonify(result)
         return "Company does not exist"
 
+@app.route("/User>", methods=["GET", "POST"])
+def users(user_id):
+    conn = db_connection()
+    cursor = conn.cursor()
+
+
+    if request.method == "GET": 
+        sql = f""" SELECT U.email, U.password;
+            
+        """
+
+
+    user = U.email
+    password = U.password
+    reveiveddata = [user_re, password_re]
+    pulleddata = [user, password]
+
+    if receiveddata[0] == pulleddate[0]:
+
+         if request.method == "POST": #haal wachwoord van server voor juiste user
+        
+        sql = f"""INSERT INTO User (User_id)
+        
+        """
+    
+    if receiveddata[1] == pulleddata[1]:
+        status = "pass"
+
+    
 
 
 
