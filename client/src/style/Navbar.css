@@ -52,3 +52,12 @@ li, .Link {
 .NavLinks li a:hover {
     color: var(--Magenta);
 }
+
+/* .logoBlockStripe {
+    position: relative;
+    left: -2px;
+    top: 7px;
+    width: 100px;
+    height: 10px;
+    background-color: rgba(19,43,200);
+} */
