@@ -3,9 +3,32 @@ import { useParams } from 'react-router';
 import '../style/Template.css';
 
 const Template = () => {
+
     const { company_id, template_id } = useParams()
-    
     const [template, setTemplate] = useState([])
+    
+    const [values, setValues] = useState({
+      title: "",
+      text: "",
+      image: "",
+    });
+
+    const handleTitleChange = (e) => {
+      setValues({...values, title: e.target.value})
+    }
+
+    const handleTextChange = (e) => {
+      setValues({...values, text: e.target.value})
+    }
+
+    const handleImageChange = (e) => {
+      setValues({...values, image: e.target.value})
+    }
+
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      alert('De template is opgeslagen!')
+    }
 
     useEffect(() => {
         fetch(`/template/${company_id}/${template_id}`).then(
@@ -21,10 +44,37 @@ const Template = () => {
     return (
         <div className="EditTempComp">
             <div className="EditBox">
-              <h1>test</h1>
+              <form onSubmit={handleSubmit} className="TempForm">
+
+                <div className="TitleComp">
+                  <label className="TitleLabel">Title</label>
+                  <input className="TitleField" type="title" name="title" value={values.title} onChange={handleTitleChange}/>
+                </div>
+                
+                <div className="TextComp">
+                  <label className="TextLabel">Text</label>
+                  <textarea className="TextField" value={values.text} name="text" onChange={handleTextChange} />
+                </div>
+
+                <div className="SelectComp">
+                  <label className="SelectLabel">Background image</label>
+                  <select className="SelectBox" value={values.image} onChange={handleImageChange}>
+                    <option className="SelectOption" value="https://via.placeholder.com/350x250/FF00BA/FFFFFF/?text=Achtergrond-1">Achtergrond-1</option>
+                    <option className="SelectOption" value="https://via.placeholder.com/350x250/D22E12/FFFFFF/?text=Achtergrond-2">Achtergrond-2</option>
+                    <option className="SelectOption" value="https://via.placeholder.com/350x250/4D4D4D/FFFFFF/?text=Achtergrond-3">Achtergrond-3</option>
+                  </select>
+                </div>
+
+                <div className="ButtonsComp">
+                  <input className="DeleteButton" type="button" value="Delete" onClick={() => window.confirm('Weet u zeker dat u de template wilt verwijderen?')} />
+                  <input className="SaveButton" type="submit" value="Save" />
+                </div>
+                
+              </form>
             </div>
             <div className="TemplateBox">
-
+              <iframe src="../templates/template1.html" className="LoadedTemplate"/>
+              {/* Document.write */}
             </div>
         </div>
     );
