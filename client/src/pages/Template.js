@@ -5,7 +5,8 @@ import '../style/Template.css';
 const Template = () => {
 
     const { company_id, template_id } = useParams()
-    const [template, setTemplate] = useState([])
+    const [templateData, setTemplateData] = useState([])
+    const [template, setTemplate] = useState("")
     
     const [values, setValues] = useState({
       title: "",
@@ -34,9 +35,9 @@ const Template = () => {
       e.preventDefault()
       const reader = new FileReader()
       reader.onload = async (e) => { 
-        const html = (e.target.result)
-        console.log(html)
-      };
+        const content = (e.target.result)
+        setTemplate(content)
+      }
       reader.readAsText(e.target.files[0])
     }
 
@@ -45,7 +46,7 @@ const Template = () => {
             res => res.json()
           ).then(
             data => {
-              setTemplate(data)
+              setTemplateData(data)
               console.log(data)
             }
           )
@@ -56,7 +57,7 @@ const Template = () => {
             <div className="EditBox">
               <form onSubmit={HandleSubmit} className="TempForm">
 
-                <input onChange={(e) => ReadFile(e)} type="file"/>
+                <input onChange={(e) => ReadFile(e)} type="file" accept=".html"/>
 
                 <div className="TitleComp">
                   <label className="TitleLabel">Title</label>
@@ -86,7 +87,7 @@ const Template = () => {
             </div>
             <div className="TemplateBox">
               {/* <iframe src="../templates/template1.html" className="LoadedTemplate"/> */}
-              {/* Document.write */}
+              <div dangerouslySetInnerHTML={{__html: template}}/>
             </div>
         </div>
     );
