@@ -55,6 +55,7 @@ const Template = () => {
     return (
         <div className="EditTempComp">
             <div className="EditBox">
+              {console.log(templateData.template_id)}
               <form onSubmit={HandleSubmit} className="TempForm">
 
                 <input onChange={(e) => ReadFile(e)} type="file" accept=".html"/>
