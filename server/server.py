@@ -1,4 +1,6 @@
 from flask import Flask, request, jsonify, session
+from user_verification import verify_user
+
 import json
 import pymysql
 import os
@@ -24,7 +26,7 @@ def db_connection():
 @app.route("/templates/<company_id>", methods=["GET", "POST"])
 def templates(company_id):
 
-    user_verification = verify_user_and_company(company_id)
+    user_verification = verify_user(company_id)
     if user_verification != "PASSED":
         return user_verification
 
@@ -49,7 +51,7 @@ def templates(company_id):
         if len(templates) is not 0:
             return jsonify(templates)
         else:
-            return {"Data:": "None"}
+            return {"errorCode": 404, "Message": "Template Does not exist"""}
 
     if request.method == "POST": #Add a template to DB
         #TODO: ACTUAL TEMPLATE NEEDS TO BE ADDED TO STORAGE
@@ -61,12 +63,12 @@ def templates(company_id):
         """
         cursor = cursor.execute(sql, (new_template_path, company_id))
         conn.commit()
-        return "Template added succesfully"
+        return {"Code": 201, "Message": "Template added to company"""}
 
 @app.route("/template/<company_id>/<template_id>", methods=["GET", "DELETE"])
 def template(company_id, template_id):
 
-    user_verification = verify_user_and_company(company_id)
+    user_verification = verify_user(company_id)
     if user_verification != "PASSED":
         return user_verification
 
@@ -82,8 +84,7 @@ def template(company_id, template_id):
         result = cursor.fetchone()
         if result is not None:
             return jsonify(result)
-        return {"Data:": "None"}
-
+        return {"errorCode": 404, "Message": "Template Does not exist"""}
 
     if request.method == "Delete" : #Delete a specific template
         sql = f"""Select template_file from Template where template_id = {template_id} and company_company_id = {company_id}
@@ -96,13 +97,12 @@ def template(company_id, template_id):
         os.remove(path)
         #cursor.execute(sql2)
         #conn.commit()
-        return "Deleted File succesfully"
-
+        return {"Code": 201, "Message": "Deleted file succesfully"""}
 
 @app.route("/company/<company_id>", methods=["GET"])
 def company(company_id):
 
-    user_verification = verify_user_and_company(company_id)
+    user_verification = verify_user(company_id)
     if user_verification != "PASSED":
         return user_verification
 
@@ -116,7 +116,6 @@ def company(company_id):
         if result is not None:
             return jsonify(result)
         return {"errorCode": 404, "Message": "Company Does not exist"""}
-
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -138,38 +137,13 @@ def login():
             return "Succesfully logged in"
 
         else:
-           return "Wrong credentials"
+           return {"Code": 406, "Message": "Incorrect User credentials"""}
 
 @app.route("/logout")
 def logout():
     session.pop("user_id", None)
     session.pop("company_company_id", None)
-    return "user logged out"
-
-
-def verify_user_and_company(company_id, accepted_roles=[1,2,3]):
-    ##ALL ROLES:
-    #1: KYNDA_ADMIN
-    #2: COMPANY_ADMIN (Kynda's Client)
-    #3: COMPANY_WORKER (Kynda's Client)
-
-    #VERIFY IF USER IN SESSION (LOGGED IN)
-    if "user_id" and "company_company_id" not in session:
-        return {"errorCode" : 403, "Message" : "Login not authorized"}
-
-    #VERIFY IF USER IN COMPANY
-    company_company_id = session["company_company_id"]
-    if int(company_company_id) != int(company_id):
-        return {"errorCode" : 403, "Message" : "Company not within User's companies"}
-
-    #VERIFY IF USER HAS RIGHT ROLE
-    role_role_id = session["role_role_id"]
-    if int(role_role_id) not in accepted_roles:
-        return {"errorCode" : 403, "Message" : "Required Role not within User's roles"}
-
-    #PASSED ALL CHECKS
-    return "PASSED"
-
+    return {"Code": 201, "Message": "User logged out"""}
 
 if __name__ == "__main__":
     app.run(debug=True)
