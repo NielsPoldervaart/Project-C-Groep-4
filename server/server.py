@@ -1,9 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
 import json
 import pymysql
 import os
 
 app = Flask(__name__)
+app.secret_key = "ToBeSecret"
+
 
 def db_connection():
     conn = None
@@ -60,6 +62,9 @@ def galleries():
 
 @app.route("/templates/<company_id>", methods=["GET", "POST"])
 def templates(company_id):
+    #if "user" in session:
+    #    user = session["user"]
+
     conn = db_connection()
     cursor = conn.cursor()
 
@@ -95,8 +100,6 @@ def templates(company_id):
         conn.commit()
         return "Template added succesfully"
 
-
-
 @app.route("/template/<company_id>/<template_id>", methods=["GET", "DELETE"])
 def template(company_id, template_id):
     conn = db_connection()
@@ -129,7 +132,68 @@ def template(company_id, template_id):
         return "Deleted File succesfully"
 
 
+@app.route("/company/<company_id>", methods=["GET"])
+def company(company_id):
+    conn = db_connection()
+    cursor = conn.cursor()
 
+    if request.method == "GET":
+        if "user_id" in session:
+            user_id = session["user_id"]
+            #TODO: Check if user is from the right company
+
+
+            sql = f"""SELECT Company_id, Company_name FROM `Company` WHERE Company_id = {company_id}"""
+            cursor.execute(sql)
+            result = cursor.fetchone()
+            if result is not None:
+                return jsonify(result)
+            return "Company does not exist"
+        else:
+            return "Must be logged in to view company information"
+
+@app.route("/login", methods=["POST"])
+def login():
+    conn = db_connection()
+    cursor = conn.cursor()
+
+    #if request.method == "GET": 
+    #    sql = f""" SELECT U.email, U.password;
+    #        
+    #    """
+
+    #user = U.email
+    #password = U.password
+    #reveiveddata = [user_re, password_re]
+    #pulleddata = [user, password]
+
+    #if receiveddata[0] == pulleddate[0]:
+
+    if request.method == "POST": #haal wachwoord van server voor juiste user
+        inserted_password = request.form["password"]
+        inserted_user_email = request.form["email"]
+
+        sql = f"""Select user_id from User where password = "{inserted_password}" and email = "{inserted_user_email}" """
+        cursor.execute(sql)
+        user = cursor.fetchone()
+
+        if user:
+            session["user_id"] = user["user_id"]
+            return "Succesfully logged in"
+
+        else:
+           return "Wrong credentials"
+        #sql = f"""INSERT INTO User (User_id)
+    
+        #"""
+    
+    #if receiveddata[1] == pulleddata[1]:
+    #    status = "pass"
+
+@app.route("/logout")
+def logout():
+    session.pop("user_id", None)
+    return "user logged out"
 
 
 

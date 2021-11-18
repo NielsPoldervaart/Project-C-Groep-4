@@ -1,0 +1,96 @@
+
+.linear-gradient {
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    background-color: #db2adb;
+    background-image: linear-gradient(180deg, #ff00ba, transparent), linear-gradient(93deg, transparent, rgba(19,43,200,.89)), linear-gradient(60deg, #d22e12, transparent);
+    opacity: 1;
+}
+  
+element.style {
+    background-image: radial-gradient(at 106% 11%, 
+    rgba(255, 0, 204, 0.2) 0%,
+    rgba(43, 61, 199, 0.2) 100%);
+}
+  
+.radial-gradient {
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+}
+
+.header {
+    position: relative;
+    width: 100%;
+    height: 20px;
+    padding: 20px;
+}
+
+.logoBlockStripe {
+    position: relative;
+    left: -2px;
+    top: 7px;
+    width: 100px;
+    height: 10px;
+    background-color: rgba(19,43,200);
+}
+
+.headerBox {
+    font-weight: bolder;
+    font-size: larger;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.registerBox {
+    position: absolute;
+    font-family: 'Raleway', sans-serif;
+    color: black;
+    text-align: center;
+    font-size: larger;
+    width: 350px;
+    height: 500px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding-left: 2%;
+    padding-right: 2%;
+    border-radius: 20%;
+    background-color: white;
+    border-style: solid;
+    border-color: black;
+    border-width: 3px;
+}
+
+.inputInput {
+    background-color: #db2adb;
+    background-image: linear-gradient(180deg, #ff00ba, transparent), linear-gradient(93deg, transparent, rgba(19,43,200,.89)), linear-gradient(60deg, #d22e12, transparent);
+    font-family: Raleway, sans-serif;
+    font-weight: bold;
+    font-size: large;
+    color: white;
+    position: relative;
+    width: 350px;
+    height: 25px;
+    border-width: 3px;
+    border-color: black;
+}
+
+.registerInput {
+    position: absolute;
+    font-family: Raleway, sans-serif;
+    font-size: larger;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.registerButton {
+    position: relative;
+    top: 300px;
+}
