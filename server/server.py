@@ -24,7 +24,7 @@ def db_connection():
 @app.route("/templates/<company_id>", methods=["GET", "POST"])
 def templates(company_id):
 
-    user_verification = verify_user_and_company(company_id)
+    user_verification = verify_user_and_company(company_id, [1,2,3])
     if user_verification != "PASSED":
         return user_verification
 
@@ -66,7 +66,7 @@ def templates(company_id):
 @app.route("/template/<company_id>/<template_id>", methods=["GET", "DELETE"])
 def template(company_id, template_id):
 
-    user_verification = verify_user_and_company(company_id)
+    user_verification = verify_user_and_company(company_id, [1,2,3])
     if user_verification != "PASSED":
         return user_verification
 
@@ -102,7 +102,7 @@ def template(company_id, template_id):
 @app.route("/company/<company_id>", methods=["GET"])
 def company(company_id):
 
-    user_verification = verify_user_and_company(company_id)
+    user_verification = verify_user_and_company(company_id, [1,2,3])
     if user_verification != "PASSED":
         return user_verification
 
@@ -127,13 +127,14 @@ def login():
         inserted_password = request.form["password"]
         inserted_user_email = request.form["email"]
 
-        sql = f"""Select user_id, company_company_id from User where password = "{inserted_password}" and email = "{inserted_user_email}" """
+        sql = f"""Select user_id, company_company_id, role_role_id from User where password = "{inserted_password}" and email = "{inserted_user_email}" """
         cursor.execute(sql)
         user = cursor.fetchone()
 
         if user: #IF USER OBJECT IS NOT NONE (COULD FIND CORRECT DATA IN DB)
             session["user_id"] = user["user_id"]
             session["company_company_id"] = user["company_company_id"]
+            session["role_role_id"] = user["role_role_id"]
             return "Succesfully logged in"
 
         else:
@@ -146,7 +147,12 @@ def logout():
     return "user logged out"
 
 
-def verify_user_and_company(company_id):
+def verify_user_and_company(company_id, accepted_roles):
+    ##ALL ROLES:
+    #1: KYNDA_ADMIN
+    #2: COMPANY_ADMIN (Kynda's Client)
+    #3: COMPANY_WORKER (Kynda's Client)
+
     #VERIFY IF USER IN SESSION (LOGGED IN)
     if "user_id" and "company_company_id" not in session:
         return {"errorCode" : 403, "Message" : "Login not authorized"}
@@ -155,6 +161,11 @@ def verify_user_and_company(company_id):
     company_company_id = session["company_company_id"]
     if int(company_company_id) != int(company_id):
         return {"errorCode" : 403, "Message" : "Company not within User's companies"}
+
+    #VERIFY IF USER HAS RIGHT ROLE
+    role_role_id = session["role_role_id"]
+    if int(role_role_id) not in accepted_roles:
+        return {"errorCode" : 403, "Message" : "Required Role not within User's roles"}
 
     #PASSED ALL CHECKS
     return "PASSED"

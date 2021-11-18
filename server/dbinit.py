@@ -158,13 +158,13 @@ ENGINE = InnoDB;
 """
 ]
 
-sql_query2 = """INSERT INTO Company Values (default, "company2", 1);
-#"""
-
-cursor.execute(sql_query2)
+sql_query2 = """INSERT INTO `Role` Values(default, "Company_Admin"),(default, "Company_Worker");"""
+sql_query1 = """SELECT * FROM `Role`;"""
+cursor.execute(sql_query1)
+print(cursor.fetchall())
 #for query in sql_query2:
 #    cursor.execute(query)
 #for i in temps:
 #  print(i)
-
+#conn.commit()
 conn.close()
