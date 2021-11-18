@@ -24,7 +24,7 @@ def db_connection():
 @app.route("/templates/<company_id>", methods=["GET", "POST"])
 def templates(company_id):
 
-    user_verification = verify_user_and_company(company_id, [1,2,3])
+    user_verification = verify_user_and_company(company_id)
     if user_verification != "PASSED":
         return user_verification
 
@@ -66,7 +66,7 @@ def templates(company_id):
 @app.route("/template/<company_id>/<template_id>", methods=["GET", "DELETE"])
 def template(company_id, template_id):
 
-    user_verification = verify_user_and_company(company_id, [1,2,3])
+    user_verification = verify_user_and_company(company_id)
     if user_verification != "PASSED":
         return user_verification
 
@@ -102,7 +102,7 @@ def template(company_id, template_id):
 @app.route("/company/<company_id>", methods=["GET"])
 def company(company_id):
 
-    user_verification = verify_user_and_company(company_id, [1,2,3])
+    user_verification = verify_user_and_company(company_id)
     if user_verification != "PASSED":
         return user_verification
 
@@ -147,7 +147,7 @@ def logout():
     return "user logged out"
 
 
-def verify_user_and_company(company_id, accepted_roles):
+def verify_user_and_company(company_id, accepted_roles=[1,2,3]):
     ##ALL ROLES:
     #1: KYNDA_ADMIN
     #2: COMPANY_ADMIN (Kynda's Client)
