@@ -145,7 +145,6 @@ def users(user_id):
     conn = db_connection()
     cursor = conn.cursor()
 
-    
 
     if request.method == "GET": 
         sql = f""" SELECT U.email, U.password;
@@ -167,7 +166,7 @@ def users(user_id):
         """
     
     if receiveddata[1] == pulleddata[1]:
-        status = pass
+        status = "pass"
 
     
 
