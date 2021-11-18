@@ -4,6 +4,8 @@ import '../style/Navbar.css';
 import Login from '../pages/Login';
 import Template from '../pages/Template';
 import Templates from '../pages/Templates';
+import Register from '../pages/Register';
+import Password from '../pages/Password';
 
 const Navbar = () => {
     return (
@@ -14,6 +16,8 @@ const Navbar = () => {
                     <ul className="NavLinks">
                         <li><Link className="Link" to="/1">Tamplates</Link></li>
                         <li><Link className="Link" to="/login">Login</Link></li>
+                        <li><Link className="Link" to="/register">Register</Link></li>
+                        <li><Link className="Link" to="/forgotpassword">Password</Link></li>
                     </ul>
                 </nav>
             </header>
@@ -21,6 +25,8 @@ const Navbar = () => {
                 <Route path="/:company_id" element={<Templates />}/>
                 <Route path="/:company_id/:template_id" element={<Template />}/>
                 <Route path="/login" element={<Login />}/>
+                <Route path="/register" element={<Register />}/>
+                <Route path="/forgotpassword" element={<Password />}/>
             </Routes>
         </Router>
         
