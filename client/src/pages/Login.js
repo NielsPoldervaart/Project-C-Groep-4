@@ -17,20 +17,16 @@ const Login = () => {
                 <form className="loginForm" method="post" action id="form">
                     <div className="loginInput">
                         <div className="email">
-                            <div className="inputWrapper">
-                                <label className="inputLabel" for="email">
-                                E-mail
-                                </label>
-                                <input className="inputInput" type="text" name="email" id="email" required="required" maxLength="100" tabIndex="1" autoFocus="autofocus" />
-                            </div>
+                            <label className="inputLabel" for="email">
+                            E-mail
+                            </label>
+                            <input className="inputInput" type="text" name="email" id="email" required="required" maxLength="100" tabIndex="1" autoFocus="autofocus" />
                         </div>
                         <div className="password">
-                            <div className="inputWrapper">
-                                <label className="inputLabel" for="password">
-                                Wachtwoord
-                                </label>
-                                <input className="inputInput" type="password" name="password" id="password" required="required" maxLength="100" tabIndex="2" autoComplete="off" />
-                            </div>
+                            <label className="inputLabel" for="password">
+                            Wachtwoord
+                            </label>
+                            <input className="inputInput" type="password" name="password" id="password" required="required" maxLength="100" tabIndex="2" autoComplete="off" />
                         </div>
                     </div>
                     <div className="loginButton">
