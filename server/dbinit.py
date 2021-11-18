@@ -158,8 +158,9 @@ ENGINE = InnoDB;
 """
 ]
 
-sql_query2 = """Update `Template` Set `Template_file` = "database\\templates\\template1.html" where `Template_id` = 1"""
-
+#sql_query2 = """INSERT INTO `user` (User_id, first_name, lastname, email, password, company_company_id, role_role_id)
+#                Values(default, "Dirk", "Van der Heijden", "Dirk@hr.com", "123", 1, 1);
+#"""
 
 cursor.execute(sql_query2)
 #for query in sql_query2:
