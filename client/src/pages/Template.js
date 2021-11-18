@@ -13,21 +13,31 @@ const Template = () => {
       image: "",
     });
 
-    const handleTitleChange = (e) => {
+    const HandleTitleChange = (e) => {
       setValues({...values, title: e.target.value})
     }
 
-    const handleTextChange = (e) => {
+    const HandleTextChange = (e) => {
       setValues({...values, text: e.target.value})
     }
 
-    const handleImageChange = (e) => {
+    const HandleImageChange = (e) => {
       setValues({...values, image: e.target.value})
     }
 
-    const handleSubmit = (e) => {
+    const HandleSubmit = (e) => {
       e.preventDefault();
       alert('De template is opgeslagen!')
+    }
+
+    const ReadFile = async (e) => {
+      e.preventDefault()
+      const reader = new FileReader()
+      reader.onload = async (e) => { 
+        const html = (e.target.result)
+        console.log(html)
+      };
+      reader.readAsText(e.target.files[0])
     }
 
     useEffect(() => {
@@ -44,21 +54,23 @@ const Template = () => {
     return (
         <div className="EditTempComp">
             <div className="EditBox">
-              <form onSubmit={handleSubmit} className="TempForm">
+              <form onSubmit={HandleSubmit} className="TempForm">
+
+                <input onChange={(e) => ReadFile(e)} type="file"/>
 
                 <div className="TitleComp">
                   <label className="TitleLabel">Title</label>
-                  <input className="TitleField" type="title" name="title" value={values.title} onChange={handleTitleChange}/>
+                  <input className="TitleField" type="title" name="title" value={values.title} onChange={HandleTitleChange}/>
                 </div>
                 
                 <div className="TextComp">
                   <label className="TextLabel">Text</label>
-                  <textarea className="TextField" value={values.text} name="text" onChange={handleTextChange} />
+                  <textarea className="TextField" value={values.text} name="text" onChange={HandleTextChange} />
                 </div>
 
                 <div className="SelectComp">
                   <label className="SelectLabel">Background image</label>
-                  <select className="SelectBox" value={values.image} onChange={handleImageChange}>
+                  <select className="SelectBox" value={values.image} onChange={HandleImageChange}>
                     <option className="SelectOption" value="https://via.placeholder.com/350x250/FF00BA/FFFFFF/?text=Achtergrond-1">Achtergrond-1</option>
                     <option className="SelectOption" value="https://via.placeholder.com/350x250/D22E12/FFFFFF/?text=Achtergrond-2">Achtergrond-2</option>
                     <option className="SelectOption" value="https://via.placeholder.com/350x250/4D4D4D/FFFFFF/?text=Achtergrond-3">Achtergrond-3</option>
@@ -73,7 +85,7 @@ const Template = () => {
               </form>
             </div>
             <div className="TemplateBox">
-              <iframe src="../templates/template1.html" className="LoadedTemplate"/>
+              {/* <iframe src="../templates/template1.html" className="LoadedTemplate"/> */}
               {/* Document.write */}
             </div>
         </div>
