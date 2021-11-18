@@ -30,8 +30,10 @@ const Templates = () => {
           )
     }, [company_id])
 
+    //TODO: Fix CompanyName to display properly
     return (
         <div className="TemplatesBody">
+          
             <h1 className="CompanyName">{company.Company_name}</h1>
             <ul className="TemplateList">
                 {
