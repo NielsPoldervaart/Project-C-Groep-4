@@ -1,15 +1,8 @@
-import './Login.css';
+import '../style/Login.css';
 
 const Login = () => {
     return (
         <div className="login">
-            <div className="kyndaBackground">
-                <div className="gradientWrapper">
-                    <div className="linear-gradient"></div>
-                    <div className="radial-gradient"></div>
-                </div>
-            </div>
-
             <div className="loginBox">
                 <div className="logoBox">
                     <img src="https://excelsiorrotterdam.nl/wp-content/uploads/2018/01/kynda_web.png" alt="kyndaLogo" width="250" />    
