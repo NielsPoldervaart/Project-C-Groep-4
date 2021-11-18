@@ -31,7 +31,7 @@ const Templates = () => {
     }, [company_id])
 
     return (
-        <div className="Body">
+        <div className="TemplatesBody">
             <h1 className="CompanyName">{company.Company_name}</h1>
             <ul className="TemplateList">
                 {
