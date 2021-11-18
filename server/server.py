@@ -1,4 +1,6 @@
 from flask import Flask, request, jsonify, session
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from user_verification import verify_user
 
 import json
@@ -106,7 +108,6 @@ def company(company_id):
     if user_verification != "PASSED":
         return user_verification
 
-    #DATABASE QUERY
     if request.method == "GET":
         conn = db_connection()
         cursor = conn.cursor()
@@ -126,11 +127,15 @@ def login():
         inserted_password = request.form["password"]
         inserted_user_email = request.form["email"]
 
-        sql = f"""Select user_id, company_company_id, role_role_id from User where password = "{inserted_password}" and email = "{inserted_user_email}" """
+        sql = f"""Select user_id, company_company_id, role_role_id, password from User where email = "{inserted_user_email}" """
         cursor.execute(sql)
         user = cursor.fetchone()
 
         if user: #IF USER OBJECT IS NOT NONE (COULD FIND CORRECT DATA IN DB)
+            if not check_password_hash(user["password"], inserted_password):
+                print(user["password"], inserted_password)
+                {"Code": 406, "Message": "Incorrect User credentials"""}
+
             session["user_id"] = user["user_id"]
             session["company_company_id"] = user["company_company_id"]
             session["role_role_id"] = user["role_role_id"]
@@ -145,5 +150,34 @@ def logout():
     session.pop("company_company_id", None)
     return {"Code": 201, "Message": "User logged out"""}
 
+@app.route("/register/<company_id>", methods = ["POST"])
+def register(company_id):
+    #TODO: COMPANY ID CAN BE RETRIEVED FROM USER DATA IN SESSION
+    user_verification = verify_user(company_id, [1])
+    if user_verification != "PASSED":
+        return user_verification
+
+    conn = db_connection()
+    cursor = conn.cursor()
+
+    if request.method == "POST":
+        inserted_first_name = request.form["first_name"]
+        inserted_last_name = request.form["last_name"]
+        inserted_user_email = request.form["email"]
+        inserted_password = request.form["password"]
+        inserted_role = request.form["role_id"]
+        hashed_password = generate_password_hash(inserted_password)
+
+        sql = f"""INSERT INTO `User` VALUES (default, "{inserted_first_name}", "{inserted_last_name}", "{inserted_user_email}", "{hashed_password}", "{company_id}", "{inserted_role}");"""
+        cursor.execute(sql)
+        conn.commit()
+
+        return {"Code": 201, "Message": "User added to company"""}
+
+
 if __name__ == "__main__":
     app.run(debug=True)
+
+    #M@hr.nl
+    #secret
+    #^ User for debugging (Role 1)

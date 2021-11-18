@@ -159,7 +159,7 @@ ENGINE = InnoDB;
 ]
 
 sql_query2 = """INSERT INTO `Role` Values(default, "Company_Admin"),(default, "Company_Worker");"""
-sql_query1 = """SELECT * FROM `Role`;"""
+sql_query1 = """SELECT * FROM `User`;"""
 cursor.execute(sql_query1)
 print(cursor.fetchall())
 #for query in sql_query2:
