@@ -21,7 +21,7 @@ def login():
         if user: #IF USER OBJECT IS NOT NONE (COULD FIND CORRECT DATA IN DB)
             if not check_password_hash(user["password"], inserted_password):
                 print(user["password"], inserted_password)
-                {"Code": 406, "Message": "Incorrect User credentials"""}
+                return {"Code": 406, "Message": "Incorrect User credentials"""}
 
             session["user_id"] = user["user_id"]
             session["company_company_id"] = user["company_company_id"]
