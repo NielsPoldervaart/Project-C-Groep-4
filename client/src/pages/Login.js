@@ -30,7 +30,7 @@ const Login = () => {
                         </div>
                     </div>
                     <div className="loginButton">
-                        <button className="button" type="submit" id="button">
+                        <button className="buttonL" type="submit" id="button">
                             <span className="buttonLabel">Inloggen</span>
                         </button>
                     </div>
