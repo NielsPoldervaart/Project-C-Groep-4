@@ -1,0 +1,91 @@
+@import "Variables.css";
+
+:root {
+    --TempCardWidth: 250px;
+    --TempCardHeight: 300px;
+}
+
+.TemplatesBody {
+    padding-left: 5%;
+    padding-right: 5%;
+    padding-top: 2.5%;
+    padding-bottom: 2.5%;
+    font-family: var(--Font);
+}
+
+.CompanyName {
+    font-weight: bold;
+    color: var(--Wit);
+    margin-top: var(--NavBarHeight);
+}
+
+.TemplateList {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.TemplateComp {
+    margin-left: 50px;
+}
+
+.TemplateComp:nth-child(1) {
+    margin-left: 0px;
+}
+
+.TitleCard {
+    margin: 0;
+    margin-top: 25px;
+    color: var(--Wit);
+    font-size: 25px;
+}
+
+.TemplateCard {
+    width: var(--TempCardWidth);
+    height: var(--TempCardHeight);
+    background-color: var(--Wit);
+    position: relative;
+}
+
+.CardIcon {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.View {
+    position: absolute;
+    bottom: 10px;
+    left: 15px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.Delete {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.NewTempBox {
+    margin-left: 50px;
+    margin-top: 55px;
+    width: var(--TempCardWidth);
+    height: var(--TempCardWidth);
+}
+
+.NewTempButton {
+    border-radius: 50%;
+    color: var(--Wit);
+    width: 150px;
+    height: 150px;
+    position: relative;
+    margin-left: 50%;
+    margin-top: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}

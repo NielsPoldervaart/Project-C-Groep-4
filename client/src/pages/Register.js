@@ -1,22 +1,7 @@
-import './Register.css';
+import '../style/Register.css';
 
 const Register = () => {
     return (
-        <div className="Register">
-            <div className="kyndaBackground">
-                <div className="gradientWrapper">
-                    <div className="linear-gradient"></div>
-                    <div className="radial-gradient"></div>
-                </div>
-            </div>
-
-            <nav className="header">
-                <a className="headerLink" href="/">
-                    <img src="https://assets.website-files.com/5f5210d08f59cd33456fb659/5f5210d08f59cd67186fb79a_kyndalogo.svg" alt="kyndaLogo" />
-                    <div className="logoBlockStripe"></div>
-                </a>
-            </nav>
-
             <div className="registerBox">
                 <div className="headerBox">
                     Account aanvragen
@@ -43,8 +28,6 @@ const Register = () => {
                     </div>
                 </form>
             </div>
-
-        </div>
     );
 };
   
