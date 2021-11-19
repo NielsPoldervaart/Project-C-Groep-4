@@ -1,0 +1,112 @@
+@import "Variables.css";
+
+.logoBox {
+    position: absolute;
+    width: 400px;
+    height: 135px;
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding-top: 5%;
+}
+
+.loginBox {
+    position: absolute;
+    font-family: var(--Font);
+    color: var(--Zwart);
+    text-align: center;
+    font-size: larger;
+    width: 350px;
+    height: 500px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding-left: 2%;
+    padding-right: 2%;
+    border-radius: 20%;
+    background-color: var(--Wit);
+    border-style: solid;
+    border-color: var(--Zwart);
+    border-width: 3px;
+}
+
+.loginInput {
+    position: absolute;
+    font-family: var(--Font);
+    font-weight: bold;
+    font-size: larger;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.inputInput {
+    background-color: #db2adb;
+    background-image: linear-gradient(180deg, #ff00ba, transparent), linear-gradient(93deg, transparent, rgba(19,43,200,.89)), linear-gradient(60deg, #d22e12, transparent);
+    font-family: var(--Font);
+    font-weight: bold;
+    font-size: large;
+    color: var(--Wit);
+    position: relative;
+    width: 350px;
+    height: 25px;
+    border-width: 3px;
+    border-color: var(--Zwart);
+}
+
+.email {
+    padding-top: 100px;
+    padding-bottom: 40px;
+}
+
+.password {
+    padding-bottom: 50px;
+}
+
+.loginButton {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.button {
+    background-color: #db2adb;
+    background-image: linear-gradient(180deg, #ff00ba, transparent), linear-gradient(93deg, transparent, rgba(19,43,200,.89)), linear-gradient(60deg, #d22e12, transparent);
+    font-family: var(--Font);
+    font-weight: bold;
+    font-size: large;
+    color: var(--Wit);
+    width: 120px;
+    height: 50px;
+    border-radius: 20%;
+    border-width: 3px;
+    border-color: var(--Zwart);
+}
+
+.register {
+    position: absolute;
+    top: 85%;
+    left: 30%;
+    transform: translate(-50%, -50%);
+    font-size: medium;
+}
+
+.registerLink {
+    font-family: var(--Font);
+    text-decoration: none;
+    color: var(--Zwart);
+}
+
+.forgotPassword {
+    position: absolute;
+    top: 85%;
+    left: 70%;
+    transform: translate(-50%, -50%);
+    font-size: medium;
+}
+
+.passwordLink {
+    text-decoration: none;
+    color: var(--Zwart);
+}

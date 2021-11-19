@@ -1,0 +1,56 @@
+@import "Variables.css";
+
+.headerBox {
+    font-weight: bolder;
+    font-size: larger;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.registerBox {
+    position: absolute;
+    font-family: var(--Font);
+    color: var(--Zwart);
+    text-align: center;
+    font-size: larger;
+    width: 350px;
+    height: 500px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding-left: 2%;
+    padding-right: 2%;
+    border-radius: 20%;
+    background-color: var(--Wit);
+    border-style: solid;
+    border-color: var(--Zwart);
+    border-width: 3px;
+}
+
+.inputInput {
+    background-color: #db2adb;
+    background-image: linear-gradient(180deg, #ff00ba, transparent), linear-gradient(93deg, transparent, rgba(19,43,200,.89)), linear-gradient(60deg, #d22e12, transparent);
+    font-family: var(--Font);
+    font-weight: bold;
+    font-size: large;
+    color: var(--Wit);
+    position: relative;
+    width: 350px;
+    height: 25px;
+    border-width: 3px;
+    border-color: var(--Zwart);
+}
+
+.registerInput {
+    position: absolute;
+    font-family: var(--Font);
+    font-size: larger;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.registerButton {
+    position: relative;
+    top: 300px;
+}
