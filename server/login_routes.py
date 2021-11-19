@@ -20,16 +20,15 @@ def login():
 
         if user: #IF USER OBJECT IS NOT NONE (COULD FIND CORRECT DATA IN DB)
             if not check_password_hash(user["password"], inserted_password):
-                print(user["password"], inserted_password)
-                return {"Code": 406, "Message": "Incorrect User credentials"""}
+                return {"Code": 406, "Message": "Incorrect User credentials (PASSWORD)"}
 
             session["user_id"] = user["user_id"]
             session["company_company_id"] = user["company_company_id"]
             session["role_role_id"] = user["role_role_id"]
-            return {"Code": 201, "Message": "User logged in"""}
+            return {"Code": 201, "Message": "User logged in"}
 
         else:
-           return {"Code": 406, "Message": "Incorrect User credentials"""}
+           return {"Code": 406, "Message": "Incorrect User credentials (NAME)"}
 
 @login_api.route("/logout", methods = ["GET"])
 def logout():
@@ -55,6 +54,7 @@ def register(company_id):
         inserted_password = request.form["password"]
         inserted_role = request.form["role_id"]
         hashed_password = generate_password_hash(inserted_password)
+        print("HASHED PASSWORD: " + hashed_password)
 
         sql = f"""INSERT INTO `User` VALUES (default, "{inserted_first_name}", "{inserted_last_name}", "{inserted_user_email}", "{hashed_password}", "{company_id}", "{inserted_role}");"""
         cursor.execute(sql)

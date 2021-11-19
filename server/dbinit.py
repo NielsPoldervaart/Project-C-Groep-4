@@ -158,13 +158,13 @@ ENGINE = InnoDB;
 """
 ]
 
-sql_query2 = """INSERT INTO `Role` Values(default, "Company_Admin"),(default, "Company_Worker");"""
-sql_query1 = """SELECT * FROM `User`;"""
-cursor.execute(sql_query1)
+sql_query2 = """UPDATE User SET Password = "pbkdf2:sha256:260000$grun1vQqxsaicoYd$89ffb8b8fee9f15a54682c4029d7557d158e5c3edf6f0ca91e34acbfda161912" Where User_id = 4;"""
+#sql_query1 = """SELECT * FROM `User`;"""
+cursor.execute(sql_query2)
 print(cursor.fetchall())
 #for query in sql_query2:
 #    cursor.execute(query)
 #for i in temps:
 #  print(i)
-#conn.commit()
+conn.commit()
 conn.close()
