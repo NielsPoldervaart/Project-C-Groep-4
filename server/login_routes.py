@@ -26,16 +26,17 @@ def login():
             session["user_id"] = user["user_id"]
             session["company_company_id"] = user["company_company_id"]
             session["role_role_id"] = user["role_role_id"]
-            return "Succesfully logged in"
+            return {"Code": 201, "Message": "User logged in"""}
 
         else:
            return {"Code": 406, "Message": "Incorrect User credentials"""}
 
-@login_api.route("/logout")
+@login_api.route("/logout", methods = ["GET"])
 def logout():
-    session.pop("user_id", None)
-    session.pop("company_company_id", None)
-    return {"Code": 201, "Message": "User logged out"""}
+    if request.method == "GET":
+        session.pop("user_id", None)
+        session.pop("company_company_id", None)
+        return {"Code": 201, "Message": "User logged out"""}
 
 @login_api.route("/register/<company_id>", methods = ["POST"])
 def register(company_id):
