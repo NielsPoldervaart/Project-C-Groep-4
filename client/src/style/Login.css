@@ -70,7 +70,7 @@
     transform: translate(-50%, -50%);
 }
 
-.button {
+.buttonL {
     background-color: #db2adb;
     background-image: linear-gradient(180deg, #ff00ba, transparent), linear-gradient(93deg, transparent, rgba(19,43,200,.89)), linear-gradient(60deg, #d22e12, transparent);
     font-family: var(--Font);
