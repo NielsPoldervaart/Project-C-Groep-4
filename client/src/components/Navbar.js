@@ -18,6 +18,7 @@ const Navbar = () => {
                         <li><Link className="Link" to="/login">Login</Link></li>
                         <li><Link className="Link" to="/register">Register</Link></li>
                         <li><Link className="Link" to="/forgotpassword">Password</Link></li>
+                        <li><Link className="Link" to="/logout">Logout</Link></li>
                     </ul>
                 </nav>
             </header>
@@ -27,6 +28,7 @@ const Navbar = () => {
                 <Route path="/login" element={<Login />}/>
                 <Route path="/register" element={<Register />}/>
                 <Route path="/forgotpassword" element={<Password />}/>
+                <Route path="/logout" element={<Login />}/>
             </Routes>
         </Router>
         
