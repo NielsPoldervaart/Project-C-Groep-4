@@ -35,6 +35,7 @@ def logout():
     if request.method == "GET":
         session.pop("user_id", None)
         session.pop("company_company_id", None)
+        session.pop("role_role_id", None)
         return {"Code": 201, "Message": "User logged out"""}
 
 @login_api.route("/register/<company_id>", methods = ["POST"])
