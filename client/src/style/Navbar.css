@@ -5,6 +5,7 @@
     margin: 0;
     padding: 0;
     font-family: var(--Font);
+    font-weight: bold;
 }
 
 body {
@@ -17,6 +18,7 @@ body {
 li, .Link {
     color: var(--Zwart);
     text-decoration: none;
+    padding: 3px;
 }
 
 .Navbar {
@@ -38,6 +40,7 @@ li, .Link {
 
 .NavLinks {
     list-style: none;
+    margin-right: 100px;
 }
 
 .NavLinks li {
@@ -53,11 +56,36 @@ li, .Link {
     color: var(--Magenta);
 }
 
-/* .logoBlockStripe {
-    position: relative;
-    left: -2px;
-    top: 7px;
+.profilePic {
+    position: fixed;
+    top: 20%;
+    left: 90%;
+    background: linear-gradient(180deg, #ff00ba, transparent), linear-gradient(93deg, transparent, rgba(19,43,200,.89)), linear-gradient(60deg, #d22e12, transparent);
+    width: 65px;
+    height: 65px;
+    border-radius: 100%;
+    text-align: center;
+    padding-top: 5px;
+}
+
+.profileMenu {
+    display: none;
+}
+
+.profilePic:hover .profileMenu {
+    display: inline-block;
+    margin-top: 10px;
+    background-color: var(--Wit);
     width: 100px;
-    height: 10px;
-    background-color: rgba(19,43,200);
-} */
+    padding: 2px;
+    text-align: left;
+    list-style: none;
+}
+
+.profileMenu li .Link {
+    transition: all 0.2s ease 0s;
+}
+
+.profileMenu li a:hover {
+    color: var(--Magenta);
+}

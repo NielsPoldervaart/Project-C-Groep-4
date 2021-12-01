@@ -1,0 +1,30 @@
+@import "Variables.css";
+
+.welcomeBox {
+    position: absolute;
+    font-family: var(--Font);
+    color: var(--Zwart);
+    text-align: center;
+    font-size: xx-large;
+    width: 400px;
+    height: 150px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding-left: 2%;
+    padding-right: 2%;
+    border-radius: 15%;
+    background-color: var(--Wit);
+    border-style: solid;
+    border-color: var(--Zwart);
+    border-width: 3px;
+}
+
+.welcome {
+    padding-top: 30px;
+}
+
+.success {
+    font-size: large;
+    padding-top: 20px;
+}
