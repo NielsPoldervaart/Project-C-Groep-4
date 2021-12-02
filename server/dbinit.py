@@ -4,16 +4,16 @@ import pymysql
 ##Database information
 conn = pymysql.connect(
     host="sql11.freesqldatabase.com",
-    database="sql11449887",
-    user="sql11449887",
-    password="j8Rl1xpF4g",
+    database="sql11455878",
+    user="sql11455878",
+    password="tEwKz5RhgR",
     charset="utf8mb4",
     cursorclass=pymysql.cursors.DictCursor
 )
 
 cursor = conn.cursor()
 
-sql_query = [
+sql_creation = [
 """
 CREATE TABLE IF NOT EXISTS  `Gallery` (
   `gallery_id` INT NOT NULL AUTO_INCREMENT,
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `User` (
   `first_name` VARCHAR(45) NOT NULL,
   `last_name` VARCHAR(45) NOT NULL,
   `email` VARCHAR(45) NOT NULL,
-  `password` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
   `Company_company_id` INT NOT NULL,
   `Role_role_id` INT NOT NULL,
   PRIMARY KEY (`user_id`),
@@ -158,12 +158,20 @@ ENGINE = InnoDB;
 """
 ]
 
-sql_query2 = """UPDATE User SET Password = "pbkdf2:sha256:260000$grun1vQqxsaicoYd$89ffb8b8fee9f15a54682c4029d7557d158e5c3edf6f0ca91e34acbfda161912" Where User_id = 4;"""
+sql_insert = [
+  f"""INSERT INTO `Gallery` VALUES (default)""",
+  f"""INSERT INTO `Collection` VALUES (default, 'TestCollection1', 1)""",
+  f"""INSERT INTO `Company` VALUES (default, 'TestCompany1', 1)""",
+  f"""INSERT INTO `Role` VALUES (default, 'KYNDA_ADMIN'), (default, 'COMPANY_ADMIN'), (default, 'COMPANY_WORKER')""",
+  f"""INSERT INTO `Template` VALUES (default, 'Cassettes.html', 1)""",
+  f"""INSERT INTO `User` Values (default, 'Test', 'User', 'TestUser@hr.nl', 'admin', 1, 1)"""
+]
+
 #sql_query1 = """SELECT * FROM `User`;"""
-cursor.execute(sql_query2)
-print(cursor.fetchall())
-#for query in sql_query2:
-#    cursor.execute(query)
+#cursor.execute(sql_query2)
+#print(cursor.fetchall())
+for query in sql_insert:
+    cursor.execute(query)
 #for i in temps:
 #  print(i)
 conn.commit()
