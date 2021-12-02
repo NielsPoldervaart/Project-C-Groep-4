@@ -11,8 +11,15 @@ def login():
     cursor = conn.cursor()
 
     if request.method == "POST": #haal wachwoord van server voor juiste user
-        inserted_password = request.form["password"]
-        inserted_user_email = request.form["email"]
+
+        #FORM METHOD
+        #inserted_password = request.form["password"]
+        #inserted_user_email = request.form["email"]
+
+        #JSON METHOD
+        jsonInput = request.json
+        inserted_password = jsonInput["password"]
+        inserted_user_email = jsonInput["email"]
 
         sql = f"""Select user_id, company_company_id, role_role_id, password from User where email = "{inserted_user_email}" """
         cursor.execute(sql)
