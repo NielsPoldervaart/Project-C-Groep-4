@@ -7,6 +7,11 @@ import Templates from '../pages/Templates';
 import Register from '../pages/Register';
 import Password from '../pages/Password';
 import Home from '../pages/Home';
+import Images from '../pages/Images';
+import Accounts from '../pages/Accounts';
+import Profile from '../pages/Profile';
+import Manual from '../pages/Manual';
+import Help from '../pages/Help';
 
 const Navbar = () => {
     return (
@@ -40,6 +45,11 @@ const Navbar = () => {
                 <Route path="/forgotpassword" element={<Password />}/>
                 <Route path="/logout" element={<Login />}/>
                 <Route path="/welcome" element={<Home />}/>
+                <Route path="/images" element={<Images />}/>
+                <Route path="/accounts" element={<Accounts />}/>
+                <Route path="/profile" element={<Profile />}/>
+                <Route path="/manual" element={<Manual />}/>
+                <Route path="/help" element={<Help />}/>
             </Routes>
         </Router>
         
