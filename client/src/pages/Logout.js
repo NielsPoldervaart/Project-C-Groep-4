@@ -8,7 +8,7 @@ const Logout = () => {
             res => res.json()
           ).then(
             data => {
-                setLogoutData(data)
+              setLogoutData(data)
               console.log(data)
             }
           )

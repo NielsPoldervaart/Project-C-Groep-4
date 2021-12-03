@@ -14,25 +14,32 @@ const Templates = () => {
 
     useEffect(() => {
         fetch(`/templates/${company_id}`).then(
-            res => res.json()
-          ).then(
-            data => {
-              setTemplates(data)
-            }
-          )
+          res => res.json()
+        ).then(
+          data => {
+            setTemplates(data)
+          }
+        )
 
-          fetch(`/company/${company_id}`).then(
-            res => res.json()
-          ).then(
-            data => {
-              setCompany(data)
-            }
-          )
+        fetch(`/company/${company_id}`).then(
+          res => res.json()
+        ).then(
+          data => {
+            setCompany(data)
+          }
+        )
+
+        DisplayElement()
     }, [company_id])
 
-    //TODO: Fix CompanyName to display properly
-    return (
-        <div className="TemplatesBody">
+    const DisplayElement = () => {
+
+      if (templates.errorCode == 403) {
+        navigate(`/login`)
+      }
+      else {
+        return (
+          <div className="TemplatesBody">
           
             <h1 className="CompanyName">{company.Company_name}</h1>
             <ul className="TemplateList">
@@ -52,7 +59,19 @@ const Templates = () => {
                 </div>
             </ul>
 
-        </div>
+          </div>
+        )
+      }
+    }
+
+    return (
+      <div>
+        {
+          DisplayElement()
+        }
+      </div>
+        
+
     );
 };
   
