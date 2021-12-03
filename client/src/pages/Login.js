@@ -9,11 +9,13 @@ const Login = () => {
         password: "",
     });
 
+    const [loginResponse, setLoginResponse] = useState({});
+
     let header = new Headers();
 
     header.append('Content-Type', 'application/json');
     header.append('Accept', 'application/json');
-    header.append('Access-Control-Allow-Origin', 'http://localhost:3000');
+    header.append('Access-Control-Allow-Origin', '*');
     header.append('Access-Control-Allow-Credentials', 'true');
 
     const HandleEmailChange = (e) => {
@@ -27,14 +29,14 @@ const Login = () => {
     const verifyUser = (e) => {
         e.preventDefault()
 
-        fetch('http://127.0.0.1:5000/login', {
+        console.log(JSON.stringify(formData))
+
+        fetch('/login', {
             method: 'POST',
-            mode: 'no-cors',
             body: JSON.stringify(formData),
             headers: header,
         })
         .then(response => response.json())
-        .then(json => console.log(json))
         .catch(error => console.log('Authorization failed : ' + error.message));
     }
 
@@ -45,7 +47,7 @@ const Login = () => {
                     <img src="https://excelsiorrotterdam.nl/wp-content/uploads/2018/01/kynda_web.png" alt="kyndaLogo" width="250" />    
                 </div>
                 {/* <form className="loginForm" method="post" action id="form" onSubmit={() => navigate(`/`)}> */}
-                <form className="loginForm" method="post" action id="form" onSubmit={(e) => verifyUser(e)}>
+                <form className="loginForm" method="post" action id="form" onSubmit={(e) => console.log(verifyUser(e))}>
                     <div className="loginInput">
                         <div className="email">
                             <label className="inputLabel" for="email">
