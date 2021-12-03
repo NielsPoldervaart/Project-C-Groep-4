@@ -86,7 +86,7 @@ ENGINE = InnoDB;
 """
 CREATE TABLE IF NOT EXISTS `Template` (
   `template_id` INT NOT NULL AUTO_INCREMENT,
-  `tamplate_file` VARCHAR(255) NOT NULL,
+  `template_file` VARCHAR(255) NOT NULL,
   `Company_company_id` INT NOT NULL,
   PRIMARY KEY (`template_id`),
   UNIQUE INDEX `template_id_UNIQUE` (`template_id` ASC),
@@ -167,11 +167,12 @@ sql_insert = [
   f"""INSERT INTO `User` Values (default, 'Test', 'User', 'TestUser@hr.nl', 'admin', 1, 1)"""
 ]
 
+#sql_query = """DELETE FROM `User` WHERE `user_id` = 1"""
 #sql_query1 = """SELECT * FROM `User`;"""
-#cursor.execute(sql_query2)
+#cursor.execute(sql_query)
 #print(cursor.fetchall())
-for query in sql_insert:
-    cursor.execute(query)
+#for query in sql_insert:
+#    cursor.execute(query)
 #for i in temps:
 #  print(i)
 conn.commit()
