@@ -2,6 +2,7 @@ import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import '../style/Navbar.css';
 import Login from '../pages/Login';
+import Logout from '../pages/Logout';
 import Template from '../pages/Template';
 import Templates from '../pages/Templates';
 import Register from '../pages/Register';
@@ -28,7 +29,7 @@ const Navbar = () => {
                 <Route path="/login" element={<Login />}/>
                 <Route path="/register" element={<Register />}/>
                 <Route path="/forgotpassword" element={<Password />}/>
-                <Route path="/logout" element={<Login />}/>
+                <Route path="/logout" element={<Logout />}/>
             </Routes>
         </Router>
         
