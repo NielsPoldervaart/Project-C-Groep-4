@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 
 const Logout = () => {
-    const [logoutData, setLogoutData] = useState([])
 
     useEffect(() => {
         fetch(`/logout`).then(
             res => res.json()
           ).then(
             data => {
-              setLogoutData(data)
               console.log(data)
             }
           )
