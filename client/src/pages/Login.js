@@ -9,6 +9,13 @@ const Login = () => {
         password: "",
     });
 
+    let header = new Headers();
+
+    header.append('Content-Type', 'application/json');
+    header.append('Accept', 'application/json');
+    header.append('Access-Control-Allow-Origin', 'http://localhost:3000');
+    header.append('Access-Control-Allow-Credentials', 'true');
+
     const HandleEmailChange = (e) => {
         setFormData({...formData, email: e.target.value})
     }
@@ -22,8 +29,13 @@ const Login = () => {
 
         fetch('http://127.0.0.1:5000/login', {
             method: 'POST',
-            body: JSON.stringify(formData)
+            mode: 'no-cors',
+            body: JSON.stringify(formData),
+            headers: header,
         })
+        .then(response => response.json())
+        .then(json => console.log(json))
+        .catch(error => console.log('Authorization failed : ' + error.message));
     }
 
     return (
