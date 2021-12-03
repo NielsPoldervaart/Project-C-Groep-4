@@ -9,8 +9,6 @@ const Login = () => {
         password: "",
     });
 
-    const [loginResponse, setLoginResponse] = useState({});
-
     let header = new Headers();
 
     header.append('Content-Type', 'application/json');
@@ -29,14 +27,20 @@ const Login = () => {
     const verifyUser = (e) => {
         e.preventDefault()
 
-        console.log(JSON.stringify(formData))
-
         fetch('/login', {
             method: 'POST',
             body: JSON.stringify(formData),
             headers: header,
         })
-        .then(response => response.json())
+        .then(res =>  res.json())
+        .then(data => {
+            if (data.Code === 201) {
+                navigate('/')
+            }
+            else {
+                alert("Error, Wrong credentials!")
+            }
+        })
         .catch(error => console.log('Authorization failed : ' + error.message));
     }
 
@@ -47,7 +51,7 @@ const Login = () => {
                     <img src="https://excelsiorrotterdam.nl/wp-content/uploads/2018/01/kynda_web.png" alt="kyndaLogo" width="250" />    
                 </div>
                 {/* <form className="loginForm" method="post" action id="form" onSubmit={() => navigate(`/`)}> */}
-                <form className="loginForm" method="post" action id="form" onSubmit={(e) => console.log(verifyUser(e))}>
+                <form className="loginForm" method="post" action id="form" onSubmit={(e) => verifyUser(e)}>
                     <div className="loginInput">
                         <div className="email">
                             <label className="inputLabel" for="email">
