@@ -34,7 +34,7 @@ const Templates = () => {
 
     const DisplayElement = () => {
 
-      if (templates.errorCode == 403) {
+      if (templates.errorCode === 403) {
         navigate(`/login`)
       }
       else {
