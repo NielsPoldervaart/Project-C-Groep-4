@@ -1,7 +1,7 @@
 from flask import request, session, Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
 from user_verification import verify_user
-from database_connection import create_db_session, db_connection
+from database_connection import *
 
 
 login_api = Blueprint('login_api', __name__)
@@ -11,26 +11,23 @@ def login():
     conn = db_connection()
     cursor = conn.cursor()
 
-    connSQLA = create_db_session()
+    db_session = create_db_session()
 
-    if request.method == "POST": #haal wachwoord van server voor juiste user
+    if request.method == "POST":
 
         #JSON METHOD
         jsonInput = request.json
         inserted_password = jsonInput["password"]
         inserted_user_email = jsonInput["email"]
 
-        sql = f"""Select user_id, company_company_id, role_role_id, password from User where email = "{inserted_user_email}" """
-        cursor.execute(sql)
-        user = cursor.fetchone()
-
+        user = db_session.query(User.user_id, User.Company_company_id, User.Role_role_id, User.password).filter_by(email =f'{inserted_user_email}').first()
         if user: #IF USER OBJECT IS NOT NONE (COULD FIND CORRECT DATA IN DB)
-            if not check_password_hash(user["password"], inserted_password):
+            if not check_password_hash(user.password, inserted_password):
                 return {"Code": 406, "Message": "Incorrect User credentials (PASSWORD)"} #TODO: REMOVE "(PASSWORD)" FROM RESPONSE"
 
-            session["user_id"] = user["user_id"]
-            session["company_company_id"] = user["company_company_id"]
-            session["role_role_id"] = user["role_role_id"]
+            session["user_id"] = user.user_id
+            session["company_company_id"] = user.Company_company_id
+            session["role_role_id"] = user.Role_role_id
             return {"Code": 201, "Message": "User logged in"}
 
         else:
@@ -61,7 +58,6 @@ def register(company_id):
         inserted_password = request.form["password"]
         inserted_role = request.form["role_id"]
         hashed_password = generate_password_hash(inserted_password)
-        print("HASHED PASSWORD: " + hashed_password)
 
         sql = f"""INSERT INTO `User` VALUES (default, "{inserted_first_name}", "{inserted_last_name}", "{inserted_user_email}", "{hashed_password}", "{company_id}", "{inserted_role}");"""
         cursor.execute(sql)
