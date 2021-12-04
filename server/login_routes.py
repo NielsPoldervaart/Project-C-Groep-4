@@ -1,7 +1,7 @@
 from flask import request, session, Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
 from user_verification import verify_user
-from database_connection import *
+from database_connection import create_db_session, db_connection
 
 
 login_api = Blueprint('login_api', __name__)
@@ -11,7 +11,7 @@ def login():
     conn = db_connection()
     cursor = conn.cursor()
 
-    connSQLA = loadSession()
+    connSQLA = create_db_session()
 
     if request.method == "POST": #haal wachwoord van server voor juiste user
 
@@ -26,7 +26,7 @@ def login():
 
         if user: #IF USER OBJECT IS NOT NONE (COULD FIND CORRECT DATA IN DB)
             if not check_password_hash(user["password"], inserted_password):
-                return {"Code": 406, "Message": "Incorrect User credentials (PASSWORD)"}
+                return {"Code": 406, "Message": "Incorrect User credentials (PASSWORD)"} #TODO: REMOVE "(PASSWORD)" FROM RESPONSE"
 
             session["user_id"] = user["user_id"]
             session["company_company_id"] = user["company_company_id"]
@@ -34,7 +34,7 @@ def login():
             return {"Code": 201, "Message": "User logged in"}
 
         else:
-           return {"Code": 406, "Message": "Incorrect User credentials (NAME)"}
+           return {"Code": 406, "Message": "Incorrect User credentials (NAME)"} #TODO: REMOVE "(NAME) FROM RESPONSE"
 
 @login_api.route("/logout", methods = ["GET"])
 def logout():
