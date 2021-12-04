@@ -1,7 +1,8 @@
 from flask import request, session, Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
 from user_verification import verify_user
-from database_connection import db_connection
+from database_connection import *
+
 
 login_api = Blueprint('login_api', __name__)
 
@@ -10,11 +11,9 @@ def login():
     conn = db_connection()
     cursor = conn.cursor()
 
-    if request.method == "POST": #haal wachwoord van server voor juiste user
+    connSQLA = loadSession()
 
-        #FORM METHOD
-        #inserted_password = request.form["password"]
-        #inserted_user_email = request.form["email"]
+    if request.method == "POST": #haal wachwoord van server voor juiste user
 
         #JSON METHOD
         jsonInput = request.json

@@ -7,10 +7,10 @@ def db_connection():
     conn = None
     try:
         conn = pymysql.connect(
-            host="sql11.freesqldatabase.com",
-            database="sql11455878",
-            user="sql11455878",
-            password="tEwKz5RhgR",
+            host="kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com",
+            database="KyndaDB",
+            user="kynda",
+            password="u9N3_HM+ARhDYsRQ",
             charset='utf8mb4',
             cursorclass=pymysql.cursors.DictCursor
         )
@@ -18,17 +18,28 @@ def db_connection():
         print("\n\n\nERROR:", e)
     return conn
 
+
 ##SESSION TEST SQLALCHEMY
 class Template(object):
     pass
+
+class Company(object):
+    pass
+
+class User(object):
+    pass
 #----------------------------------------------------------------------
-def loadSession():
-    """"""    
-    engine = create_engine('mysql+mysqldb://sql11455878:tEwKz5RhgR@sql11.freesqldatabase.com/sql11455878', echo=True)
+def loadSession():   
+    engine = create_engine('mysql+mysqldb://kynda:u9N3_HM+ARhDYsRQ@kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com/KyndaDB', echo=True)
     
     metadata = MetaData(engine)
-    moz_template = Table('Template', metadata, autoload=True)
-    mapper(Template, moz_template)
+    table_template = Table('Template', metadata, autoload=True)
+    table_company = Table('Company', metadata, autoload=True)
+    table_user = Table('User', metadata, autoload=True)
+
+    mapper(Template, table_template)
+    mapper(Company, table_company)
+    mapper(User, table_user)
     
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -36,7 +47,12 @@ def loadSession():
 
 def createSession():
     session = loadSession()
-    res = session.query(Template).all()
-    print(res[0].tamplate_file)
+    res2 = session.query(User.first_name, User.password).all()
+    res = session.query(User).filter_by(first_name='Hi').first()
+    print(res2[0].password)
+    print(type(res))
+    print(res == [])
+    print(res == None)
+    #print(f"PASSWORD: {res[0].password}")
 
 #createSession()
