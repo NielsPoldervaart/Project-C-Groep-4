@@ -42,14 +42,12 @@ def logout():
 @login_api.route("/register/<company_identifier>", methods = ["POST"])
 def register(company_identifier):
     #TODO: COMPANY ID CAN BE RETRIEVED FROM USER DATA IN SESSION
+    user_verification = verify_user(company_identifier, [1])
+    if user_verification != "PASSED":
+        return user_verification
 
     if request.method == "POST":
-        user_verification = verify_user(company_identifier, [1])
-        if user_verification != "PASSED":
-            return user_verification
-
         db_session = create_db_session()
-
         inserted_first_name = request.form["first_name"]
         inserted_last_name = request.form["last_name"]
         inserted_user_email = request.form["email"]
