@@ -113,11 +113,16 @@ def create_db_session():
     return session
 
 def createSession():
-    session = DB()
-    res2 = session.query(User.first_name, User.password).all()
-    print("BREAK POINT\n\n\n\n\BREAKPOINT")
-    session2 = createSession()
-    res2 = session.query(User.first_name, User.password).all()
+    init_db_structure()
+    session = create_db_session()
+    #templates = session.query(Template.template_id, Template.template_file, Company.company_id).join(Company).filter_by(company_id = f'{1}').all()
+    #print(templates[0])
+    #new_template = Template(None, 'test.html', 1)
+    #session.add(new_template)
+    #session.commit()
+    #print("BREAK POINT\n\n\n\n\BREAKPOINT")
+    res = session.query(Template).all()
+    print(res[1].template_id, res[1].template_file)
     #res = session.query(User).filter_by(first_name='Hi').first()
     #testUser = User(2, "Yeet", "Teey", "Mail@mail.mail", "secure", 1, 1)
     #print(testUser.password)

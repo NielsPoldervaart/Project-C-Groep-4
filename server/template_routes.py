@@ -1,34 +1,33 @@
 from flask import Blueprint, request, jsonify
 from user_verification import verify_user
-from database_connection import db_connection
+from database_connection import *
 import os
 
 template_api = Blueprint('template_api', __name__)
 
-@template_api.route("/templates/<company_id>", methods=["GET", "POST"])
-def templates(company_id):
+@template_api.route("/templates/<company_identifier>", methods=["GET", "POST"])
+def templates(company_identifier):
 
-    user_verification = verify_user(company_id)
+    user_verification = verify_user(company_identifier)
     if user_verification != "PASSED":
         return user_verification
 
-    conn = db_connection()
-    cursor = conn.cursor()
+    #conn = db_connection()
+    #cursor = conn.cursor()
+
+    db_session = create_db_session()
 
     if request.method == "GET": #View ALL templates from a company
-        sql = f"""Select T.template_id, T.template_file, C.company_name From Template T
-                    join Company C
-                        on T.company_company_id = C.company_id
-                    where C.company_id = {company_id};
-        """
-        cursor.execute(sql)
+
+        result = db_session.query(Template.template_id, Template.template_file, Company.company_name).join(Company).filter_by(company_id = f'{company_identifier}').all()
+
         templates = [
             dict(
                 template_id = row['template_id'],
               template_file = row['template_file'],
                 company_name = row['company_name']
                 )
-                for row in cursor.fetchall()
+                for row in result
         ]  
         if len(templates) is not 0:
             return jsonify(templates)
