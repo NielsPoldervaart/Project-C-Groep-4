@@ -50,11 +50,7 @@ def template(company_identifier, template_identifier):
     if user_verification != "PASSED":
         return user_verification
 
-    conn = db_connection()
-    cursor = conn.cursor()
-
     db_session = create_db_session()
-
 
     if request.method == "GET": #View a specific template
 

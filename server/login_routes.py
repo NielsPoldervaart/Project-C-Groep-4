@@ -39,17 +39,17 @@ def logout():
         session.pop("role_role_id", None)
         return {"Code": 201, "Message": "User logged out"""}
 
-@login_api.route("/register/<company_id>", methods = ["POST"])
-def register(company_id):
+@login_api.route("/register/<company_identifier>", methods = ["POST"])
+def register(company_identifier):
     #TODO: COMPANY ID CAN BE RETRIEVED FROM USER DATA IN SESSION
-    user_verification = verify_user(company_id, [1])
-    if user_verification != "PASSED":
-        return user_verification
-
-    conn = db_connection()
-    cursor = conn.cursor()
 
     if request.method == "POST":
+        user_verification = verify_user(company_identifier, [1])
+        if user_verification != "PASSED":
+            return user_verification
+
+        db_session = create_db_session()
+
         inserted_first_name = request.form["first_name"]
         inserted_last_name = request.form["last_name"]
         inserted_user_email = request.form["email"]
@@ -57,8 +57,10 @@ def register(company_id):
         inserted_role = request.form["role_id"]
         hashed_password = generate_password_hash(inserted_password)
 
-        sql = f"""INSERT INTO `User` VALUES (default, "{inserted_first_name}", "{inserted_last_name}", "{inserted_user_email}", "{hashed_password}", "{company_id}", "{inserted_role}");"""
-        cursor.execute(sql)
-        conn.commit()
+        new_user = User(None, inserted_first_name, inserted_last_name, inserted_user_email, hashed_password, company_identifier, inserted_role)
+        db_session.add(new_user)
+        db_session.commit()
 
         return {"Code": 201, "Message": "User added to company"""}
+        #TODO: RETURN SOMETHING IF REQUEST IS NOT POST
+        #TODO: REMOVING A USER FROM DB OPTION?
