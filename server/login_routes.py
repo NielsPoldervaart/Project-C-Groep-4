@@ -8,19 +8,17 @@ login_api = Blueprint('login_api', __name__)
 
 @login_api.route("/login", methods=["POST"])
 def login():
-    conn = db_connection()
-    cursor = conn.cursor()
-
     db_session = create_db_session()
 
     if request.method == "POST":
-
         #JSON METHOD
         jsonInput = request.json
         inserted_password = jsonInput["password"]
         inserted_user_email = jsonInput["email"]
 
+        #REQUESTS `user_id`, `Company_company_id`, `Role_role_id`, `password` FROM DATABASE WHERE EMAIL IS INSERTED EMAIL. RETURNS NONE IF CANNOT FIND MATCH
         user = db_session.query(User.user_id, User.Company_company_id, User.Role_role_id, User.password).filter_by(email =f'{inserted_user_email}').first()
+
         if user: #IF USER OBJECT IS NOT NONE (COULD FIND CORRECT DATA IN DB)
             if not check_password_hash(user.password, inserted_password):
                 return {"Code": 406, "Message": "Incorrect User credentials (PASSWORD)"} #TODO: REMOVE "(PASSWORD)" FROM RESPONSE"
