@@ -68,15 +68,17 @@ def template(company_identifier, template_identifier):
             )
         return {"errorCode": 404, "Message": "Template Does not exist"""}
 
-    if request.method == "Delete" : #Delete a specific template
-        #sql = f"""Select template_file from Template where template_id = {template_id} and company_company_id = {company_id}
-        #"""
-        #sql2 = f"""Delete from Template where template_id = {template_id} and company_company_id = {company_id}
-        #"""
-        cursor.execute(sql)
-        result = cursor.fetchone()
-        path = result.get("template_file")
-        os.remove(path)
-        #cursor.execute(sql2)
-        #conn.commit()
+    if request.method == "DELETE" : #Delete a specific template
+
+        #TODO: FIND A WAY TO ACCESS THE TEMPLATE FILE WITH ONE QUERY FOR DELETION, INSTEAD OF HAVING TO QUERY TWICE (SPEED INCR, OPTIONAL)
+        template_to_delete = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
+        #TODO: ADD CHECK IF TEMPLATE_TO_DELETE = NONE (NO TEMPLATE COULD BE FOUND WITH PROVIDED REQUIRMEMENTS, RETURN CORRECT DATA THEN)
+        path = template_to_delete.template_file
+        db_session.delete(template_to_delete)
+        db_session.commit()
+
+        path = template_to_delete.template_file
+        print(path)
+        #os.remove(path) TODO: ADD CONNECTION TO ACTUAL STORAGE TO DELETE THE TEMPLATE THERE WITH THE GATHERED PATH
+
         return {"Code": 201, "Message": "Deleted file succesfully"""}
