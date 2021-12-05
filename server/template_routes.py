@@ -43,30 +43,34 @@ def templates(company_identifier):
 
         return {"Code": 201, "Message": "Template added to company"""}
 
-@template_api.route("/template/<company_id>/<template_id>", methods=["GET", "DELETE"])
-def template(company_id, template_id):
+@template_api.route("/template/<company_identifier>/<template_identifier>", methods=["GET", "DELETE"])
+def template(company_identifier, template_identifier):
 
-    user_verification = verify_user(company_id)
+    user_verification = verify_user(company_identifier)
     if user_verification != "PASSED":
         return user_verification
 
     conn = db_connection()
     cursor = conn.cursor()
+
+    db_session = create_db_session()
+
+
     if request.method == "GET": #View a specific template
-        sql = f"""Select * From Template
-                    where template_id = {template_id}
-                    and
-                        company_company_id = {company_id};               
-        """
-        cursor.execute(sql)
-        result = cursor.fetchone()
+
+        result = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
+
         if result is not None:
-            return jsonify(result)
+            return dict(
+                template_id = result.template_id,
+                template_file = result.template_file,
+                Company_company_id = result.Company_company_id
+            )
         return {"errorCode": 404, "Message": "Template Does not exist"""}
 
     if request.method == "Delete" : #Delete a specific template
-        sql = f"""Select template_file from Template where template_id = {template_id} and company_company_id = {company_id}
-        """
+        #sql = f"""Select template_file from Template where template_id = {template_id} and company_company_id = {company_id}
+        #"""
         #sql2 = f"""Delete from Template where template_id = {template_id} and company_company_id = {company_id}
         #"""
         cursor.execute(sql)
