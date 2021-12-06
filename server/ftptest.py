@@ -1,17 +1,24 @@
 from ftplib import FTP
 
-session = FTP('145.24.222.235')
-session.login("Controller", "cC2G'Q_&3qY@=D!@")
-
 contents = []
 filename = 'test.html'
 
-def getFile(filename, company_id=0):
+def getFileContents(filename, company_id=0):
+    session = FTP('145.24.222.235')
+    session.login("Controller", "cC2G'Q_&3qY@=D!@")
+
     global contents
     session.retrlines("RETR " + filename, collectLines)
     tempContents = contents
     contents = []
     return tempContents
+
+def get_file_full(file_name, company_id):
+    session = FTP('145.24.222.235')
+    session.login("Controller", "cC2G'Q_&3qY@=D!@")
+    handle = open(f'database/templates/{file_name}', 'w')
+    print("FILENAME: " + filename)
+    session.retrlines("RETR " + filename, handle.write)
 
 def uploadFile():
     pass
@@ -21,7 +28,6 @@ def updateFile():
 
 def deleteFile():
     pass
-
 def createDir():
     pass
 
@@ -32,6 +38,6 @@ def collectLines(s):
     global contents
     contents.append(s)
 
-getFile(filename)
-print(contents)
+#get_file_full(filename, 1)
+#a = getFileContents(filename)
 #ftp.dir()

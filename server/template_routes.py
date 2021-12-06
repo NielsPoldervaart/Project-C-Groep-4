@@ -1,7 +1,7 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_from_directory
 from user_verification import verify_user
+from ftptest import get_file_full
 from database_connection import *
-import os
 
 template_api = Blueprint('template_api', __name__)
 
@@ -37,13 +37,13 @@ def templates(company_identifier):
         new_template_path = request.form["template_path"]
         #New Template object is created, None is used for id as it is auto-incremented by SQLAlchemy
         new_template = Template(None, new_template_path, company_identifier)
-
+        
         db_session.add(new_template)
         db_session.commit()
 
         return {"Code": 201, "Message": "Template added to company"""}
 
-@template_api.route("/template/<company_identifier>/<template_identifier>", methods=["GET", "DELETE"])
+@template_api.route("/template/<int:company_identifier>/<int:template_identifier>", methods=["GET", "DELETE"])
 def template(company_identifier, template_identifier):
 
     user_verification = verify_user(company_identifier)
@@ -54,14 +54,26 @@ def template(company_identifier, template_identifier):
 
     if request.method == "GET": #View a specific template
 
-        result = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
+        #result = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
+        template_file_location_ftp = db_session.query(Template.template_file).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
 
-        if result is not None:
-            return dict(
-                template_id = result.template_id,
-                template_file = result.template_file,
-                Company_company_id = result.Company_company_id
-            )
+        if template_file_location_ftp is not None:
+            print(type(template_file_location_ftp.template_file), template_file_location_ftp.template_file)
+            get_file_full(template_file_location_ftp.template_file, company_identifier)
+            try:
+                return send_from_directory("database/templates/", template_file_location_ftp.template_file, as_attachment=True)
+            except:
+                return "NOPE"
+            #download file from ftp
+            #return file to client
+            #delete file from local storage
+
+        #if result is not None:
+        #    return dict(
+        #        template_id = result.template_id,
+        #        template_file = result.template_file,
+        #        Company_company_id = result.Company_company_id
+        #    )
         return {"errorCode": 404, "Message": "Template Does not exist"""}
 
     if request.method == "DELETE" : #Delete a specific template
