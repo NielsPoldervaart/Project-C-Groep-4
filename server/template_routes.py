@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, send_from_directory
 from user_verification import verify_user
 from ftptest import get_file_full
 from database_connection import *
+import os
 
 template_api = Blueprint('template_api', __name__)
 
@@ -60,10 +61,10 @@ def template(company_identifier, template_identifier):
         if template_file_location_ftp is not None:
             print(type(template_file_location_ftp.template_file), template_file_location_ftp.template_file)
             get_file_full(template_file_location_ftp.template_file, company_identifier)
-            try:
-                return send_from_directory("database/templates/", template_file_location_ftp.template_file, as_attachment=True)
-            except:
-                return "NOPE"
+            send_from_directory("database/templates/", template_file_location_ftp.template_file, as_attachment=True)
+            return send_from_directory("database/templates/", template_file_location_ftp.template_file, as_attachment=True)
+                
+
             #download file from ftp
             #return file to client
             #delete file from local storage
