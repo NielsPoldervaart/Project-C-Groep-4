@@ -3,14 +3,13 @@ import pymysql
 
 ##Database information
 conn = pymysql.connect(
-    host="sql11.freesqldatabase.com",
-    database="sql11455878",
-    user="sql11455878",
-    password="tEwKz5RhgR",
-    charset="utf8mb4",
-    cursorclass=pymysql.cursors.DictCursor
-)
-
+            host="kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com",
+            database="KyndaDB",
+            user="kynda",
+            password="u9N3_HM+ARhDYsRQ",
+            charset='utf8mb4',
+            cursorclass=pymysql.cursors.DictCursor
+        )
 cursor = conn.cursor()
 
 sql_creation = [
@@ -167,13 +166,13 @@ sql_insert = [
   f"""INSERT INTO `User` Values (default, 'Test', 'User', 'TestUser@hr.nl', 'admin', 1, 1)"""
 ]
 
-#sql_query = """DELETE FROM `User` WHERE `user_id` = 1"""
-#sql_query1 = """SELECT * FROM `User`;"""
-#cursor.execute(sql_query)
-#print(cursor.fetchall())
+#sql_query = """DELETE FROM `User` WHERE `User_id` = 1"""
+sql_query = """SELECT * FROM `User`;"""
+cursor.execute(sql_query)
+print(cursor.fetchall())
 #for query in sql_insert:
 #    cursor.execute(query)
 #for i in temps:
 #  print(i)
-conn.commit()
+#conn.commit()
 conn.close()
