@@ -2,6 +2,9 @@ from ftplib import FTP
 import os
 from os import path
 import shutil
+import io
+import random
+import string
 
 def delete_files_from_dir(dir):
     for file_object in os.listdir(dir):
@@ -11,11 +14,7 @@ def delete_files_from_dir(dir):
             else:
                 shutil.rmtree(file_object_path)
 
-
 def get_file_full(file_name, company_id):
-    #Check if theres already files in temp storage from previous requests, if so, delete these files
-    if path.exists(f'temporary_ftp_storage/{company_id}'):
-        delete_files_from_dir(f'temporary_ftp_storage/{company_id}')
 
     #Create session with FTP
     session = FTP('145.24.222.235')
@@ -24,17 +23,34 @@ def get_file_full(file_name, company_id):
     #Change directory on FTP to the company's
     session.cwd(f'{company_id}') #TODO: Catch errors if doesnt exist
 
-    #Check if folders already exists from previous requests, if not, create them
-    if not path.exists(f'temporary_ftp_storage/{company_id}/templates'):
-        os.makedirs(f'temporary_ftp_storage/{company_id}/templates')
+    #Generate random file path for temp storage
+    random_file_path = f'{get_random_string(24)}.html'
+
+    #Check for extreme edge case, if path is same as a different parallel request path
+    if path.exists(f'temporary_ftp_storage/{random_file_path}'):
+        random_file_path = f'{get_random_string(24)}.html'
         
     #Create the local (temporary) file
-    handle = open(f'temporary_ftp_storage/{company_id}/templates/{file_name}', 'w')
-    #print("FILENAME: " + file_name)
+    with open(f'temporary_ftp_storage/{random_file_path}', 'w') as handle:
+        #Retrieve file from FTP server and write it to created temp file
+        session.retrlines("RETR " + file_name, handle.write)
 
-    #Retrieve file from FTP server and write it to created temp file
-    session.retrlines("RETR " + file_name, handle.write)
+    #Create variable to store the local file contents
+    return_data = io.BytesIO()
+    with open(f'temporary_ftp_storage/{random_file_path}', 'rb') as handle:
+        #Write all contents from temporary file to the variable
+        return_data.write(handle.read())
+    #return variable position to 0 (after writing it ends up at length-1)
+    return_data.seek(0)
+
+    #Remove the temporary_file from local storage
+    os.remove(f'temporary_ftp_storage/{random_file_path}')
+    
+    #Close FTP session
     session.quit()
+
+    #Return the extracted Bytes
+    return return_data
 
 def get_image(file_name, company_id=1):
     session = FTP('145.24.222.235')
@@ -71,11 +87,12 @@ def delete_file(file_name, company_id=1):
     session.delete(file_name)
     session.quit()
 
-def createDir():
-    pass
+def get_random_string(length):
+    # choose from all lowercase letter
+    letters = string.ascii_lowercase
+    result_str = ''.join(random.choice(letters) for i in range(length))
+    return result_str
 
-def deleteDir():
-    pass
 
 
 #get_file_full(filename, 1)
