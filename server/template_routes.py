@@ -4,6 +4,7 @@ from ftp_controller import get_file_full, upload_file
 from database_connection import *
 import os
 from os import path
+from generate_random_path import generate_random_path
 
 template_api = Blueprint('template_api', __name__)
 
@@ -36,14 +37,18 @@ def templates(company_identifier):
     if request.method == "POST": #Add a template to DB and FTP
         #new_template_path = request.form["template_path"]
         uploaded_template = request.files['template_file']
-        if uploaded_template.filename == '':
+        if uploaded_template.filename == '': #TODO: Check for correct file extension (HTML/HTM)
             return {"Code": 405, "Message": "No template file found in request, OR File has no valid name"}
 
-        if not path.exists(f'temporary_ftp_storage/{company_identifier}/templates'):
-            os.makedirs(f'temporary_ftp_storage/{company_identifier}/templates')
+        random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage
+        if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
+            random_file_path = generate_random_path(24, 'html')
 
-        uploaded_template.save(f"temporary_ftp_storage/{company_identifier}/templates/{uploaded_template.filename}")
-        upload_file(f"{uploaded_template.filename}", "templates", company_identifier)
+        uploaded_template.save(random_file_path) #Save template to created storage
+        upload_file(random_file_path, f"{uploaded_template.filename}", "templates", company_identifier)
+
+        os.remove(random_file_path)
+
         #New Template object is created, None is used for id as it is auto-incremented by SQLAlchemy
         #new_template = Template(None, new_template_path, company_identifier)
         
