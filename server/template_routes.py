@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, send_from_directory
+from flask import Blueprint, request, jsonify, send_from_directory, send_file
 from user_verification import verify_user
 from ftp_controller import get_file_full, upload_file
 from database_connection import *
@@ -68,8 +68,9 @@ def template(company_identifier, template_identifier):
 
         if template_file_location_ftp is not None:
             print(type(template_file_location_ftp.template_file), template_file_location_ftp.template_file)
-            get_file_full(template_file_location_ftp.template_file, company_identifier)
-            return send_from_directory(f"temporary_ftp_storage/{company_identifier}/templates/", template_file_location_ftp.template_file, as_attachment=True)
+
+            template_bytes = get_file_full(template_file_location_ftp.template_file, company_identifier)
+            return send_file(template_bytes, mimetype="text/html")
                 
 
             #download file from ftp
