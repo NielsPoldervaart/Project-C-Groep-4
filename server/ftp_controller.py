@@ -5,6 +5,7 @@ import shutil
 import io
 from generate_random_path import generate_random_path
 
+"""
 def delete_files_from_dir(dir):
     for file_object in os.listdir(dir):
             file_object_path = os.path.join(dir, file_object)
@@ -12,8 +13,9 @@ def delete_files_from_dir(dir):
                 os.unlink(file_object_path)
             else:
                 shutil.rmtree(file_object_path)
+"""
 
-def get_file_full(file_name, company_id):
+def try_to_get_text_file_ftps(file_name, company_id):
     session = FTP('145.24.222.235') #Create session with FTP
     session.login("Controller", "cC2G'Q_&3qY@=D!@")
 
@@ -27,7 +29,8 @@ def get_file_full(file_name, company_id):
         random_file_path = generate_random_path(24, 'html')
 
     with open(f'temporary_ftp_storage/{random_file_path}', 'w') as handle: #Create the local (temporary) file
-        #TODO: Check if file exists on FTP server
+        if f"{file_name}" not in session.nlst(): #Check if actual file exists on FTP Server in the company id directory, if not, return
+            return {"errorCode": 404, "Message": "Requested file not found on FTP server"}
         session.retrlines("RETR " + file_name, handle.write) #Retrieve file from FTP server and write it to created temp file
 
     return_data = io.BytesIO() #Create variable to store the local file contents
@@ -80,7 +83,7 @@ def delete_file(file_name, company_id):
     session.quit()
 
 
-#get_file_full(filename, 1)
+#try_to_download_text_file(filename, 1)
 #get_image("picture.jpg")
 #upload_file("template1.html", "templates")
 #a = getFileContents(filename)
