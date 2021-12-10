@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, send_file
 from user_verification import verify_user
-from ftp_controller import try_to_get_text_file_ftps, upload_file
+from ftp_controller import try_to_get_text_file_ftps, delete_file_ftps, upload_file
 from database_connection import *
 import os
 from os import path
@@ -35,12 +35,14 @@ def templates(company_identifier):
             return {"errorCode": 404, "Message": "Template Does not exist"""}
 
     if request.method == "POST": #Add a template to DB and FTP
-        #new_template_path = request.form["template_path"]
         uploaded_template = request.files['template_file']
-        if uploaded_template.filename == '': #TODO: Check for correct file extension (HTML/HTM)
+        if uploaded_template.filename == '': 
             return {"Code": 405, "Message": "No template file found in request, OR File has no valid name"}
 
-        random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage
+        if not (uploaded_template.filename.endswith(".html") or uploaded_template.filename.endswith(".htm")):
+            return  {"Code": 405, "Message": "No template file found in request, OR File has no valid extension (.html OR .htm)"}
+
+        random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage + create an empty file with given length + extension
         if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
             random_file_path = generate_random_path(24, 'html')
 
@@ -50,10 +52,10 @@ def templates(company_identifier):
         os.remove(random_file_path)
 
         #New Template object is created, None is used for id as it is auto-incremented by SQLAlchemy
-        #new_template = Template(None, new_template_path, company_identifier)
+        new_template = Template(None, f"{uploaded_template.filename}", company_identifier)
         
-        #db_session.add(new_template)
-        #db_session.commit()
+        db_session.add(new_template)
+        db_session.commit()
 
         return {"Code": 201, "Message": "Template added to company"}
 
@@ -83,15 +85,15 @@ def template(company_identifier, template_identifier):
 
     if request.method == "DELETE" : #Delete a specific template
 
-        #TODO: FIND A WAY TO ACCESS THE TEMPLATE FILE WITH ONE QUERY FOR DELETION, INSTEAD OF HAVING TO QUERY TWICE (SPEED INCR, OPTIONAL)
+    #TODO: FIND A WAY TO ACCESS THE TEMPLATE FILE WITH ONE QUERY FOR DELETION, INSTEAD OF HAVING TO QUERY TWICE (SPEED INCR, OPTIONAL)
         template_to_delete = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
-        #TODO: ADD CHECK IF TEMPLATE_TO_DELETE = NONE (NO TEMPLATE COULD BE FOUND WITH PROVIDED REQUIRMEMENTS, RETURN CORRECT DATA THEN)
+        if template_to_delete is None:
+            return {"Code": 404, "Message": "Template not found in database"}
+
         path = template_to_delete.template_file
+        attempt_to_remove = delete_file_ftps(path, 'templates', company_identifier) #TODO: Change 'templates' to actual dynamic var (will not work with image files currently (can get type from file path[etc] and then set accordingly))
+        #TODO: CHECK Value of attempt to remove is 201, if not, dont unlink from database (File is not removed from)
         db_session.delete(template_to_delete)
         db_session.commit()
-
-        path = template_to_delete.template_file
-        #print(path)
-        #os.remove(path) TODO: ADD CONNECTION TO ACTUAL STORAGE TO DELETE THE TEMPLATE THERE WITH THE GATHERED PATH
-
-        return {"Code": 201, "Message": "Deleted file succesfully"""}
+        
+        return attempt_to_remove

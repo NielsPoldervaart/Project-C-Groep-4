@@ -24,6 +24,11 @@ def try_to_get_text_file_ftps(file_name, company_id):
 
     session.cwd(f'{company_id}') #Change directory on FTP to the company's
 
+    if "templates" not in session.nlst(): #Check if templates dir exists on FTP Server, if not, return
+        return {"errorCode": 404, "Message": "Company directory does not contain any templates on FTP server"}
+
+    session.cwd("templates") #Change directory on FTP to the company's
+    
     random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage
     if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
         random_file_path = generate_random_path(24, 'html')
@@ -64,13 +69,16 @@ def upload_file(file_path, file_name, file_type, company_id):
 
     if f"{company_id}" not in session.nlst(): #Check if company dir exists on FTP Server, if not, create it
         session.mkd(f"{company_id}")
-
     session.cwd(f'{company_id}') #Change to the company dir
+    if file_type not in session.nlst():
+        session.mkd(file_type)
+
+    session.cwd(file_type) #Change to the company dir
     session.storbinary("STOR " + file_name, file_to_send) #Send file as through binary
     session.quit() #Close FTP session
     file_to_send.close()
 
-def delete_file(file_name, company_id):
+def delete_file_ftps(file_path, file_type, company_id):
     session = FTP('145.24.222.235')
     session.login("Controller", "cC2G'Q_&3qY@=D!@")
 
@@ -78,9 +86,15 @@ def delete_file(file_name, company_id):
         return {"errorCode": 404, "Message": "Company directory does not exist on FTP server"}
 
     session.cwd(f'{company_id}') #Change to the company dir
-    #TODO: Check if file exists in correct Dir
-    session.delete(file_name)
+
+    if file_type not in session.nlst(): #Check if company dir exists on FTP Server, if not, return
+        return {"errorCode": 404, "Message": "Correct file directory does not exist on FTP server"}
+
+    session.cwd(file_type) #Change to the company dir
+
+    session.delete(file_path)
     session.quit()
+    return {"errorCode": 201, "Message": "File succesfully removed from storage"}
 
 
 #try_to_download_text_file(filename, 1)
