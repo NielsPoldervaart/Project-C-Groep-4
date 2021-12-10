@@ -1,6 +1,6 @@
-from flask import Blueprint, request, jsonify, send_from_directory, send_file
+from flask import Blueprint, request, jsonify, send_file
 from user_verification import verify_user
-from ftp_controller import get_file_full, upload_file
+from ftp_controller import try_to_get_text_file_ftps, upload_file
 from database_connection import *
 import os
 from os import path
@@ -67,27 +67,18 @@ def template(company_identifier, template_identifier):
     db_session = create_db_session()
 
     if request.method == "GET": #Download specific template as client
-
         #result = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
         template_file_location_ftp = db_session.query(Template.template_file).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
 
         if template_file_location_ftp is not None:
             print(type(template_file_location_ftp.template_file), template_file_location_ftp.template_file)
 
-            template_bytes = get_file_full(template_file_location_ftp.template_file, company_identifier)
+            template_bytes = try_to_get_text_file_ftps(template_file_location_ftp.template_file, company_identifier)
+            if template_bytes is dict: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
+                return template_bytes
+
             return send_file(template_bytes, mimetype="text/html")
-                
 
-            #download file from ftp
-            #return file to client
-            #delete file from local storage
-
-        #if result is not None:
-        #    return dict(
-        #        template_id = result.template_id,
-        #        template_file = result.template_file,
-        #        Company_company_id = result.Company_company_id
-        #    )
         return {"errorCode": 404, "Message": "Template Does not exist"""}
 
     if request.method == "DELETE" : #Delete a specific template
