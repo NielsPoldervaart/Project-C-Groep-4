@@ -6,15 +6,22 @@ rectangle "FTP Server (Windows 2019)" {
           |_ templates
             |_ example.html 
             |_ example2.html
-          |_ images
-            |_ example.png
-            |_ example.jpeg
+          |_ private gallery
+            |_ collection X
+              |_ example.png
+              |_ example2.jpeg
         |_ 2
           |_ templates
           |_ images
         |_ 3
           |_ etc...
-        |_ etc...
+          |_ etc...
+        |_ gallery dir
+          |_ gallery Fotos
+            |_ collection 1
+              |_ example.png
+              |_ example2.jpeg
+            |_ collection 2
     ]
 }
 note right of A
