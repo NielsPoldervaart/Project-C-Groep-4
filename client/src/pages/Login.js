@@ -35,7 +35,7 @@ const Login = () => {
         .then(res =>  res.json())
         .then(data => {
             if (data.Code === 201) {
-                navigate('/')
+                navigate('/1')
             }
             else {
                 alert("Error, Wrong credentials!")
