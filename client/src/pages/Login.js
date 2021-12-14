@@ -50,7 +50,6 @@ const Login = () => {
                 <div className="logoBox">
                     <img src="https://excelsiorrotterdam.nl/wp-content/uploads/2018/01/kynda_web.png" alt="kyndaLogo" width="250" />    
                 </div>
-                {/* <form className="loginForm" method="post" action id="form" onSubmit={() => navigate(`/`)}> */}
                 <form className="loginForm" method="post" action id="form" onSubmit={(e) => verifyUser(e)}>
                     <div className="loginInput">
                         <div className="email">
