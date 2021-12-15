@@ -26,10 +26,7 @@
     flex-wrap: wrap;
     justify-content: flex-start;
     align-items: center;
-}
-
-.TemplateComp {
-    margin-left: 50px;
+    gap: 5rem;
 }
 
 .TemplateComp:nth-child(1) {
@@ -72,7 +69,6 @@
 }
 
 .NewTempBox {
-    margin-left: 50px;
     margin-top: 55px;
     width: var(--TempCardWidth);
     height: var(--TempCardWidth);
