@@ -23,8 +23,14 @@ def db_connection():
 
 #CLASSES, INIT DEFINED FOR OBJECT CREATION (NEEDED FOR INSERTING INTO DB)
 class Gallery(object):
-    def __init__(self, gallery_id):
+    def __init__(self, gallery_id, name):
         self.gallery_id = gallery_id
+        self.name = name
+
+class Gallery_has_Company(object):
+    def __init__(self, Company_company_id, Gallery_gallery_id):
+        self.Company_company_id = Company_company_id
+        self.Gallery_gallery_id = Gallery_gallery_id
 
 class Collection(object):
     def __init__(self, collection_id, name, Gallery_gallery_id):
@@ -70,12 +76,11 @@ class Product(object):
         self.Gallery_gallery_id = Gallery_gallery_id
 
 class Image(object):
-    def __init__(self, image_id, image, name):
+    def __init__(self, image_id, image_path):
         self.image_id = image_id
-        self.image = image #TODO: CHANGE THIS FROM BLOB `image` TO IMAGE PATH in DB and storage (e.g: `image_file` or `image_path`). 
-        self.name = name
+        self.image_path = image_path
 
-class Image_has_collection(object):
+class Image_has_Collection(object):
     def __init__(self, Image_image_id, Collection_collection_id):
         self.Image_image_id = Image_image_id
         self.Collection_collection_id = Collection_collection_id
@@ -87,6 +92,7 @@ def init_db_structure():
     
     metadata = MetaData(engine)
     table_gallery = Table('Gallery', metadata, autoload=True)
+    table_Gallery_has_Company = Table('Gallery_has_Company', metadata, autoload=True)
     table_collection = Table('Collection', metadata, autoload=True)
     table_company = Table('Company', metadata, autoload=True)
     table_role = Table('Role', metadata, autoload=True)
@@ -94,9 +100,10 @@ def init_db_structure():
     table_template = Table('Template', metadata, autoload=True)
     table_product = Table('Product', metadata, autoload=True)
     table_image = Table('Image', metadata, autoload=True)
-    #table_image_has_collection = Table('Image_has_collection', metadata, autoload=True)
+    table_image_has_collection = Table('Image_has_collection', metadata, autoload=True)
 
     mapper(Gallery, table_gallery)
+    mapper(Gallery_has_Company, table_Gallery_has_Company)
     mapper(Collection, table_collection)
     mapper(Company, table_company)
     mapper(Role, table_role)
@@ -104,7 +111,7 @@ def init_db_structure():
     mapper(Template, table_template)
     mapper(Product, table_product)
     mapper(Image, table_image)
-    #mapper(Image_has_collection, table_image_has_collection)
+    mapper(Image_has_Collection, table_image_has_collection)
 
 def create_db_session():   
     engine = create_engine('mysql+mysqldb://kynda:u9N3_HM+ARhDYsRQ@kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com/KyndaDB', echo=True)
