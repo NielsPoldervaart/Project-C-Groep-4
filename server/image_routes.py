@@ -31,6 +31,7 @@ def galleries(company_identifier):
             return jsonify(galleries)
         else:
             return {"errorCode": 404, "Message": "There are no galleries available"""}
+    
     if request.method == "POST": #Add a new gallery (when user is Kynda employee)
         return
 
@@ -56,18 +57,23 @@ def collections(company_identifier,gallery_identifier):
             return jsonify(collections)
         else:
             return {"errorCode": 404, "Message": "There are no collections in this gallery"""}
+    
     if request.method == "POST": #Add a new collection (when user is Kynda employee)
         Collection_name = request.json["name"]
         if Collection_name == '':
             return {"Code": 405, "Message": "No name found in request"}
-
         else:
             new_Collection = Collection(None, Collection_name, gallery_identifier)
             db_session.add(new_Collection)
             db_session.commit()
             return {"Code": 201, "Message": "Collection added to gallery"}
+
     if request.method == "DELETE": #Remove the gallery (when user is Kynda employee)
-        return
+        #TODO: Code for checking if Kynda employee
+        if Delete_Gallery(db_session, gallery_identifier) == "Removed":
+            return {"Code": 201, "Message": "Gallery has been removed"}
+        else:
+            return {"errorCode": 404, "Message": "Gallery could not be removed"}
 
 @image_api.route("/images/<company_identifier>/<gallery_identifier>/<collection_identifier>", methods=["GET","POST","DELETE"])
 def images(company_identifier,gallery_identifier,collection_identifier):
@@ -93,7 +99,11 @@ def images(company_identifier,gallery_identifier,collection_identifier):
     if request.method == "POST": #Add a new image (when user is Kynda employee)
         return
     if request.method == "DELETE": #Remove the collection (when user is Kynda employee)
-        return
+        #TODO: Code for checking if Kynda employee
+        if Delete_Collection(db_session, collection_identifier) == "Removed":
+            return {"Code": 201, "Message": "Collection has been removed from the gallery"}
+        else:
+            return {"errorCode": 404, "Message": "Collection could not be removed"}
 
 @image_api.route("/images/<company_identifier>/<gallery_identifier>/<collection_identifier>/<image_identifier>", methods=["GET","DELETE"])
 def image(company_identifier,gallery_identifier,collection_identifier,image_identifier):
@@ -111,4 +121,39 @@ def image(company_identifier,gallery_identifier,collection_identifier,image_iden
         else:
             return {"errorCode": 404, "Message": "This image does not exist"""}
     if request.method == "DELETE": #Remove the image (when user is Kynda employee)
-        return
+        #TODO: Code for checking if Kynda employee
+        if Delete_Image(db_session, collection_identifier, image_identifier) == "Removed":
+            return {"Code": 201, "Message": "Image has been removed from the collection"}
+        else:
+            return {"errorCode": 404, "Message": "Image could not be removed"}
+
+def Delete_Image(db_session, collection_identifier, image_identifier):
+    image_has_collection_to_delete = db_session.query(Image_has_Collection).filter_by(Image_image_id = image_identifier).filter_by(Collection_collection_id = collection_identifier).all()
+    db_session.delete(image_has_collection_to_delete)
+    db_session.commit()
+    remaining = db_session.query(Image_has_Collection).filter_by(Image_image_id = image_identifier).all()
+    if remaining == None:
+        image = db_session.query(Image).filter_by(image_id = image_identifier).first()
+        db_session.delete(image)
+        db_session.commit()
+    return "Removed"
+
+def Delete_Collection(db_session, collection_identifier):
+    images_in_collection = db_session.query(Image_has_Collection).filter_by(Collection_collection_id = collection_identifier).all()
+    json_images = jsonify(images_in_collection)
+    for image in json_images:
+        Delete_Image(db_session, collection_identifier, image["Image_image_id"])
+    db_session.delete(db_session.query(Collection).filter_by(collection_id = collection_identifier).first())
+    db_session.commit()
+    return "Removed"
+
+def Delete_Gallery(db_session, gallery_identifier):
+    collections_in_gallery = db_session.query(Collection).filter_by(Gallery_gallery_id = gallery_identifier).all()
+    json_collections = jsonify(collections_in_gallery)
+    for collection in json_collections:
+        Delete_Collection(db_session, collection["collection_id"])
+    Gallery_has_Companys_to_delete = db_session.query(Gallery_has_Company).filter_by(Gallery_gallery_id = gallery_identifier).all()
+    db_session.delete(Gallery_has_Companys_to_delete)
+    db_session.delete(db_session.query(Gallery).filter_by(gallery_id = gallery_identifier).first())
+    db_session.commit()
+    return "Removed"
