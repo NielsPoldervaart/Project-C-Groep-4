@@ -15,14 +15,6 @@
     margin-top: var(--NavBarHeight);
 }
 
-.EditBox {
-    width: var(--EditBoxWidth);
-    height: 100%;
-    background-color: var(--Wit);
-    padding: 50px 25px 25px 25px;
-    float: left;
-}
-
 .Title {
     font-size: 25px;
     font-weight: bold;
@@ -53,14 +45,10 @@
 }
 
 .TemplateBox {
-    width: -webkit-calc(100% - var(--EditBoxWidth));
-    width:    -moz-calc(100% - var(--EditBoxWidth));
-    width:         calc(100% - var(--EditBoxWidth));
+    width: 100%;
     height: 100%;
-    float: right;
     display: flex;
     justify-content: center;
-    align-items: center;
 }
 
 .LoadedTemplate {
