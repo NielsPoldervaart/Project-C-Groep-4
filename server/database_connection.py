@@ -100,10 +100,10 @@ def init_db_structure():
     table_template = Table('Template', metadata, autoload=True)
     table_product = Table('Product', metadata, autoload=True)
     table_image = Table('Image', metadata, autoload=True)
-    table_image_has_collection = Table('Image_has_collection', metadata, autoload=True)
+    table_image_has_collection = Table('Image_has_Collection', metadata, autoload=True)
 
     mapper(Gallery, table_gallery)
-    mapper(Gallery_has_Company, table_Gallery_has_Company)
+    #mapper(Gallery_has_Company, table_Gallery_has_Company)
     mapper(Collection, table_collection)
     mapper(Company, table_company)
     mapper(Role, table_role)
@@ -111,7 +111,7 @@ def init_db_structure():
     mapper(Template, table_template)
     mapper(Product, table_product)
     mapper(Image, table_image)
-    mapper(Image_has_Collection, table_image_has_collection)
+    #mapper(Image_has_Collection, table_image_has_collection)
 
 def create_db_session():   
     engine = create_engine('mysql+mysqldb://kynda:u9N3_HM+ARhDYsRQ@kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com/KyndaDB', echo=True)

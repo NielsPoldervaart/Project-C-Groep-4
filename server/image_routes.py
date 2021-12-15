@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, send_from_directory, send_file
 from user_verification import verify_user
-from ftp_controller import get_file_full, upload_file
+from ftp_controller import try_to_get_text_file_ftps, delete_file_ftps, upload_file
 from database_connection import *
 import os
 from os import path
@@ -18,7 +18,7 @@ def galleries(company_identifier):
     db_session = create_db_session()
     
     if request.method == "GET": #View all galleries available to the company
-        result = db_session.query(Gallery.gallery_id, Gallery.name, Company.company_id).join(Gallery_has_Company).filter_by(gallery_id = Gallery_gallery_id).join(Company).filter_by(Company_company_id = f'{company_identifier}').all()
+        result = db_session.query(Gallery.gallery_id, Gallery.name, Company.company_id).join(Gallery_has_Company).filter_by(gallery_id = Gallery_has_Company.Gallery_gallery_id).join(Company).filter_by(Company_company_id = f'{company_identifier}').all()
         galleries = [
             dict(
                 gallery_id = row['gallery_id'],
@@ -57,7 +57,15 @@ def collections(company_identifier,gallery_identifier):
         else:
             return {"errorCode": 404, "Message": "There are no collections in this gallery"""}
     if request.method == "POST": #Add a new collection (when user is Kynda employee)
-        return
+        Collection_name = request.json["name"]
+        if Collection_name == '':
+            return {"Code": 405, "Message": "No name found in request"}
+
+        else:
+            new_Collection = Collection(None, Collection_name, gallery_identifier)
+            db_session.add(new_Collection)
+            db_session.commit()
+            return {"Code": 201, "Message": "Collection added to gallery"}
     if request.method == "DELETE": #Remove the gallery (when user is Kynda employee)
         return
 
@@ -70,7 +78,7 @@ def images(company_identifier,gallery_identifier,collection_identifier):
     db_session = create_db_session()
     
     if request.method == "GET": #View all images inside the collection
-        result = db_session.query(Image.image_id, Image.image_path).join(Image_has_Collection).filter_by(Collection_collection_id = f'{collection_identifier}').filter_by(Image_id = Image_image_id).all()
+        result = db_session.query(Image.image_id, Image.image_path).join(Image_has_Collection).filter_by(Collection_collection_id = f'{collection_identifier}').filter_by(Image_id = Image_has_Collection.Image_image_id).all()
         images = [
             dict(
                 image_id = row['image_id'],
