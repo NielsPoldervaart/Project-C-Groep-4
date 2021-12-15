@@ -6,10 +6,10 @@ import os
 from os import path
 from generate_random_path import generate_random_path
 
-template_api = Blueprint('template_api', __name__)
+product_api = Blueprint('product_api', __name__)
 
-@template_api.route("/products/<company_identifier>", methods=["GET", "POST"])
-def templates(company_identifier):
+@product_api.route("/products/<company_identifier>", methods=["GET", "POST"])
+def products(company_identifier):
 
     user_verification = verify_user(company_identifier)
     if user_verification != "PASSED":
@@ -17,50 +17,50 @@ def templates(company_identifier):
 
     db_session = create_db_session()
 
-    if request.method == "GET": #View ALL templates from a company
-        #SELECT `Template_id`, `Template_file`, Company_name WHERE `Company_1` = company_identifier
-        result = db_session.query(Template.template_id, Template.template_file, Company.company_name).join(Company).filter_by(company_id = f'{company_identifier}').all()
+    if request.method == "GET": #View ALL products from a company
+        #SELECT `Product_id`, `Product_file`, Company_name WHERE `Company_1` = company_identifier
+        result = db_session.query(Product.product_id, Product.product_file, Company.company_name).join(Company).filter_by(company_id = f'{company_identifier}').all()
 
-        templates = [
+        products = [
             dict(
-                template_id = row['template_id'],
-              template_file = row['template_file'],
-                company_name = row['company_name']
+                product_id = row['product_id'],
+              product_file = row['product_file'],
+                product_name = row['company_name']
                 )
                 for row in result
         ]  
-        if len(templates) is not 0:
-            return jsonify(templates)
+        if len(products) is not 0:
+            return jsonify(products)
         else:
-            return {"errorCode": 404, "Message": "Template Does not exist"""}
+            return {"errorCode": 404, "Message": "No product in company"""}
 
-    if request.method == "POST": #Add a template to DB and FTP
-        uploaded_template = request.files['template_file']
-        if uploaded_template.filename == '': 
-            return {"Code": 405, "Message": "No template file found in request, OR File has no valid name"}
+    if request.method == "POST": #Add a product to DB and FTP
+        uploaded_product = request.files['product_file']
+        if uploaded_product.filename == '': 
+            return {"Code": 405, "Message": "No product file found in request, OR File has no valid name"}
 
-        if not (uploaded_template.filename.endswith(".html") or uploaded_template.filename.endswith(".htm")):
-            return  {"Code": 405, "Message": "No template file found in request, OR File has no valid extension (.html OR .htm)"}
+        if not (uploaded_product.filename.endswith(".html") or uploaded_product.filename.endswith(".htm")):
+            return  {"Code": 405, "Message": "No product file found in request, OR File has no valid extension (.html OR .htm)"}
 
         random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage + create an empty file with given length + extension
         if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
             random_file_path = generate_random_path(24, 'html')
 
-        uploaded_template.save(random_file_path) #Save template to created storage
-        upload_file(random_file_path, f"{uploaded_template.filename}", "templates", company_identifier)
+        uploaded_product.save(random_file_path) #Save product to created storage
+        upload_file(random_file_path, f"{uploaded_product.filename}", "products", company_identifier)
 
         os.remove(random_file_path)
 
-        #New Template object is created, None is used for id as it is auto-incremented by SQLAlchemy
-        new_template = Template(None, f"{uploaded_template.filename}", company_identifier)
+        #New Product object is created, None is used for id as it is auto-incremented by SQLAlchemy
+        new_product = Product(None, f"{uploaded_product.filename}", company_identifier)
         
-        db_session.add(new_template)
+        db_session.add(new_product)
         db_session.commit()
 
-        return {"Code": 201, "Message": "Template added to company"}
+        return {"Code": 201, "Message": "Product added to company"}
 
-@template_api.route("/template/<int:company_identifier>/<int:template_identifier>", methods=["GET", "DELETE"])
-def template(company_identifier, template_identifier):
+@product_api.route("/product/<int:company_identifier>/<int:product_identifier>", methods=["GET", "DELETE"])
+def product(company_identifier, product_identifier):
 
     user_verification = verify_user(company_identifier)
     if user_verification != "PASSED":
@@ -68,32 +68,32 @@ def template(company_identifier, template_identifier):
 
     db_session = create_db_session()
 
-    if request.method == "GET": #Download specific template as client
-        #result = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
-        template_file_location_ftp = db_session.query(Template.template_file).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
+    if request.method == "GET": #Download specific product as client
+        #result = db_session.query(Product).filter_by(product_id = product_identifier).filter_by(Company_company_id = company_identifier).first()
+        product_file_location_ftp = db_session.query(Product.product_file).filter_by(product_id = product_identifier).filter_by(Company_company_id = company_identifier).first()
 
-        if template_file_location_ftp is not None:
-            print(type(template_file_location_ftp.template_file), template_file_location_ftp.template_file)
+        if product_file_location_ftp is not None:
+            #print(type(product_file_location_ftp.product_file), product_file_location_ftp.product_file)
 
-            template_bytes = try_to_get_text_file_ftps(template_file_location_ftp.template_file, company_identifier)
-            if template_bytes is dict: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
-                return template_bytes
+            product_bytes = try_to_get_text_file_ftps(product_file_location_ftp.product_file, company_identifier)
+            if product_bytes is dict: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
+                return product_bytes
 
-            return send_file(template_bytes, mimetype="text/html")
+            return send_file(product_bytes, mimetype="text/html")
 
-        return {"errorCode": 404, "Message": "Template Does not exist"""}
+        return {"errorCode": 404, "Message": "Product Does not exist"""}
 
-    if request.method == "DELETE" : #Delete a specific template
+    if request.method == "DELETE" : #Delete a specific product
 
-    #TODO: FIND A WAY TO ACCESS THE TEMPLATE FILE WITH ONE QUERY FOR DELETION, INSTEAD OF HAVING TO QUERY TWICE (SPEED INCR, OPTIONAL)
-        template_to_delete = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
-        if template_to_delete is None:
-            return {"Code": 404, "Message": "Template not found in database"}
+    #TODO: FIND A WAY TO ACCESS THE product FILE WITH ONE QUERY FOR DELETION, INSTEAD OF HAVING TO QUERY TWICE (SPEED INCR, OPTIONAL)
+        product_to_delete = db_session.query(Product).filter_by(product_id = product_identifier).filter_by(Company_company_id = company_identifier).first()
+        if product_to_delete is None:
+            return {"Code": 404, "Message": "Product not found in database"}
 
-        path = template_to_delete.template_file
-        attempt_to_remove = delete_file_ftps(path, 'templates', company_identifier) #TODO: Change 'templates' to actual dynamic var (will not work with image files currently (can get type from file path[etc] and then set accordingly))
+        path = product_to_delete.product_file
+        attempt_to_remove = delete_file_ftps(path, 'products', company_identifier) #TODO: Change 'products' to actual dynamic var (will not work with image files currently (can get type from file path[etc] and then set accordingly))
         #TODO: CHECK Value of attempt to remove is 201, if not, dont unlink from database (File is not removed from)
-        db_session.delete(template_to_delete)
+        db_session.delete(product_to_delete)
         db_session.commit()
         
         return attempt_to_remove
