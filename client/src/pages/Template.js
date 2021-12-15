@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router';
 import '../style/Template.css';
+import Loader from '../components/Loader';
 
 const Template = () => {
 
     const { company_id, template_id } = useParams()
-    const [templateData, setTemplateData] = useState([])
-    const [template, setTemplate] = useState("")
+    const [templateData, setTemplateData] = useState("")
+    const [loading, setLoading] = useState(true);
     
     const [values, setValues] = useState({
       title: "",
@@ -31,23 +32,13 @@ const Template = () => {
       alert('De template is opgeslagen!')
     }
 
-    const ReadFile = async (e) => {
-      e.preventDefault()
-      const reader = new FileReader()
-      reader.onload = async (e) => { 
-        const content = (e.target.result)
-        setTemplate(content)
-      }
-      reader.readAsText(e.target.files[0])
-    }
-
     useEffect(() => {
         fetch(`/template/${company_id}/${template_id}`).then(
-            res => res.json()
+            res => res.text()
           ).then(
             data => {
               setTemplateData(data)
-              console.log(data)
+              setLoading(false)
             }
           )
     }, [company_id, template_id])
@@ -55,10 +46,7 @@ const Template = () => {
     return (
         <div className="EditTempComp">
             <div className="EditBox">
-              {console.log(templateData.template_id)}
               <form onSubmit={HandleSubmit} className="TempForm">
-
-                <input onChange={(e) => ReadFile(e)} type="file" accept=".html"/>
 
                 <div className="TitleComp">
                   <label className="TitleLabel">Title</label>
@@ -86,9 +74,9 @@ const Template = () => {
                 
               </form>
             </div>
-            <div className="TemplateBox">
+            <div className="TemplateBox" id='TemplateBox'>
               {/* <iframe src="../templates/template1.html" className="LoadedTemplate"/> */}
-              <div dangerouslySetInnerHTML={{__html: template}}/>
+              {loading ? <Loader /> : <div dangerouslySetInnerHTML={{__html: templateData}}/>}
             </div>
         </div>
     );
