@@ -43,11 +43,19 @@ const Template = () => {
           )
     }, [company_id, template_id])
 
+    const DisplayLoader = () => {
+      return (
+        <div className='loaderDiv'>
+          <Loader />
+        </div>
+      )
+    }
+
     return (
         <div className="EditTempComp">
             <div className="TemplateBox" id='TemplateBox'>
               {/* <iframe src="../templates/template1.html" className="LoadedTemplate"/> */}
-              {loading ? <Loader /> : <div dangerouslySetInnerHTML={{__html: templateData}}/>}
+              {loading ? DisplayLoader() : <div className='loadedTemplate' dangerouslySetInnerHTML={{__html: templateData}}/>}
             </div>
         </div>
     );
