@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { FaRegTrashAlt, FaRegEye, FaPlusCircle } from 'react-icons/fa';
+import Loader from '../components/Loader';
 import '../style/Templates.css';
 
 const Templates = () => {
@@ -11,6 +12,7 @@ const Templates = () => {
 
     const [templates, setTemplates] = useState([])
     const [company, setCompany] = useState([])
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetch(`/templates/${company_id}`).then(
@@ -18,6 +20,7 @@ const Templates = () => {
         ).then(
           data => {
             setTemplates(data)
+            setLoading(false)
           }
         )
 
@@ -32,9 +35,17 @@ const Templates = () => {
         DisplayElement()
     }, [company_id])
 
+    const DisplayLoader = () => {
+      return (
+        <div className='loaderDiv'>
+          <Loader />
+        </div>
+      )
+    }
+
     const DisplayElement = () => {
 
-      if (templates.errorCode == 403) {
+      if (templates.errorCode === 403) {
         navigate(`/login`)
       }
       else {
@@ -66,9 +77,7 @@ const Templates = () => {
 
     return (
       <div>
-        {
-          DisplayElement()
-        }
+          { loading ? DisplayLoader() : DisplayElement() }
       </div>
         
 
