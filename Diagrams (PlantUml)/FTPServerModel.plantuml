@@ -4,7 +4,9 @@ rectangle "FTP Server (Windows 2019)" {
         kyndaftp
         |_ 1
           |_ templates
-            |_ example.html 
+            |_ example
+              |_ example.html
+              |_ example.png
             |_ etc...
           |_ products
             |_ product1.html
