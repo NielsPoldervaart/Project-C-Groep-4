@@ -1,7 +1,7 @@
 import pymysql
 
 from sqlalchemy import create_engine, MetaData, Table
-from sqlalchemy.orm import mapper, sessionmaker
+from sqlalchemy.orm import mapper, sessionmaker, close_all_sessions
 
 def db_connection():
     conn = None
@@ -60,7 +60,7 @@ class Template(object):
         self.Company_company_id = Company_company_id
 
 class Product(object):
-    def __init__(self, product_id, price, verified, downloads, template_id, user_id, Gallery_gallery_id):
+    def __init__(self, product_id, product_file, price, verified, downloads, template_id, user_id, Gallery_gallery_id):
         self.product_id = product_id
         self.price = price
         self.verified = verified
@@ -68,6 +68,7 @@ class Product(object):
         self.template_id = template_id
         self.user_id = user_id
         self.Gallery_gallery_id = Gallery_gallery_id
+        self.product_file = product_file
 
 class Image(object):
     def __init__(self, image_id, image, name):
@@ -132,3 +133,6 @@ def createSession():
     #print(res == None)
     #print(f"PASSWORD: {res[0].password}")
 #createSession()
+
+def close_current_sessions():
+    close_all_sessions()

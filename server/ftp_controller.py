@@ -70,7 +70,7 @@ def upload_file(file_path, file_name, file_type, company_id):
     if f"{company_id}" not in session.nlst(): #Check if company dir exists on FTP Server, if not, create it
         session.mkd(f"{company_id}")
     session.cwd(f'{company_id}') #Change to the company dir
-    if file_type not in session.nlst():
+    if file_type not in session.nlst(): #file_type = template, product or gallery
         session.mkd(file_type)
 
     session.cwd(file_type) #Change to the company dir
