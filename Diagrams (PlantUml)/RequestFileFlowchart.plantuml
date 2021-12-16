@@ -2,7 +2,7 @@
 start
 ->//API Endpoint: "/template/<int:company_identifier>/<int:template_identifier>"//;
 #yellow: GET Request (template file);
-#lawngreen:if (User logged in correctly?) then (no)
+#pink:if (User logged in correctly?) then (no)
     #powderblue: Return error code;
     stop
 else (yes)
@@ -27,6 +27,6 @@ stop
  | <#yellow>  | Client |
  | <#powderblue>       | Flask back-end (template_routes.py) |
  | <#palegreen>       | Flask back-end (ftp_controller.py) |
- | <#lawngreen>       | Flask back-end (user_verification.py) |
+ | <#pink>       | Flask back-end (user_verification.py) |
  endlegend
 @enduml
