@@ -9,149 +9,15 @@
     padding: 0;
     top: 0;
     width: 100%;
-    height: -webkit-calc(100% - var(--NavBarHeight));
-    height:    -moz-calc(100% - var(--NavBarHeight));
-    height:         calc(100% - var(--NavBarHeight));
-    margin-top: var(--NavBarHeight);
-}
-
-.EditBox {
-    width: var(--EditBoxWidth);
-    height: 100%;
-    background-color: var(--Wit);
-    padding: 50px 25px 25px 25px;
-    float: left;
-}
-
-.Title {
-    font-size: 25px;
-    font-weight: bold;
-}
-
-.Text {
-    font-size: 25px;
-    font-weight: bold;
-}
-
-.ImageButton {
-    font-size: 25px;
-    font-weight: bold;
-}
-
-.Buttons {
-    flex-direction: row;
-}
-
-.Delete {
-    font-size: 25px;
-    font-weight: bold;
-}
-
-.Save {
-    font-size: 25px;
-    font-weight: bold;
 }
 
 .TemplateBox {
-    width: -webkit-calc(100% - var(--EditBoxWidth));
-    width:    -moz-calc(100% - var(--EditBoxWidth));
-    width:         calc(100% - var(--EditBoxWidth));
-    height: 100%;
-    float: right;
-}
-
-.LoadedTemplate {
     width: 100%;
     height: 100%;
-    border: 0;
-}
-
-.TempForm {
-    flex-direction: column;
-    height: 100%;
-    position: relative;
-}
-
-.TitleComp {
-    width: 100%;
-    padding: 50px 0px 50px 0px;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
 }
 
-.TitleLabel {
-    font-size: 25px;
-}
-
-.TitleField {
-    font-size: 25px;
-}
-
-.TextComp {
-    width: 100%;
-    padding: 25px 0px 25px 0px;
-    display: flex;
-    flex-direction: column;
-}
-
-.TextLabel {
-    font-size: 25px;
-}
-
-.TextField {
-    height: 250px;
-    resize: none;
-}
-
-.SelectComp {
-    width: 100%;
-    padding: 25px 0px 25px 0px;
-    flex-grow: 1;
-}
-
-.SelectLabel {
-    font-size: 25px;
-}
-
-.SelectBox {
-    width: 100%;
-    font-size: 25px;
-}
-
-.ButtonsComp {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    position: absolute;
-    bottom: 0px;
-}
-
-.DeleteButton {
-    background-color: rgba(24, 26, 27, 0.5);
-    border: 0;
-    color: var(--Wit);
-    padding: 15px 35px 15px 35px;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.2s ease 0s;
-}
-
-.SaveButton {
-    background-color: rgba(24, 26, 27, 0.5);
-    border: 0;
-    color: var(--Wit);
-    padding: 15px 35px 15px 35px;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.2s ease 0s;
-}
-
-.DeleteButton:hover {
-    background-color: rgb(204, 0, 149);
-}
-
-.SaveButton:hover {
-    background-color: rgb(204, 0, 149);
+.loadedTemplate {
+    margin-top: var(--NavBarHeight);
 }
