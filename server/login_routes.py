@@ -67,8 +67,15 @@ def register(company_identifier):
 @login_api.route("/folder", methods = ["POST"])
 def folder():
     if request.method == "POST":
-        uploaded_files =  request.files.getlist("file[]")
+        uploaded_files =  request.files.getlist('FileList')
         #print(uploaded_files)
         for i in uploaded_files:
             print(f'file: {i.filename}')
+        return {}
+
+@login_api.route("/singlefile", methods = ["POST"])
+def file():
+    if request.method == "POST":
+        uploaded_files =  request.files['File']
+        print(f"file: {uploaded_files}")
         return {}
