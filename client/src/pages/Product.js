@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router';
-import '../style/Template.css';
+import '../style/Product.css';
 import Loader from '../components/Loader';
 
 const Template = () => {

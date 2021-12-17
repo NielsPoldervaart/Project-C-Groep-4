@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { FaRegTrashAlt, FaRegEye, FaPlusCircle } from 'react-icons/fa';
 import Loader from '../components/Loader';
-import '../style/Templates.css';
+import '../style/Products.css';
 
 const Templates = () => {
     let navigate = useNavigate();
