@@ -7,14 +7,14 @@ const Template = () => {
 
 
     const handleChange = e => {
-        setFiles(e.target.files)
+        setFiles(e.target.file)
     };
 
     const uploadDir = (e) => {
         e.preventDefault()
 
         console.log("Post")
-        fetch('/folder', {
+        fetch('/singlefile', {
             method: 'POST',
             body: files,
         })
@@ -25,7 +25,8 @@ const Template = () => {
     return (
         <div>
             <form method="post" action id="DirForm" onSubmit={(e) => uploadDir(e)}>
-                <input className='DirInputBar' type='file' multiple="" directory="" webkitdirectory="" mozdirectory="" onChange={handleChange}/>
+                {/* <input className='DirInputBar' type='file' multiple="" directory="" webkitdirectory="" mozdirectory="" onChange={handleChange}/> */}
+                <input className='DirInputBar' type='file' onChange={handleChange}/>
                 <input class="button" type="submit" value="Upload" />
             </form>
         </div>
