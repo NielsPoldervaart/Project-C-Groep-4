@@ -4,12 +4,20 @@ rectangle "FTP Server (Windows 2019)" {
         kyndaftp
         |_ 1
           |_ templates
-            |_ example
-              |_ example.html
-              |_ example.png
+            |_ template1
+              |_ template.html
+              |_ templatefolder
+                |_ css
+                |_ image
+                |_ script
             |_ etc...
           |_ products
-            |_ product1.html
+            |_ product1
+              |_ template.html
+              |_ templatefolder
+                |_ css
+                |_ image
+                |_ script
             |_ etc...
           |_ private gallery
             |_ collection X
