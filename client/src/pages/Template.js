@@ -3,11 +3,12 @@ import '../style/Template.css';
 
 const Template = () => {
 
-    const [files, setFiles] = useState();
 
+    const data = new FormData();
 
     const handleChange = e => {
-        setFiles(e.target.file)
+        const fileData = document.querySelector('input[type="file"]').files[0];
+        data.append("File", fileData);
     };
 
     const uploadDir = (e) => {
@@ -16,7 +17,7 @@ const Template = () => {
         console.log("Post")
         fetch('/singlefile', {
             method: 'POST',
-            body: files,
+            body: data,
         })
         .then(res =>  res.json())
         .catch(error => console.log('Authorization failed : ' + error.message));
@@ -26,7 +27,7 @@ const Template = () => {
         <div>
             <form method="post" action id="DirForm" onSubmit={(e) => uploadDir(e)}>
                 {/* <input className='DirInputBar' type='file' multiple="" directory="" webkitdirectory="" mozdirectory="" onChange={handleChange}/> */}
-                <input className='DirInputBar' type='file' onChange={handleChange}/>
+                <input name='File' className='DirInputBar' type='file' onChange={handleChange}/>
                 <input class="button" type="submit" value="Upload" />
             </form>
         </div>
