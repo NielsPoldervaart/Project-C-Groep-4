@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify, send_from_directory, send_file
+from flask.scaffold import F
 from user_verification import verify_user
 from ftp_controller import try_to_get_text_file_ftps, delete_file_ftps, upload_file
 from database_connection import *
@@ -51,7 +52,10 @@ def galleries(company_identifier):
             return {"errorCode": 404, "Message": "There are no galleries available"""}
     
     if request.method == "POST": #Add a new gallery
-        #TODO: Check if Kynda or 'head of company'
+        verification = verify_user(company_identifier, [1,2])
+        if verification is not "Passed":
+            return verification
+            
         Gallery_name = request.json["name"]
         if Gallery_name == '':
             return {"Code": 405, "Message": "No name found in request"}
@@ -91,7 +95,10 @@ def collections(company_identifier,gallery_identifier):
             return {"errorCode": 404, "Message": "There are no collections in this gallery"""}
     
     if request.method == "POST": #Add a new collection
-        #TODO: check if Kynda or 'head of company'
+        verification = verify_user(company_identifier, [1,2])
+        if verification is not "Passed":
+            return verification
+
         Collection_name = request.json["name"]
         if Collection_name == '':
             return {"Code": 405, "Message": "No name found in request"}
@@ -101,8 +108,11 @@ def collections(company_identifier,gallery_identifier):
             db_session.commit()
             return {"Code": 201, "Message": "Collection added to gallery"}
 
-    if request.method == "DELETE": #Remove the gallery (when user is Kynda employee)
-        #TODO: Code for checking if Kynda employee or 'head of company'
+    if request.method == "DELETE": #Remove the gallery
+        verification = verify_user(company_identifier, [1,2])
+        if verification is not "Passed":
+            return verification
+
         if Delete_Gallery(db_session, gallery_identifier) == "Removed":
             return {"Code": 201, "Message": "Gallery has been removed"}
         else:
@@ -130,10 +140,16 @@ def images(company_identifier,gallery_identifier,collection_identifier):
         else:
             return {"errorCode": 404, "Message": "There are no images in this collection"""}
     if request.method == "POST": #TODO: Add a new image 
-        #check if Kynda or 'head of company'
+        verification = verify_user(company_identifier, [1,2])
+        if verification is not "Passed":
+            return verification
+
         return
     if request.method == "DELETE": #Remove the collection
-        #TODO: Code for checking if Kynda employee or 'head of company'
+        verification = verify_user(company_identifier, [1,2])
+        if verification is not "Passed":
+            return verification
+
         if Delete_Collection(db_session, collection_identifier) == "Removed":
             return {"Code": 201, "Message": "Collection has been removed from the gallery"}
         else:
@@ -155,11 +171,15 @@ def image(company_identifier,gallery_identifier,collection_identifier,image_iden
         else:
             return {"errorCode": 404, "Message": "This image does not exist"""}
     if request.method == "DELETE": #Remove the image
-        #TODO: Code for checking if Kynda employee or 'head of company'
+        verification = verify_user(company_identifier, [1,2])
+        if verification is not "Passed":
+            return verification
+
         if Delete_Image(db_session, collection_identifier, image_identifier) == "Removed":
             return {"Code": 201, "Message": "Image has been removed from the collection"}
         else:
             return {"errorCode": 404, "Message": "Image could not be removed"}
+
 
 
 
