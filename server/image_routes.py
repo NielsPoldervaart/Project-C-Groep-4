@@ -8,6 +8,8 @@ from generate_random_path import generate_random_path
 
 image_api = Blueprint('image_api', __name__)
 
+#TODO: sending images
+
 @image_api.route("/images/<company_identifier>", methods=["GET","POST"])
 def galleries(company_identifier):
 
@@ -18,24 +20,49 @@ def galleries(company_identifier):
     db_session = create_db_session()
     
     if request.method == "GET": #View all galleries available to the company
-        result = db_session.query(Gallery.gallery_id, Gallery.name, Company.company_id).join(Gallery_has_Company).filter_by(gallery_id = Gallery_has_Company.Gallery_gallery_id).join(Company).filter_by(Company_company_id = f'{company_identifier}').all()
+        #gets the galleries for the company
+        result = db_session.query(Gallery.gallery_id, Gallery.name).filter_by(Company_company_id = f'{company_identifier}').all() #TODO: add Kynda galleries
         galleries = [
             dict(
                 gallery_id = row['gallery_id'],
-                gallery_name = row['name'],
-                company_id = row['company_id']
+                gallery_name = row['name']
             )
             for row in result
         ]
+        #gets the collections for the galleries
+        for gallery in galleries:
+            result = db_session.query(Collection.collection_id, Collection.name).filter_by(Gallery_gallery_id = gallery['id']).all()
+            collections = [
+                dict(
+                    collection_id = row['collection_id'],
+                    name = row['name']
+                )
+                for row in result
+            ]
+            #gets the first image of the collection
+            for collection in collections:
+                result = db_session.query(Image.image_path).filter_by(Collection_collection_id = collection['collection_id']).order_by(Image.image_id.desc()).first()
+                collection['first_image'] = dict(first_image = result['image_path'])
+            gallery['collections'] = collections
+
         if len(galleries) is not 0:
             return jsonify(galleries)
         else:
             return {"errorCode": 404, "Message": "There are no galleries available"""}
     
-    if request.method == "POST": #Add a new gallery (when user is Kynda employee)
-        return
+    if request.method == "POST": #Add a new gallery
+        #TODO: Check if Kynda or 'head of company'
+        Gallery_name = request.json["name"]
+        if Gallery_name == '':
+            return {"Code": 405, "Message": "No name found in request"}
+        else:
+            new_Gallery = Gallery(None, Gallery_name, company_identifier)
+            db_session.add(new_Gallery)
+            db_session.commit()
+            return {"Code": 201, "Message": "Gallery added to company"}
 
 @image_api.route("/images/<company_identifier>/<gallery_identifier>", methods=["GET","POST","DELETE"])
+#route is optional (galleries directly to collection)
 def collections(company_identifier,gallery_identifier):
 
     user_verification = verify_user(company_identifier)
@@ -53,12 +80,18 @@ def collections(company_identifier,gallery_identifier):
             )
             for row in result
         ]
+        #gets the first image of the collection
+        for collection in collections:
+            result = db_session.query(Image.image_path).filter_by(Collection_collection_id = collection['collection_id']).order_by(Image.image_id.desc()).first()
+            collection['first_image'] = dict(first_image = result['image_path'])
+            
         if len(collections) is not 0:
             return jsonify(collections)
         else:
             return {"errorCode": 404, "Message": "There are no collections in this gallery"""}
     
-    if request.method == "POST": #Add a new collection (when user is Kynda employee)
+    if request.method == "POST": #Add a new collection
+        #TODO: check if Kynda or 'head of company'
         Collection_name = request.json["name"]
         if Collection_name == '':
             return {"Code": 405, "Message": "No name found in request"}
@@ -69,7 +102,7 @@ def collections(company_identifier,gallery_identifier):
             return {"Code": 201, "Message": "Collection added to gallery"}
 
     if request.method == "DELETE": #Remove the gallery (when user is Kynda employee)
-        #TODO: Code for checking if Kynda employee
+        #TODO: Code for checking if Kynda employee or 'head of company'
         if Delete_Gallery(db_session, gallery_identifier) == "Removed":
             return {"Code": 201, "Message": "Gallery has been removed"}
         else:
@@ -84,7 +117,7 @@ def images(company_identifier,gallery_identifier,collection_identifier):
     db_session = create_db_session()
     
     if request.method == "GET": #View all images inside the collection
-        result = db_session.query(Image.image_id, Image.image_path).join(Image_has_Collection).filter_by(Collection_collection_id = f'{collection_identifier}').filter_by(Image_id = Image_has_Collection.Image_image_id).all()
+        result = db_session.query(Image.image_id, Image.image_path).filter_by(Collection_collection_id = f'{collection_identifier}').all()
         images = [
             dict(
                 image_id = row['image_id'],
@@ -96,10 +129,11 @@ def images(company_identifier,gallery_identifier,collection_identifier):
             return jsonify(images)
         else:
             return {"errorCode": 404, "Message": "There are no images in this collection"""}
-    if request.method == "POST": #Add a new image (when user is Kynda employee)
+    if request.method == "POST": #TODO: Add a new image 
+        #check if Kynda or 'head of company'
         return
-    if request.method == "DELETE": #Remove the collection (when user is Kynda employee)
-        #TODO: Code for checking if Kynda employee
+    if request.method == "DELETE": #Remove the collection
+        #TODO: Code for checking if Kynda employee or 'head of company'
         if Delete_Collection(db_session, collection_identifier) == "Removed":
             return {"Code": 201, "Message": "Collection has been removed from the gallery"}
         else:
@@ -120,12 +154,14 @@ def image(company_identifier,gallery_identifier,collection_identifier,image_iden
             return jsonify(dict(image_id = row['image_id'], image_path = row['image_path']) for row in result)
         else:
             return {"errorCode": 404, "Message": "This image does not exist"""}
-    if request.method == "DELETE": #Remove the image (when user is Kynda employee)
-        #TODO: Code for checking if Kynda employee
+    if request.method == "DELETE": #Remove the image
+        #TODO: Code for checking if Kynda employee or 'head of company'
         if Delete_Image(db_session, collection_identifier, image_identifier) == "Removed":
             return {"Code": 201, "Message": "Image has been removed from the collection"}
         else:
             return {"errorCode": 404, "Message": "Image could not be removed"}
+
+
 
 def Delete_Image(db_session, collection_identifier, image_identifier):
     image_has_collection_to_delete = db_session.query(Image_has_Collection).filter_by(Image_image_id = image_identifier).filter_by(Collection_collection_id = collection_identifier).all()
