@@ -15,14 +15,13 @@ def login():
         jsonInput = request.json
         inserted_username = jsonInput["name"]
         inserted_password = jsonInput["password"]
-        inserted_user_email = jsonInput["email"]
 
 
         #REQUESTS `user_id`, `Company_company_id`, `Role_role_id`, `password` FROM DATABASE WHERE EMAIL IS INSERTED EMAIL. RETURNS NONE IF CANNOT FIND MATCH
         user = db_session.query(User.user_id, User.Company_company_id, User.Role_role_id, User.password, User.email).filter_by(username =f'{inserted_username}').first()
 
         if user: #IF USER OBJECT IS NOT NONE (COULD FIND CORRECT DATA IN DB)
-            if not (check_password_hash(user.password, inserted_password)) or (not check_password_hash(user.email, inserted_user_email)):
+            if not check_password_hash(user.password, inserted_password):
                 return {"Code": 406, "Message": "Incorrect User credentials (PASSWORD)"}, 406 #TODO: REMOVE "(PASSWORD)" FROM RESPONSE"
 
             session["user_id"] = user.user_id
