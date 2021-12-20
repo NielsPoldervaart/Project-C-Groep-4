@@ -1,64 +1,37 @@
-import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router';
+import React, { useState } from 'react'
 import '../style/Template.css';
-import Loader from '../components/Loader';
 
 const Template = () => {
 
-    const { company_id, template_id } = useParams()
-    const [templateData, setTemplateData] = useState("")
-    const [loading, setLoading] = useState(true);
-    
-    const [values, setValues] = useState({
-      title: "",
-      text: "",
-      image: "",
-    });
 
-    const HandleTitleChange = (e) => {
-      setValues({...values, title: e.target.value})
-    }
+    const data = new FormData();
 
-    const HandleTextChange = (e) => {
-      setValues({...values, text: e.target.value})
-    }
+    const handleChange = e => {
+        const fileData = document.querySelector('input[type="file"]').files[0];
+        data.append("File", fileData);
+    };
 
-    const HandleImageChange = (e) => {
-      setValues({...values, image: e.target.value})
-    }
+    const uploadDir = (e) => {
+        e.preventDefault()
 
-    const HandleSubmit = (e) => {
-      e.preventDefault();
-      alert('De template is opgeslagen!')
-    }
-
-    useEffect(() => {
-        fetch(`/template/${company_id}/${template_id}`).then(
-            res => res.text()
-          ).then(
-            data => {
-              setTemplateData(data)
-              setLoading(false)
-            }
-          )
-    }, [company_id, template_id])
-
-    const DisplayLoader = () => {
-      return (
-        <div className='loaderDiv'>
-          <Loader />
-        </div>
-      )
+        console.log("Post")
+        fetch('/singlefile', {
+            method: 'POST',
+            body: data,
+        })
+        .then(res =>  res.json())
+        .catch(error => console.log('Authorization failed : ' + error.message));
     }
 
     return (
-        <div className="EditTempComp">
-            <div className="TemplateBox" id='TemplateBox'>
-              {/* <iframe src="../templates/template1.html" className="LoadedTemplate"/> */}
-              {loading ? DisplayLoader() : <div className='loadedTemplate' dangerouslySetInnerHTML={{__html: templateData}}/>}
-            </div>
+        <div>
+            <form method="post" action id="DirForm" onSubmit={(e) => uploadDir(e)}>
+                {/* <input className='DirInputBar' type='file' multiple="" directory="" webkitdirectory="" mozdirectory="" onChange={handleChange}/> */}
+                <input name='File' className='DirInputBar' type='file' onChange={handleChange}/>
+                <input class="button" type="submit" value="Upload" />
+            </form>
         </div>
-    );
-};
-  
-export default Template;
+    )
+}
+
+export default Template
