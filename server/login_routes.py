@@ -13,23 +13,24 @@ def login():
     if request.method == "POST":
         #JSON METHOD
         jsonInput = request.json
+        inserted_username = jsonInput["name"]
         inserted_password = jsonInput["password"]
-        inserted_user_email = jsonInput["email"]
+
 
         #REQUESTS `user_id`, `Company_company_id`, `Role_role_id`, `password` FROM DATABASE WHERE EMAIL IS INSERTED EMAIL. RETURNS NONE IF CANNOT FIND MATCH
-        user = db_session.query(User.user_id, User.Company_company_id, User.Role_role_id, User.password).filter_by(email =f'{inserted_user_email}').first()
+        user = db_session.query(User.user_id, User.Company_company_id, User.Role_role_id, User.password, User.email).filter_by(username =f'{inserted_username}').first()
 
         if user: #IF USER OBJECT IS NOT NONE (COULD FIND CORRECT DATA IN DB)
             if not check_password_hash(user.password, inserted_password):
-                return {"Code": 406, "Message": "Incorrect User credentials (PASSWORD)"} #TODO: REMOVE "(PASSWORD)" FROM RESPONSE"
+                return {"Code": 406, "Message": "Incorrect User credentials (PASSWORD)"}, 406 #TODO: REMOVE "(PASSWORD)" FROM RESPONSE"
 
             session["user_id"] = user.user_id
             session["company_company_id"] = user.Company_company_id
             session["role_role_id"] = user.Role_role_id
-            return {"Code": 201, "Message": "User logged in"}
+            return {"Code": 201, "Message": "User logged in"}, 201
 
         else:
-           return {"Code": 406, "Message": "Incorrect User credentials (NAME)"} #TODO: REMOVE "(NAME) FROM RESPONSE"
+           return {"Code": 406, "Message": "Incorrect User credentials (NAME)"}, 406 #TODO: REMOVE "(NAME) FROM RESPONSE"
 
 @login_api.route("/logout", methods = ["GET"])
 def logout():
@@ -48,14 +49,14 @@ def register(company_identifier):
 
     if request.method == "POST":
         db_session = create_db_session()
-        inserted_first_name = request.form["first_name"]
-        inserted_last_name = request.form["last_name"]
+        inserted_username = request.form["name"]
         inserted_user_email = request.form["email"]
         inserted_password = request.form["password"]
         inserted_role = request.form["role_id"]
         hashed_password = generate_password_hash(inserted_password)
+        hashed_email = generate_password_hash(inserted_user_email)
 
-        new_user = User(None, inserted_first_name, inserted_last_name, inserted_user_email, hashed_password, company_identifier, inserted_role)
+        new_user = User(None, inserted_username, hashed_email, hashed_password, True, company_identifier, inserted_role)
         db_session.add(new_user)
         db_session.commit()
 

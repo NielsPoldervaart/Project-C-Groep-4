@@ -28,10 +28,11 @@ class Gallery(object):
         self.name = name
 
 class Company(object):
-    def __init__(self, company_id, company_name, Collection_collection_id):
+    def __init__(self, company_id, company_name, Gallery_gallery_id):
         self.company_id = company_id
         self.company_name = company_name
-        self.Collection_collection_id = Collection_collection_id
+        self.Gallery_gallery_id = Gallery_gallery_id
+
 
 class Role(object):
     def __init__(self, role_id, name):
@@ -39,12 +40,12 @@ class Role(object):
         self.name = name
 
 class User(object):
-    def __init__(self, user_id, first_name, last_name, email, password, Company_company_id, Role_role_id):
+    def __init__(self, user_id, username, email, password, verified, Company_company_id, Role_role_id):
         self.user_id = user_id
-        self.first_name = first_name
-        self.last_name = last_name
+        self.username = username
         self.email = email
         self.password = password
+        self.verified = verified
         self.Company_company_id = Company_company_id
         self.Role_role_id = Role_role_id
 
@@ -57,18 +58,19 @@ class Template(object):
 class Product(object):
     def __init__(self, product_id, product_file, price, verified, downloads, template_id, user_id, Gallery_gallery_id):
         self.product_id = product_id
+        self.product_file = product_file
         self.price = price
         self.verified = verified
         self.downloads = downloads
         self.template_id = template_id
         self.user_id = user_id
         self.Gallery_gallery_id = Gallery_gallery_id
-        self.product_file = product_file
 
 class Image(object):
-    def __init__(self, image_id, image_path):
+    def __init__(self, image_id, image_path, Gallery_gallery_id):
         self.image_id = image_id
         self.image_path = image_path
+        self.Gallery_gallery_id = Gallery_gallery_id
 
 #----------------------------------------------------------------------
 #CREATES DATABSE STRUCTURE BY MAPPING ALL TABLE METADATA TO CORRECT ENGINE METADATA

@@ -97,3 +97,21 @@ def template(company_identifier, template_identifier):
         db_session.commit()
         
         return attempt_to_remove
+
+
+@template_api.route("/multiplefiles", methods = ["POST"])
+def multiple_files():
+    if request.method == "POST":
+        uploaded_files = request.files.getlist('Files')
+
+        for file in uploaded_files:
+            random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage + create an empty file with given length + extension
+            if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
+                random_file_path = generate_random_path(24, 'html')
+
+            file.save(random_file_path) #Save template to created storage
+            upload_file(random_file_path, f"{file.filename}", "multiplefiles", 1)
+
+            os.remove(random_file_path)
+    
+    return {}
