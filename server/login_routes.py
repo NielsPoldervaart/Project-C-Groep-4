@@ -44,9 +44,9 @@ def logout():
 @login_api.route("/register/<company_identifier>", methods = ["POST"])
 def register(company_identifier):
     #TODO: COMPANY ID CAN BE RETRIEVED FROM USER DATA IN SESSION
-    #user_verification = verify_user(company_identifier, [1])
-    #if user_verification != "PASSED":
-    #    return user_verification
+    user_verification = verify_user(company_identifier, [1])
+    if user_verification != "PASSED":
+        return user_verification
 
     if request.method == "POST":
         db_session = create_db_session()
