@@ -4,7 +4,7 @@ def verify_user(company_id, accepted_roles=[1,2,3]):
     ##ALL ROLES:
     #1: KYNDA_ADMIN
     #2: COMPANY_ADMIN (Kynda's Client)
-    #3: COMPANY_WORKER (Kynda's Client)
+    #3: COMPANY_EMPLOYEE (Kynda's Client)
 
     #VERIFY IF USER IN SESSION (LOGGED IN)
     if "user_id" and "company_company_id" not in session:
