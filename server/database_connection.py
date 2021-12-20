@@ -23,20 +23,16 @@ def db_connection():
 
 #CLASSES, INIT DEFINED FOR OBJECT CREATION (NEEDED FOR INSERTING INTO DB)
 class Gallery(object):
-    def __init__(self, gallery_id):
+    def __init__(self, gallery_id, name):
         self.gallery_id = gallery_id
-
-class Collection(object):
-    def __init__(self, collection_id, name, Gallery_gallery_id):
-        self.collection_id = collection_id
         self.name = name
-        self.Gallery_gallery_id = Gallery_gallery_id
 
 class Company(object):
-    def __init__(self, company_id, company_name, Collection_collection_id):
+    def __init__(self, company_id, company_name, Gallery_gallery_id):
         self.company_id = company_id
         self.company_name = company_name
-        self.Collection_collection_id = Collection_collection_id
+        self.Gallery_gallery_id = Gallery_gallery_id
+
 
 class Role(object):
     def __init__(self, role_id, name):
@@ -44,12 +40,12 @@ class Role(object):
         self.name = name
 
 class User(object):
-    def __init__(self, user_id, first_name, last_name, email, password, Company_company_id, Role_role_id):
+    def __init__(self, user_id, username, email, password, verified, Company_company_id, Role_role_id):
         self.user_id = user_id
-        self.first_name = first_name
-        self.last_name = last_name
+        self.username = username
         self.email = email
         self.password = password
+        self.verified = verified
         self.Company_company_id = Company_company_id
         self.Role_role_id = Role_role_id
 
@@ -62,24 +58,19 @@ class Template(object):
 class Product(object):
     def __init__(self, product_id, product_file, price, verified, downloads, template_id, user_id, Gallery_gallery_id):
         self.product_id = product_id
+        self.product_file = product_file
         self.price = price
         self.verified = verified
         self.downloads = downloads
         self.template_id = template_id
         self.user_id = user_id
         self.Gallery_gallery_id = Gallery_gallery_id
-        self.product_file = product_file
 
 class Image(object):
-    def __init__(self, image_id, image, name):
+    def __init__(self, image_id, image_path, Gallery_gallery_id):
         self.image_id = image_id
-        self.image = image #TODO: CHANGE THIS FROM BLOB `image` TO IMAGE PATH in DB and storage (e.g: `image_file` or `image_path`). 
-        self.name = name
-
-class Image_has_collection(object):
-    def __init__(self, Image_image_id, Collection_collection_id):
-        self.Image_image_id = Image_image_id
-        self.Collection_collection_id = Collection_collection_id
+        self.image_path = image_path
+        self.Gallery_gallery_id = Gallery_gallery_id
 
 #----------------------------------------------------------------------
 #CREATES DATABSE STRUCTURE BY MAPPING ALL TABLE METADATA TO CORRECT ENGINE METADATA
@@ -88,24 +79,20 @@ def init_db_structure():
     
     metadata = MetaData(engine)
     table_gallery = Table('Gallery', metadata, autoload=True)
-    table_collection = Table('Collection', metadata, autoload=True)
     table_company = Table('Company', metadata, autoload=True)
     table_role = Table('Role', metadata, autoload=True)
     table_user = Table('User', metadata, autoload=True)
     table_template = Table('Template', metadata, autoload=True)
     table_product = Table('Product', metadata, autoload=True)
     table_image = Table('Image', metadata, autoload=True)
-    #table_image_has_collection = Table('Image_has_collection', metadata, autoload=True)
 
     mapper(Gallery, table_gallery)
-    mapper(Collection, table_collection)
     mapper(Company, table_company)
     mapper(Role, table_role)
     mapper(User, table_user)
     mapper(Template, table_template)
     mapper(Product, table_product)
     mapper(Image, table_image)
-    #mapper(Image_has_collection, table_image_has_collection)
 
 def create_db_session():   
     engine = create_engine('mysql+mysqldb://kynda:u9N3_HM+ARhDYsRQ@kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com/KyndaDB', echo=True)
