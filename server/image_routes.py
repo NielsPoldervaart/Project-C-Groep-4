@@ -1,19 +1,76 @@
 from flask import Blueprint, request, jsonify, send_from_directory, send_file
 from flask.scaffold import F
 from user_verification import verify_user
-from ftp_controller import try_to_get_text_file_ftps, delete_file_ftps, upload_file
+from ftp_controller import get_image, try_to_get_text_file_ftps, delete_file_ftps, upload_file
 from database_connection import *
 import os
 from os import path
 from generate_random_path import generate_random_path
+import base64
 
 image_api = Blueprint('image_api', __name__)
 
+#TODO: change image directory in ftp_controller
+
+@image_api.route("/gallery/<company_identifier>/<gallery_identifier>", methods=["GET","POST"])
+def gallery(company_identifier, gallery_identifier):
+
+    db_session = create_db_session()
+
+    if request.method == "GET": #return all images in the gallery
+        user_verification = verify_user(company_identifier)
+        if user_verification != "PASSED":
+            return user_verification
+
+        result = db_session.query(Image.image_id, Image.image_path).filter_by(Gallery_gallery_id = f'{gallery_identifier}').all()
+        images = [
+            dict(
+                image_id = row['image_id'],
+                image = base64.b64encode(get_image(row['image_path'], company_identifier))
+            )
+            for row in result
+        ]
+        if len(images) is not 0:
+            return images
+        return {"errorCode": 404, "Message": "There are no images available"}, 404
+
+    if request.method == "POST": #add an image
+        user_verification = verify_user(company_identifier, [1,2])
+        if user_verification != "PASSED":
+            return user_verification
+
+
+        return
 
 
 
 
+@image_api.route("gallery/<company_identifier>/<gallery_identifier>/<image_identifier>", methods=["GET","DELETE"])
+def image(company_identifier, gallery_identifier, image_identifier):
 
+    db_session = create_db_session()
+
+    if request.method == "GET": #return the image
+        user_verification = verify_user(company_identifier)
+        if user_verification != "PASSED":
+            return user_verification
+
+        image = db_session.query(Image).filter_by(image_id = f'{image_identifier}').first()
+        if image is not None:
+            return dict(image)
+        return {"errorCode": 404, "Message": "This image is not available"}, 404
+
+    if request.method == "DELETE": #delete the image
+        user_verification = verify_user(company_identifier,[1,2])
+        if user_verification != "PASSED":
+            return user_verification
+
+        image = db_session.query(Image).filter_by(image_id = f'{image_identifier}').first()
+        if image is not None:
+            db_session.delete(image)
+            db_session.commit()
+            return {"Code": 201, "Message": "Image has been removed"}, 201
+        return {"errorCode": 404, "Message": "Image could not be removed"}, 404
 
 
 

@@ -4,6 +4,7 @@ from os import path
 import shutil
 import io
 from generate_random_path import generate_random_path
+import base64
 
 """
 def delete_files_from_dir(dir):
@@ -50,14 +51,15 @@ def try_to_get_text_file_ftps(file_name, company_id):
 
     return return_data #Return the extracted Bytes
 
-def get_image(file_name, company_id=1):
+def get_image(file_name, company_id):
     session = FTP('145.24.222.235')
     session.login("Controller", "cC2G'Q_&3qY@=D!@")
 
     handle = open(f'database/templates/{file_name}', 'wb')
     #print("FILENAME: " + file_name)
-    session.retrbinary("RETR " + file_name, handle.write)
+    image = session.retrbinary("RETR " + file_name, handle.write)
     session.quit()
+    return image
 
 #upload_file () name of file, file type (gallery OR templates)
 def upload_file(file_path, file_name, file_type, company_id):
