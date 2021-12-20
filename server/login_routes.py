@@ -48,14 +48,13 @@ def register(company_identifier):
 
     if request.method == "POST":
         db_session = create_db_session()
-        inserted_first_name = request.form["first_name"]
-        inserted_last_name = request.form["last_name"]
         inserted_user_email = request.form["email"]
         inserted_password = request.form["password"]
         inserted_role = request.form["role_id"]
         hashed_password = generate_password_hash(inserted_password)
+        hashed_email = generate_password_hash(inserted_user_email)
 
-        new_user = User(None, inserted_first_name, inserted_last_name, inserted_user_email, hashed_password, company_identifier, inserted_role)
+        new_user = User(None, hashed_email, hashed_password, True, company_identifier, inserted_role)
         db_session.add(new_user)
         db_session.commit()
 

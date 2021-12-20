@@ -44,12 +44,11 @@ class Role(object):
         self.name = name
 
 class User(object):
-    def __init__(self, user_id, first_name, last_name, email, password, Company_company_id, Role_role_id):
+    def __init__(self, user_id, email, password, verified, Company_company_id, Role_role_id):
         self.user_id = user_id
-        self.first_name = first_name
-        self.last_name = last_name
         self.email = email
         self.password = password
+        self.verified = verified
         self.Company_company_id = Company_company_id
         self.Role_role_id = Role_role_id
 
