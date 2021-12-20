@@ -11,6 +11,7 @@ import base64
 image_api = Blueprint('image_api', __name__)
 
 #TODO: change image directory in ftp_controller
+#TODO: accepted filetypes and saved filetype
 
 @image_api.route("/gallery/<company_identifier>/<gallery_identifier>", methods=["GET","POST"])
 def gallery(company_identifier, gallery_identifier):
@@ -39,11 +40,38 @@ def gallery(company_identifier, gallery_identifier):
         if user_verification != "PASSED":
             return user_verification
 
+        uploaded_images = request.files.getlist("file[]")
+        for image in uploaded_images:
+            if image.filename == '': 
+                return {"Code": 405, "Message": "One or multiple images does not have a filename"}, 405
 
-        return
+            if not image_endswith(image.filename):
+                return  {"Code": 405, "Message": "One or multiple images does not have a correct filetype"}, 405
+
+            random_file_path = generate_random_path(24, 'png') #Generate random file path for temp storage + create an empty file with given length + extension
+            if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
+                random_file_path = generate_random_path(24, 'png')
+
+            image.save(random_file_path) #Save template to created storage
+            upload_file(random_file_path, f"{image.filename}", "gallery", company_identifier)
+
+            os.remove(random_file_path)
+
+            #New Template object is created, None is used for id as it is auto-incremented by SQLAlchemy
+            new_image = Image(None, f"{image.filename}", gallery_identifier)
+            
+            db_session.add(new_image)
+            db_session.commit()
+
+        return {"Code": 201, "Message": "Template added to company"}
 
 
-
+def image_endswith(filename):
+    accepted_files = [".png",".jpg",".jpeg"]
+    for type in accepted_files:
+        if filename.endswith(type):
+            return True
+    return False
 
 @image_api.route("gallery/<company_identifier>/<gallery_identifier>/<image_identifier>", methods=["GET","DELETE"])
 def image(company_identifier, gallery_identifier, image_identifier):
