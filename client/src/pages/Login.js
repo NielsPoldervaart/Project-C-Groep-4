@@ -5,7 +5,7 @@ import '../style/Login.css';
 const Login = () => {
     let navigate = useNavigate();
     const [formData, setFormData] = useState({
-        email: "",
+        username: "",
         password: "",
     });
 
@@ -16,8 +16,8 @@ const Login = () => {
     header.append('Access-Control-Allow-Origin', '*');
     header.append('Access-Control-Allow-Credentials', 'true');
 
-    const HandleEmailChange = (e) => {
-        setFormData({...formData, email: e.target.value})
+    const HandleUsernameChange = (e) => {
+        setFormData({...formData, username: e.target.value})
     }
 
     const HandlePasswordChange = (e) => {
@@ -54,9 +54,9 @@ const Login = () => {
                     <div className="loginInput">
                         <div className="email">
                             <label className="inputLabel" for="email">
-                            E-mail
+                            Gebruikersnaam
                             </label>
-                            <input className="inputInput" type="text" name="email" id="email" required="required" maxLength="100" tabIndex="1" autoFocus="autofocus" value={formData.email} onChange={HandleEmailChange} />
+                            <input className="inputInput" type="text" name="username" id="username" required="required" maxLength="100" tabIndex="1" autoFocus="autofocus" value={formData.username} onChange={HandleUsernameChange} />
                         </div>
                         <div className="password">
                             <label className="inputLabel" for="password">
