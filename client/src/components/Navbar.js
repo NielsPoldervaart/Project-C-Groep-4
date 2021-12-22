@@ -3,15 +3,16 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import '../style/Navbar.css';
 import Login from '../pages/Login';
 import Template from '../pages/Template';
-import Templates from '../pages/Templates';
+import Logout from '../pages/Logout';
+import Product from '../pages/Product';
+import Products from '../pages/Products';
 import Register from '../pages/Register';
 import Password from '../pages/Password';
 import Home from '../pages/Home';
 import Images from '../pages/Images';
 import Accounts from '../pages/Accounts';
-import Profile from '../pages/Profile';
-import Manual from '../pages/Manual';
 import Help from '../pages/Help';
+import Manual from '../pages/Manual';
 
 const Navbar = () => {
     return (
@@ -22,7 +23,8 @@ const Navbar = () => {
                     </Link></h1>
                 <nav>
                     <ul className="NavLinks">
-                        <li><Link className="Link" to="/1">Tamplates</Link></li>
+                        <li><Link className="Link" to="/1">Products</Link></li>
+                        <li><Link className="Link" to="/template">Template</Link></li>
                         <li><Link className="Link" to="/images">Beeldbank</Link></li>
                         <li><Link className="Link" to="/accounts">Accounts</Link></li>
                     </ul>
@@ -38,18 +40,18 @@ const Navbar = () => {
                 </nav>
             </header>
             <Routes>
-                <Route path="/:company_id" element={<Templates />}/>
-                <Route path="/:company_id/:template_id" element={<Template />}/>
+                <Route path="/:company_id" element={<Products />}/>
+                <Route path="/template" element={<Template />}/>
+                <Route path="/:company_id/:template_id" element={<Product />}/>
                 <Route path="/login" element={<Login />}/>
                 <Route path="/register" element={<Register />}/>
                 <Route path="/forgotpassword" element={<Password />}/>
-                <Route path="/logout" element={<Login />}/>
+                <Route path="/logout" element={<Logout />}/>
                 <Route path="/welcome" element={<Home />}/>
                 <Route path="/images" element={<Images />}/>
                 <Route path="/accounts" element={<Accounts />}/>
-                <Route path="/profile" element={<Profile />}/>
-                <Route path="/manual" element={<Manual />}/>
-                <Route path="/help" element={<Help />}/>
+                <Route path="/help" element={<Help/>}/>
+                <Route path="/manual" element={<Manual/>}/>
             </Routes>
         </Router>
         
