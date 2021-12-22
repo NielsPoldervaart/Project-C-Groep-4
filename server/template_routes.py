@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, send_file
+from flask import Blueprint, request, send_file, session
 from user_verification import verify_user
 from ftp_controller import try_to_get_text_file_ftps, delete_file_ftps, upload_file
 from database_connection import *
@@ -24,15 +24,17 @@ def templates(company_identifier):
         templates = [
             dict(
                 template_id = row['template_id'],
-              template_file = row['template_file'],
-                company_name = row['company_name']
+                template_file = row['template_file'],
                 )
                 for row in result
-        ]  
-        if len(templates) is not 0:
-            return jsonify(templates)
-        else:
-            return {"errorCode": 404, "Message": "Template Does not exist"""}
+        ]
+        if len(templates) != 0:
+            Dict = {}
+            Dict["company_name"] = result[0].company_name
+            Dict["user_role"] = session["role_role_id"]
+            Dict["templates"] = templates
+            return Dict
+        return {"errorCode": 404, "Message": "Template Does not exist"""}
 
     if request.method == "POST": #Add a template to DB and FTP
         uploaded_template = request.files['template_file']
