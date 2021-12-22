@@ -13,6 +13,7 @@ import Images from '../pages/Images';
 import Accounts from '../pages/Accounts';
 import Help from '../pages/Help';
 import Manual from '../pages/Manual';
+import Profile from '../pages/Profile';
 
 const Navbar = () => {
     return (
@@ -24,7 +25,7 @@ const Navbar = () => {
                 <nav>
                     <ul className="NavLinks">
                         <li><Link className="Link" to="/1">Products</Link></li>
-                        <li><Link className="Link" to="/template">Template</Link></li>
+                        <li><Link className="Link" to="/template">Tamplates</Link></li>
                         <li><Link className="Link" to="/images">Beeldbank</Link></li>
                         <li><Link className="Link" to="/accounts">Accounts</Link></li>
                     </ul>
@@ -50,8 +51,9 @@ const Navbar = () => {
                 <Route path="/welcome" element={<Home />}/>
                 <Route path="/images" element={<Images />}/>
                 <Route path="/accounts" element={<Accounts />}/>
-                <Route path="/help" element={<Help/>}/>
-                <Route path="/manual" element={<Manual/>}/>
+                <Route path="/help" element={<Help />}/>
+                <Route path="/manual" element={<Manual />}/>
+                <Route path="/profile" element={<Profile />}/>
             </Routes>
         </Router>
         
