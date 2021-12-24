@@ -10,8 +10,9 @@ import base64
 
 image_api = Blueprint('image_api', __name__)
 
-#TODO: change image directory in ftp_controller
-#TODO: accepted filetypes and saved filetype
+#TODO: add image to FTP database
+#TODO: accepted filetypes
+#TODO: change image from Appa to selected image and change first 10 char to entire string
 
 @image_api.route("/gallery/<company_identifier>/<gallery_identifier>", methods=["GET","POST"])
 def gallery(company_identifier, gallery_identifier):
@@ -24,15 +25,18 @@ def gallery(company_identifier, gallery_identifier):
             return user_verification
 
         result = db_session.query(Image.image_id, Image.image_path).filter_by(Gallery_gallery_id = f'{gallery_identifier}').all()
+        print(result)
         images = [
             dict(
                 image_id = row['image_id'],
-                image = base64.b64encode(get_image(row['image_path'], company_identifier))
+                image = row['image_path'],
+                image = base64.b64encode(get_image("Appa.jpg", company_identifier)).decode('ascii')[0:10]
             )
             for row in result
         ]
+        print(images)
         if len(images) is not 0:
-            return images
+            return jsonify(images)
         return {"errorCode": 404, "Message": "There are no images available"}, 404
 
     if request.method == "POST": #add an image
@@ -42,6 +46,7 @@ def gallery(company_identifier, gallery_identifier):
 
         uploaded_images = request.files.getlist("file[]")
         for image in uploaded_images:
+            print(image.filename)
             if image.filename == '': 
                 return {"Code": 405, "Message": "One or multiple images does not have a filename"}, 405
 
@@ -52,18 +57,18 @@ def gallery(company_identifier, gallery_identifier):
             if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
                 random_file_path = generate_random_path(24, 'png')
 
-            image.save(random_file_path) #Save template to created storage
+            image.save(random_file_path) #Save image to created storage
             upload_file(random_file_path, f"{image.filename}", "gallery", company_identifier)
 
             os.remove(random_file_path)
 
-            #New Template object is created, None is used for id as it is auto-incremented by SQLAlchemy
-            new_image = Image(None, f"{image.filename}", gallery_identifier)
+            #New Image object is created, None is used for id as it is auto-incremented by SQLAlchemy
+            new_image = Image(None, random_file_path, gallery_identifier)
             
             db_session.add(new_image)
             db_session.commit()
 
-        return {"Code": 201, "Message": "Template added to company"}
+        return {"Code": 201, "Message": "Image added to company"}
 
 
 def image_endswith(filename):
@@ -73,7 +78,7 @@ def image_endswith(filename):
             return True
     return False
 
-@image_api.route("gallery/<company_identifier>/<gallery_identifier>/<image_identifier>", methods=["GET","DELETE"])
+@image_api.route("/gallery/<company_identifier>/<gallery_identifier>/<image_identifier>", methods=["GET","DELETE"])
 def image(company_identifier, gallery_identifier, image_identifier):
 
     db_session = create_db_session()
@@ -83,9 +88,14 @@ def image(company_identifier, gallery_identifier, image_identifier):
         if user_verification != "PASSED":
             return user_verification
 
-        image = db_session.query(Image).filter_by(image_id = f'{image_identifier}').first()
-        if image is not None:
-            return dict(image)
+        result = db_session.query(Image.image_id, Image.image_path).filter_by(image_id = f'{image_identifier}').first()
+        if result is not None:
+            img = base64.b64encode(get_image("Appa.jpg", company_identifier)).decode('ascii')
+            return jsonify(dict(
+                image_id = result["image_id"],
+                image_path = result["image_path"],
+                image = img[0:10]
+            ))
         return {"errorCode": 404, "Message": "This image is not available"}, 404
 
     if request.method == "DELETE": #delete the image
