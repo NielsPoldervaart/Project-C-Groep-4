@@ -80,3 +80,8 @@ def file():
         uploaded_files =  request.files['File']
         print(f"file: {uploaded_files}")
         return {}
+
+
+@login_api.route("/")
+def test():
+        return {}
