@@ -19,6 +19,7 @@ const Templates = () => {
           res => res.json()
         ).then(
           data => {
+            console.log(data);
             setTemplates(data)
             setLoading(false)
           }
@@ -45,7 +46,7 @@ const Templates = () => {
 
     const DisplayElement = () => {
 
-      if (templates.errorCode === 403) {
+      if (templates.errorCode === 401) {
         navigate(`/login`)
       }
       else {
