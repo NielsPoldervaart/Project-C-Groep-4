@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, send_file
+from flask import Blueprint, request, send_file, session
 from user_verification import verify_user
 from ftp_controller import try_to_get_text_file_ftps, delete_file_ftps, upload_file
 from database_connection import *
@@ -11,30 +11,33 @@ template_api = Blueprint('template_api', __name__)
 @template_api.route("/templates/<company_identifier>", methods=["GET", "POST"])
 def templates(company_identifier):
 
-    user_verification = verify_user(company_identifier)
-    if user_verification != "PASSED":
-        return user_verification
-
     db_session = create_db_session()
 
     if request.method == "GET": #View ALL templates from a company
         #SELECT `Template_id`, `Template_file`, Company_name WHERE `Company_1` = company_identifier
+
+        user_verification = verify_user(company_identifier) #make sure user is logged in correctly
+        if user_verification != "PASSED":
+            return user_verification
+
         result = db_session.query(Template.template_id, Template.template_file, Company.company_name).join(Company).filter_by(company_id = f'{company_identifier}').all()
 
         templates = [
             dict(
                 template_id = row['template_id'],
-              template_file = row['template_file'],
-                company_name = row['company_name']
+                template_file = row['template_file'],
                 )
                 for row in result
-        ]  
-        if len(templates) is not 0:
-            return jsonify(templates)
-        else:
-            return {"errorCode": 404, "Message": "Template Does not exist"""}
+        ]
+        if len(templates) != 0:
+            Dict = {}
+            Dict["company_name"] = result[0].company_name
+            Dict["user_role"] = session["role_role_id"]
+            Dict["templates"] = templates
+            return Dict
+        return {"errorCode": 404, "Message": "Template Does not exist"""}
 
-    if request.method == "POST": #Add a template to DB and FTP
+    if request.method == "POST": #Add a template to specific company as KYNDA_ADMIN
         uploaded_template = request.files['template_file']
         if uploaded_template.filename == '': 
             return {"Code": 405, "Message": "No template file found in request, OR File has no valid name"}
@@ -68,7 +71,7 @@ def template(company_identifier, template_identifier):
 
     db_session = create_db_session()
 
-    if request.method == "GET": #Download specific template as client
+    if request.method == "GET": #Open specific template (to view or to create a product)
         #result = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
         template_file_location_ftp = db_session.query(Template.template_file).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
 
@@ -83,7 +86,7 @@ def template(company_identifier, template_identifier):
 
         return {"errorCode": 404, "Message": "Template Does not exist"""}
 
-    if request.method == "DELETE" : #Delete a specific template
+    if request.method == "DELETE" : #Delete a specific template as KYNDA_ADMIN or COMPANY_ADMIN
 
     #TODO: FIND A WAY TO ACCESS THE TEMPLATE FILE WITH ONE QUERY FOR DELETION, INSTEAD OF HAVING TO QUERY TWICE (SPEED INCR, OPTIONAL)
         template_to_delete = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
@@ -97,6 +100,7 @@ def template(company_identifier, template_identifier):
         db_session.commit()
         
         return attempt_to_remove
+
 
 
 @template_api.route("/multiplefiles", methods = ["POST"])
