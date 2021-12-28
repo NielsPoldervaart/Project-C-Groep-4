@@ -27,7 +27,7 @@ def login():
             session["user_id"] = user.user_id
             session["company_company_id"] = user.Company_company_id
             session["role_role_id"] = user.Role_role_id
-            return {"Code": 201, "Message": "User logged in"}, 201
+            return {"Code": 200, "Message": "User logged in"}, 200
 
         else:
            return {"Code": 406, "Message": "Incorrect User credentials (NAME)"}, 406 #TODO: REMOVE "(NAME) FROM RESPONSE"
@@ -79,9 +79,4 @@ def file():
     if request.method == "POST":
         uploaded_files =  request.files['File']
         print(f"file: {uploaded_files}")
-        return {}
-
-
-@login_api.route("/")
-def test():
         return {}

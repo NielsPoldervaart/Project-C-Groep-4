@@ -86,7 +86,6 @@ def company_accounts(company_identifier):
             return {"returnCode": 201, "Message": "User's verified status updated"} , 201
 
         else:
-            pass
             #remove user from DB
             db_session.delete(extracted_user)
             db_session.commit()

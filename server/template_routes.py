@@ -62,7 +62,7 @@ def templates(company_identifier):
 
         return {"Code": 201, "Message": "Template added to company"}
 
-@template_api.route("/template/<int:company_identifier>/<int:template_identifier>", methods=["GET", "DELETE", "POST"])
+@template_api.route("/template/<int:company_identifier>/<int:template_identifier>", methods=["GET", "DELETE"])
 def template(company_identifier, template_identifier):
 
     user_verification = verify_user(company_identifier)
