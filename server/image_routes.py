@@ -24,17 +24,24 @@ def gallery(company_identifier, gallery_identifier):
             return user_verification
 
         result = db_session.query(Image.image_id, Image.image_path).filter_by(Gallery_gallery_id = f'{gallery_identifier}').all()
-        print(result)
-        images = [
-            dict(
-                image_id = row['image_id'],
-                image = get_image(row['image_path'], 'gallery', company_identifier)[0:10]
-            )
-            for row in result
-        ]
-        print(images)
-        if len(images) is not 0:
-            return jsonify(images)
+        if result is not None:
+            images = []
+            
+            for row in result:
+                img = get_image(row['image_path'], 'gallery', company_identifier)
+                if img is not "":
+                    images.append(
+                        dict(
+                            image_id = row['image_id'],
+                            image = img[0:10]
+                        )
+                    )
+                else:
+                    return {"errorCode": 404, "Message": "One or multiple images could not be retrieved from the FTP server"}
+            
+            if len(images) is not 0:
+                return jsonify(images)
+
         return {"errorCode": 404, "Message": "There are no images available"}, 404
 
     if request.method == "POST": #add an image
@@ -56,9 +63,11 @@ def gallery(company_identifier, gallery_identifier):
                 random_file_path = generate_random_path(24, 'jpg')
 
             image.save(random_file_path) #Save image to created storage
-            upload_file(random_file_path, f"{random_file_path}", "gallery", company_identifier)
-
+            upload_attempt = upload_file(random_file_path, f"{random_file_path}", "gallery", company_identifier)
             os.remove(random_file_path)
+            
+            if not upload_attempt[1] == 201:
+                return upload_attempt
 
             #New Image object is created, None is used for id as it is auto-incremented by SQLAlchemy
             new_image = Image(None, random_file_path, gallery_identifier)
@@ -66,7 +75,7 @@ def gallery(company_identifier, gallery_identifier):
             db_session.add(new_image)
             db_session.commit()
 
-        return {"Code": 201, "Message": "Image added to company"}
+        return {"Code": 201, "Message": "Image added to company"}, 201
 
 
 def image_endswith(filename):
@@ -89,10 +98,12 @@ def image(company_identifier, gallery_identifier, image_identifier):
         result = db_session.query(Image.image_id, Image.image_path).filter_by(image_id = f'{image_identifier}').first()
         if result is not None:
             img = get_image(result["image_path"], 'gallery', company_identifier)
-            return jsonify(dict(
-                image_id = result["image_id"],
-                image = img[0:10]
-            ))
+            if img is not "":
+                return jsonify(dict(
+                    image_id = result["image_id"],
+                    image = img[0:10]
+                ))
+            return {"errorCode": 404, "Message": "This image could not be retrieved from the FTP server"}, 404
         return {"errorCode": 404, "Message": "This image is not available"}, 404
 
     if request.method == "DELETE": #delete the image
@@ -102,8 +113,10 @@ def image(company_identifier, gallery_identifier, image_identifier):
 
         image = db_session.query(Image).filter_by(image_id = f'{image_identifier}').first()
         if image is not None:
-            delete_file_ftps(image.image_path, 'gallery', company_identifier)
-            db_session.delete(image)
-            db_session.commit()
-            return {"Code": 201, "Message": "Image has been removed"}, 201
-        return {"errorCode": 404, "Message": "Image could not be removed"}, 404
+            delete_attempt = delete_file_ftps(image.image_path, 'gallery', company_identifier)
+            if delete_attempt[1] is not 404:
+                db_session.delete(image)
+                db_session.commit()
+                return {"Code": 201, "Message": "Image has been removed"}, 201
+            return delete_attempt
+        return {"errorCode": 404, "Message": "Image could not be found in the database"}, 404

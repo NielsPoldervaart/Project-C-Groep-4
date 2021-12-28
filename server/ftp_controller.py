@@ -57,24 +57,29 @@ def get_image(file_name, file_type, company_id):
     session.login("Controller", "cC2G'Q_&3qY@=D!@")
     session.cwd(f'{company_id}')
     session.cwd(file_type)
-    session.retrbinary("RETR " + file_name, open(f'database/{file_type}/{file_name}', 'wb').write)
-    session.quit()
     img = ""
-    with open(f'database/gallery/{file_name}', 'rb') as f:
-        for data in f:
-            img_b64 = base64.b64encode(data)
-            img_str = img_b64.decode('ascii')
-            img += img_str
-    os.remove(f'database/gallery/{file_name}')
-    return img
+    try:
+        session.retrbinary("RETR " + file_name, open(f'database/{file_type}/{file_name}', 'wb').write)
+        session.quit()
+        with open(f'database/{file_type}/{file_name}', 'rb') as f:
+            for data in f:
+                img_b64 = base64.b64encode(data)
+                img_str = img_b64.decode('ascii')
+                img += img_str
+        os.remove(f'database/gallery/{file_name}')
+        return img
+    except:
+        return img
 
 #upload_file () name of file, file type (gallery OR templates)
 def upload_file(file_path, file_name, file_type, company_id):
 
         session = FTP('145.24.222.235') #Create session with FTP
         session.login("Controller", "cC2G'Q_&3qY@=D!@") #Login to FTP
-
-        file_to_send = open(file_path, 'rb') #Open file to send
+        try:
+            file_to_send = open(file_path, 'rb') #Open file to send
+        except:
+            return {"errorCode": 404, "Message": "The sent file could not be found"}, 404
 
         if f"{company_id}" not in session.nlst(): #Check if company dir exists on FTP Server, if not, create it
             session.mkd(f"{company_id}")
@@ -86,24 +91,25 @@ def upload_file(file_path, file_name, file_type, company_id):
         session.storbinary("STOR " + file_name, file_to_send) #Send file through as binary
         session.quit() #Close FTP session
         file_to_send.close()
+        return {"Code": 201, "Message": "The file has been uploaded to the FTP server"}, 201
 
 def delete_file_ftps(file_path, file_type, company_id):
     session = FTP('145.24.222.235')
     session.login("Controller", "cC2G'Q_&3qY@=D!@")
 
     if f"{company_id}" not in session.nlst(): #Check if company dir exists on FTP Server, if not, return
-        return {"errorCode": 404, "Message": "Company directory does not exist on FTP server"}
+        return {"errorCode": 404, "Message": "Company directory does not exist on FTP server"}, 404
 
     session.cwd(f'{company_id}') #Change to the company dir
 
     if file_type not in session.nlst(): #Check if company dir exists on FTP Server, if not, return
-        return {"errorCode": 404, "Message": "Correct file directory does not exist on FTP server"}
+        return {"errorCode": 404, "Message": "Correct file directory does not exist on FTP server"}, 404
 
     session.cwd(file_type) #Change to the company dir
 
     session.delete(file_path)
     session.quit()
-    return {"errorCode": 201, "Message": "File succesfully removed from storage"}
+    return {"Code": 201, "Message": "File succesfully removed from storage"}, 201
 
 
 #try_to_download_text_file(filename, 1)
