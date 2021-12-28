@@ -5,8 +5,7 @@ import shutil
 import io
 from generate_random_path import generate_random_path
 
-from PIL import Image
-import numpy as np
+import base64
 
 """
 def delete_files_from_dir(dir):
@@ -53,26 +52,25 @@ def try_to_get_text_file_ftps(file_name, company_id):
 
     return return_data #Return the extracted Bytes
 
-def get_image(file_name, company_id):
+def get_image(file_name, file_type, company_id):
     session = FTP('145.24.222.235')
     session.login("Controller", "cC2G'Q_&3qY@=D!@")
-
-    image = Image.open(f'database/gallery/{file_name}')
+    session.cwd(f'{company_id}')
+    session.cwd(file_type)
+    session.retrbinary("RETR " + file_name, open(f'database/{file_type}/{file_name}', 'wb').write)
     session.quit()
-    image = np.array(image)
-    binarr = np.where(image>128, 255, 0)
-    return binarr
-    
-    handle = open(f'database/gallery/{file_name}', 'wb')
-    #print("FILENAME: " + file_name)
-    image = session.retrbinary("RETR " + file_name, handle.write)
-    print("retrieve")
-    session.quit()
-    return image
+    img = ""
+    with open(f'database/gallery/{file_name}', 'rb') as f:
+        for data in f:
+            img_b64 = base64.b64encode(data)
+            img_str = img_b64.decode('ascii')
+            img += img_str
+    os.remove(f'database/gallery/{file_name}')
+    return img
 
 #upload_file () name of file, file type (gallery OR templates)
 def upload_file(file_path, file_name, file_type, company_id):
-    
+
         session = FTP('145.24.222.235') #Create session with FTP
         session.login("Controller", "cC2G'Q_&3qY@=D!@") #Login to FTP
 
