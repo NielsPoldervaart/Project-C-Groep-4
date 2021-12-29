@@ -17,7 +17,7 @@ def delete_files_from_dir(dir):
                 shutil.rmtree(file_object_path)
 """
 
-def try_to_get_text_file_ftps(file_name, company_id):
+def try_to_get_text_file_ftps(file_name, file_type, company_id):
     session = FTP('145.24.222.235') #Create session with FTP
     session.login("Controller", "cC2G'Q_&3qY@=D!@")
 
@@ -26,10 +26,10 @@ def try_to_get_text_file_ftps(file_name, company_id):
 
     session.cwd(f'{company_id}') #Change directory on FTP to the company's
 
-    if "templates" not in session.nlst(): #Check if templates dir exists on FTP Server, if not, return
-        return {"errorCode": 404, "Message": "Company directory does not contain any templates on FTP server"}
+    if file_type not in session.nlst(): #Check if file_type dir exists on FTP Server, if not, return (EG: "templates", "manual")
+        return {"errorCode": 404, "Message": f"Company directory does not contain any {file_type} on FTP server"}
 
-    session.cwd("templates") #Change directory on FTP to the company's
+    session.cwd(file_type) #Change directory on FTP to the company's
     
     random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage
     if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path

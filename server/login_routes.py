@@ -1,4 +1,4 @@
-from flask import request, session, Blueprint
+from flask import request, session, Blueprint, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from user_verification import verify_user
 from database_connection import *
@@ -8,7 +8,7 @@ login_api = Blueprint('login_api', __name__)
 
 @login_api.route("/login", methods=["POST"])
 def login():
-    db_session = create_db_session()
+    #db_session = create_db_session(current_app.config["DATABASE_URI"])
 
     if request.method == "POST":
         #JSON METHOD
@@ -16,9 +16,9 @@ def login():
         inserted_username = jsonInput["name"]
         inserted_password = jsonInput["password"]
 
-
-        #REQUESTS `user_id`, `Company_company_id`, `Role_role_id`, `password` FROM DATABASE WHERE EMAIL IS INSERTED EMAIL. RETURNS NONE IF CANNOT FIND MATCH
-        user = db_session.query(User.user_id, User.Company_company_id, User.Role_role_id, User.password, User.email).filter_by(username =f'{inserted_username}').first()
+        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+            #REQUESTS `user_id`, `Company_company_id`, `Role_role_id`, `password` FROM DATABASE WHERE EMAIL IS INSERTED EMAIL. RETURNS NONE IF CANNOT FIND MATCH
+            user = db_session.query(User.user_id, User.Company_company_id, User.Role_role_id, User.password, User.email).filter_by(username =f'{inserted_username}').first()
 
         if user: #IF USER OBJECT IS NOT NONE (COULD FIND CORRECT DATA IN DB)
             if not check_password_hash(user.password, inserted_password):
@@ -48,7 +48,6 @@ def register(company_identifier):
         return user_verification
 
     if request.method == "POST":
-        db_session = create_db_session()
         inserted_username = request.form["name"]
         inserted_user_email = request.form["email"]
         inserted_password = request.form["password"]
@@ -56,15 +55,16 @@ def register(company_identifier):
         hashed_password = generate_password_hash(inserted_password)
         hashed_email = generate_password_hash(inserted_user_email)
 
-        new_user = User(None, inserted_username, hashed_email, hashed_password, True, company_identifier, inserted_role)
-        db_session.add(new_user)
-        db_session.commit()
+        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+            new_user = User(None, inserted_username, hashed_email, hashed_password, True, company_identifier, inserted_role)
+            db_session.add(new_user)
+            db_session.commit()
 
         return {"Code": 201, "Message": "User added to company"""}
         #TODO: RETURN SOMETHING IF REQUEST IS NOT POST
-        #TODO: REMOVING A USER FROM DB OPTION?
 
 
+"""
 @login_api.route("/folder", methods = ["POST"])
 def folder():
     if request.method == "POST":
@@ -80,3 +80,4 @@ def file():
         uploaded_files =  request.files['File']
         print(f"file: {uploaded_files}")
         return {}
+"""

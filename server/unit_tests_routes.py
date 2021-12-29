@@ -30,8 +30,7 @@ class TestRoutes(unittest.TestCase):
 ###Database creation
     #Database initialization
     def setUp(self):
-        init_db_structure()
-
+        init_db_structure("sqlite://")
 
 ###TODO: Security tests before logging in
     #TODO: TEST Company routes
@@ -66,8 +65,8 @@ class TestRoutes(unittest.TestCase):
     
     def test_all(self):
         client = app.test_client(self)
-        self.login_pass(client)
-        self.template_pass(client)
+        #self.login_pass(client)
+        #self.template_pass(client)
         
 
     def login_pass(self, client):
@@ -110,9 +109,10 @@ class TestRoutes(unittest.TestCase):
     #TODO: Login pass
 
 ###TODO: Template routes
-    #TODO: POST add template to company for product creation ("/templates/<company_identifier>" POST)
+    #TODO: POST add template to company for product creation ("/templates/<company_identifier>" POST) (KYNDA_ADMIN)
         #TODO: Create a folder for template to add
-    #TODO: POST add template to company for deletion test ("/templates/<company_identifier>" POST)
+    #TODO: POST add template to company for deletion test ("/templates/<company_identifier>" POST) (KYNDA_ADMIN)
+
 
     #GET view all templates from company ("/templates/<company_identifier>" GET)
     """
@@ -127,7 +127,7 @@ class TestRoutes(unittest.TestCase):
     #TODO: DELETE specific template ("/template/<int:company_identifier>/<int:template_identifier>" DELETE)
 
 ###TODO: Product routes
-    #TODO: 
+    #TODO: POST add product to company ("/products/<company_identifier>" POST) (COMPANY_ADMIN/COMPANY_EMPLOYEE)
 
 
 ###TODO: Image routes
@@ -137,9 +137,6 @@ class TestRoutes(unittest.TestCase):
     #TODO: POST add an image to delete ("/gallery/<company_identifier>/<gallery_identifier>" POST)
     #TODO: GET view the selected images from gallery ("/gallery/<company_identifier>/<gallery_identifier>/<image_identifier>" GET)
     #TODO: DELETE remove the image to be deleted ("/gallery/<company_identifier>/<gallery_identifier>/<image_identifier>" DELETE)
-
-###TODO: Guide routes
-    #TODO: 
 
 ###TODO: Logout Created account
     #TODO: Logout pass

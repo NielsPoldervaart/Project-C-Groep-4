@@ -12,11 +12,12 @@ class Test_user_verification_module(unittest.TestCase):
 ###Database creation
     #Database initialization
     def setUp(self):
-        init_db_structure()
+        init_db_structure("sqlite://")
 
     def test_user_verification(self):
         with app.test_client() as client:
             client.get("/") #Create a session by requesting index route 
+            client.get("/init/sqlite://")
             self.verify_user_fail()
             self.login_pass(client)
             self.verify_user_pass()

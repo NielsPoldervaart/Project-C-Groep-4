@@ -72,10 +72,17 @@ class Image(object):
         self.image_path = image_path
         self.Gallery_gallery_id = Gallery_gallery_id
 
+
+class Manual(object):
+    def __init__(self, manual_id, manual_path, Company_company_id):
+        self.manual_id = manual_id
+        self.manual_path = manual_path
+        self.Company_company_id = Company_company_id
+
 #----------------------------------------------------------------------
-#CREATES DATABSE STRUCTURE BY MAPPING ALL TABLE METADATA TO CORRECT ENGINE METADATA
-def init_db_structure():
-    engine = create_engine('mysql+mysqldb://kynda:u9N3_HM+ARhDYsRQ@kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com/KyndaDB', echo=True)
+#CREATES DATABASE STRUCTURE BY MAPPING ALL TABLE METADATA TO CORRECT ENGINE METADATA
+def init_db_structure(database_URI):
+    engine = create_engine(database_URI, echo=True)
     
     metadata = MetaData(engine)
     table_gallery = Table('Gallery', metadata, autoload=True)
@@ -94,8 +101,8 @@ def init_db_structure():
     mapper(Product, table_product)
     mapper(Image, table_image)
 
-def create_db_session():   
-    engine = create_engine('mysql+mysqldb://kynda:u9N3_HM+ARhDYsRQ@kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com/KyndaDB', echo=True)
+def create_db_session(database_URI):   
+    engine = create_engine(database_URI, echo=True)
     Session = sessionmaker(bind=engine)
     session = Session()
     return session

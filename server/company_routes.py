@@ -1,6 +1,9 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, send_file, current_app
 from user_verification import verify_user
 from database_connection import *
+from ftp_controller import try_to_get_text_file_ftps, generate_random_path, upload_file
+import os
+from os import path
 
 company_api = Blueprint('company_api', __name__)
 
@@ -12,8 +15,8 @@ def company(company_identifier):
         return user_verification
 
     if request.method == "GET":
-        db_session = create_db_session()
-        company_information = db_session.query(Company.company_id, Company.company_name).filter_by(company_id = company_identifier).first()
+        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+            company_information = db_session.query(Company.company_id, Company.company_name).filter_by(company_id = company_identifier).first()
 
         if company_information is not None:
             return dict(
@@ -30,11 +33,12 @@ def company_accounts(company_identifier):
         return user_verification
 
     if request.method == "GET":
-        db_session = create_db_session()
         users_dictionary = {}
         company_has_no_users = True
-        verified_users_information = db_session.query(User.email, User.username, User.Role_role_id).filter_by(Company_company_id = company_identifier).filter_by(verified = True).all()
-        awaiting_users_information = db_session.query(User.email, User.username, User.Role_role_id).filter_by(Company_company_id = company_identifier).filter_by(verified = False).all()
+
+        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+            verified_users_information = db_session.query(User.email, User.username, User.Role_role_id).filter_by(Company_company_id = company_identifier).filter_by(verified = True).all()
+            awaiting_users_information = db_session.query(User.email, User.username, User.Role_role_id).filter_by(Company_company_id = company_identifier).filter_by(verified = False).all()
 
         if verified_users_information is not None:
             company_has_no_users = True
@@ -71,26 +75,26 @@ def company_accounts(company_identifier):
     if request.method == "POST":
         form_user_id = request.form['user_id'] #STRING: WHICH USER TO BE ADDED / DECLINED
         form_accepted = request.form['accepted'] #BOOLEAN: WHETHER USER SHOULD BE ADDED TO COMPANY (APPROVED)
-        db_session = create_db_session()
-        extracted_user = db_session.query(User).filter_by(Company_company_id = company_identifier).filter_by(user_id = form_user_id).first()
+        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+            extracted_user = db_session.query(User).filter_by(Company_company_id = company_identifier).filter_by(user_id = form_user_id).first()
 
-        if extracted_user is None:
-            return {"errorCode": 404, "Message": "User does not exist within company"} , 404
+            if extracted_user is None:
+                return {"errorCode": 404, "Message": "User does not exist within company"} , 404
 
-        if form_accepted:
-            #change user to verified in DB
-            extracted_user.verified = True
-            db_session.commit()
-            db_session.close()
+            if form_accepted:
+                #change user to verified in DB
+                extracted_user.verified = True
+                db_session.commit()
+                db_session.close()
 
-            return {"returnCode": 201, "Message": "User's verified status updated"} , 201
+                return {"returnCode": 201, "Message": "User's verified status updated"} , 201
 
-        else:
-            #remove user from DB
-            db_session.delete(extracted_user)
-            db_session.commit()
-            db_session.close()
-            return {"returnCode": 201, "Message": "User deleted from system"} , 201
+            else:
+                #remove user from DB
+                db_session.delete(extracted_user)
+                db_session.commit()
+                db_session.close()
+                return {"returnCode": 201, "Message": "User deleted from system"} , 201
 
 
     return {"errorCode": 500, "Message": "Internal server error"} , 500 #Something went wrong
@@ -98,8 +102,49 @@ def company_accounts(company_identifier):
 
 @company_api.route("/<company_identifier>/manual", methods=["GET", "POST"])
 def company_manual(company_identifier):
-    pass
+    
+    user_verification = verify_user(company_identifier)
+    if user_verification != "PASSED":
+        return user_verification
 
+    if request.method == "GET": #Open specific manual (to view)
+        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+            #result = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
+            manual_file_location_ftp = db_session.query(Manual.template_file).filter_by(Company_company_id = company_identifier).first()
+
+        if manual_file_location_ftp is not None:
+            manual_bytes = try_to_get_text_file_ftps(manual_file_location_ftp, "manual", company_identifier)
+            if manual_bytes is dict: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
+                return manual_bytes
+
+            return send_file(manual_bytes, mimetype="text/html")
+
+        return {"errorCode": 404, "Message": "Manual Does not exist"""}
+
+    if request.method == "POST": #Upload a manual to Company
+        uploaded_template = request.files['template_file']
+        if uploaded_template.filename == '': 
+            return {"Code": 405, "Message": "No manual file found in request, OR File has no valid name"}
+
+        if not (uploaded_template.filename.endswith(".html") or uploaded_template.filename.endswith(".htm")):
+            return  {"Code": 405, "Message": "No manual file found in request, OR File has no valid extension (.html OR .htm)"}
+
+        random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage + create an empty file with given length + extension
+        if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
+            random_file_path = generate_random_path(24, 'html')
+
+        uploaded_template.save(random_file_path) #Save template to created storage
+        upload_file(random_file_path, f"{uploaded_template.filename}", "manual", company_identifier)
+
+        os.remove(random_file_path)
+
+        #New Template object is created, None is used for id as it is auto-incremented by SQLAlchemy
+        new_template = Template(None, f"{uploaded_template.filename}", company_identifier)
+        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+            db_session.add(new_template)
+            db_session.commit()
+
+        return {"Code": 201, "Message": "Manual added to company"}
 
 @company_api.route("/", methods=["GET"])
 def index():
