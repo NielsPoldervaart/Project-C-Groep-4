@@ -130,8 +130,13 @@ class TestRoutes(unittest.TestCase):
     #TODO: 
 
 
-###TODO: Images routes
-    #TODO: 
+###TODO: Image routes
+    #TODO: GET view all images of gallery ("/gallery/<company_identifier>/<gallery_identifier>" GET)
+    #TODO: POST try to add a file with the wrong filetype ("/gallery/<company_identifier>/<gallery_identifier>" POST)
+    #TODO: POST add an image for *later use* ("/gallery/<company_identifier>/<gallery_identifier>" POST)
+    #TODO: POST add an image to delete ("/gallery/<company_identifier>/<gallery_identifier>" POST)
+    #TODO: GET view the selected images from gallery ("/gallery/<company_identifier>/<gallery_identifier>/<image_identifier>" GET)
+    #TODO: DELETE remove the image to be deleted ("/gallery/<company_identifier>/<gallery_identifier>/<image_identifier>" DELETE)
 
 ###TODO: Guide routes
     #TODO: 
