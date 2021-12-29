@@ -94,3 +94,13 @@ def company_accounts(company_identifier):
 
 
     return {"errorCode": 500, "Message": "Internal server error"} , 500 #Something went wrong
+
+
+@company_api.route("/<company_identifier>/manual", methods=["GET", "POST"])
+def company_manual(company_identifier):
+    pass
+
+
+@company_api.route("/", methods=["GET"])
+def index():
+    return {}
