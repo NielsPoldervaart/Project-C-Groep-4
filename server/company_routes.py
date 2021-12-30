@@ -110,10 +110,11 @@ def company_manual(company_identifier):
     if request.method == "GET": #Open specific manual (to view)
         with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
             #result = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
-            manual_file_location_ftp = db_session.query(Manual.template_file).filter_by(Company_company_id = company_identifier).first()
+            manual_file_location_ftp = db_session.query(Manual.manual_file).join(Company).filter_by(Manual_manual_id = Manual.manual_id).first()
+
 
         if manual_file_location_ftp is not None:
-            manual_bytes = try_to_get_text_file_ftps(manual_file_location_ftp, "manual", company_identifier)
+            manual_bytes = try_to_get_text_file_ftps("Huisstijlhandboek_Kynda", "manual", company_identifier)
             if manual_bytes is dict: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
                 return manual_bytes
 
@@ -122,26 +123,34 @@ def company_manual(company_identifier):
         return {"errorCode": 404, "Message": "Manual Does not exist"""}
 
     if request.method == "POST": #Upload a manual to Company
-        uploaded_template = request.files['template_file']
-        if uploaded_template.filename == '': 
+        uploaded_manual = request.files['manual_file']
+        if uploaded_manual.filename == '': 
             return {"Code": 405, "Message": "No manual file found in request, OR File has no valid name"}
 
-        if not (uploaded_template.filename.endswith(".html") or uploaded_template.filename.endswith(".htm")):
+        if not (uploaded_manual.filename.endswith(".html") or uploaded_manual.filename.endswith(".htm")):
             return  {"Code": 405, "Message": "No manual file found in request, OR File has no valid extension (.html OR .htm)"}
 
-        random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage + create an empty file with given length + extension
-        if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
-            random_file_path = generate_random_path(24, 'html')
-
-        uploaded_template.save(random_file_path) #Save template to created storage
-        upload_file(random_file_path, f"{uploaded_template.filename}", "manual", company_identifier)
-
-        os.remove(random_file_path)
-
-        #New Template object is created, None is used for id as it is auto-incremented by SQLAlchemy
-        new_template = Template(None, f"{uploaded_template.filename}", company_identifier)
         with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
-            db_session.add(new_template)
+            #Check if company already has a manual, if so, return error code TODO: Should be able to update manual
+            company_info = db_session.query(Company).filter_by(company_id = company_identifier).first() #TODO: check if can be safer (query only necessary info)
+            #if company_info.Manual_manual_id is not None:
+            #    return {"Code": 400, "Message": "Company already has a manual connected. Contact Kynda for more information"}
+
+            random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage + create an empty file with given length + extension
+            if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
+                random_file_path = generate_random_path(24, 'html')
+
+            uploaded_manual.save(random_file_path) #Save manual to created storage
+            upload_file(random_file_path, f"{uploaded_manual.filename}", "manual", company_identifier)
+
+            os.remove(random_file_path) #Delete manual from created storage (temp storage)
+
+            new_manual = Manual(None, f"{uploaded_manual.filename}")
+            db_session.add(new_manual)
+            db_session.flush()
+            manual_identifier = new_manual.manual_id
+            print(manual_identifier)
+            company_info.Manual_manual_id = manual_identifier
             db_session.commit()
 
         return {"Code": 201, "Message": "Manual added to company"}

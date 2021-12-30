@@ -28,10 +28,11 @@ class Gallery(object):
         self.name = name
 
 class Company(object):
-    def __init__(self, company_id, company_name, Gallery_gallery_id):
+    def __init__(self, company_id, company_name, Gallery_gallery_id, Manual_manual_id):
         self.company_id = company_id
         self.company_name = company_name
         self.Gallery_gallery_id = Gallery_gallery_id
+        self.Manual_manual_id = Manual_manual_id
 
 
 class Role(object):
@@ -72,12 +73,10 @@ class Image(object):
         self.image_path = image_path
         self.Gallery_gallery_id = Gallery_gallery_id
 
-
 class Manual(object):
-    def __init__(self, manual_id, manual_path, Company_company_id):
+    def __init__(self, manual_id, manual_file):
         self.manual_id = manual_id
-        self.manual_path = manual_path
-        self.Company_company_id = Company_company_id
+        self.manual_file = manual_file
 
 #----------------------------------------------------------------------
 #CREATES DATABASE STRUCTURE BY MAPPING ALL TABLE METADATA TO CORRECT ENGINE METADATA
@@ -92,6 +91,7 @@ def init_db_structure(database_URI):
     table_template = Table('Template', metadata, autoload=True)
     table_product = Table('Product', metadata, autoload=True)
     table_image = Table('Image', metadata, autoload=True)
+    table_manual = Table('Manual', metadata, autoload=True)
 
     mapper(Gallery, table_gallery)
     mapper(Company, table_company)
@@ -100,6 +100,7 @@ def init_db_structure(database_URI):
     mapper(Template, table_template)
     mapper(Product, table_product)
     mapper(Image, table_image)
+    mapper(Manual, table_manual)
 
 def create_db_session(database_URI):   
     engine = create_engine(database_URI, echo=True)
