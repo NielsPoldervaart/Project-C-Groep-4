@@ -133,8 +133,8 @@ def company_manual(company_identifier):
         with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
             #Check if company already has a manual, if so, return error code TODO: Should be able to update manual
             company_info = db_session.query(Company).filter_by(company_id = company_identifier).first() #TODO: check if can be safer (query only necessary info)
-            #if company_info.Manual_manual_id is not None:
-            #    return {"Code": 400, "Message": "Company already has a manual connected. Contact Kynda for more information"}
+            if company_info.Manual_manual_id is not None:
+                return {"Code": 400, "Message": "Company already has a manual connected. Contact Kynda for more information"}
 
             random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage + create an empty file with given length + extension
             if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
