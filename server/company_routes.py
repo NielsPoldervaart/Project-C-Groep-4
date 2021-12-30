@@ -1,7 +1,7 @@
 from flask import Blueprint, request, send_file, current_app
 from user_verification import verify_user
 from database_connection import *
-from ftp_controller import try_to_get_text_file_ftps, generate_random_path, upload_file
+from ftp_controller import try_to_get_text_file_ftps, generate_random_path, upload_file, try_to_get_file_ftps_binary
 import os
 from os import path
 
@@ -110,11 +110,11 @@ def company_manual(company_identifier):
     if request.method == "GET": #Open specific manual (to view)
         with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
             #result = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
-            manual_file_location_ftp = db_session.query(Manual.manual_file).join(Company).filter_by(Manual_manual_id = Manual.manual_id).first()
+            manual_file_location_ftp = db_session.query(Manual.manual_file).join(Company).filter_by(Manual_manual_id = Manual.manual_id).filter_by(company_id = company_identifier).first()
 
 
         if manual_file_location_ftp is not None:
-            manual_bytes = try_to_get_text_file_ftps("Huisstijlhandboek_Kynda", "manual", company_identifier)
+            manual_bytes = try_to_get_file_ftps_binary(manual_file_location_ftp.manual_file, "manual", company_identifier)
             if manual_bytes is dict: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
                 return manual_bytes
 
@@ -149,7 +149,6 @@ def company_manual(company_identifier):
             db_session.add(new_manual)
             db_session.flush()
             manual_identifier = new_manual.manual_id
-            print(manual_identifier)
             company_info.Manual_manual_id = manual_identifier
             db_session.commit()
 
