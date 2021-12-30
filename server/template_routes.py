@@ -11,7 +11,7 @@ template_api = Blueprint('template_api', __name__)
 @template_api.route("/templates/<company_identifier>", methods=["GET", "POST"])
 def templates(company_identifier):
 
-    db_session = create_db_session()
+    db_session = create_db_session('mysql+mysqldb://kynda:u9N3_HM+ARhDYsRQ@kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com/KyndaDB')
 
     if request.method == "GET": #View ALL templates from a company
         #SELECT `Template_id`, `Template_file`, Company_name WHERE `Company_1` = company_identifier
@@ -69,7 +69,7 @@ def template(company_identifier, template_identifier):
     if user_verification != "PASSED":
         return user_verification
 
-    db_session = create_db_session()
+    db_session = create_db_session('mysql+mysqldb://kynda:u9N3_HM+ARhDYsRQ@kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com/KyndaDB')
 
     if request.method == "GET": #Open specific template (to view or to create a product)
         #result = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
@@ -78,7 +78,7 @@ def template(company_identifier, template_identifier):
         if template_file_location_ftp is not None:
             print(type(template_file_location_ftp.template_file), template_file_location_ftp.template_file)
 
-            template_bytes = try_to_get_text_file_ftps(template_file_location_ftp.template_file, company_identifier)
+            template_bytes = try_to_get_text_file_ftps(template_file_location_ftp.template_file, "templates", company_identifier)
             if template_bytes is dict: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
                 return template_bytes
 
