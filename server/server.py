@@ -5,6 +5,7 @@ from company_routes import company_api
 from product_routes import product_api
 from database_connection import init_db_structure, close_current_sessions
 from image_routes import image_api
+from init_routes import init_api
 
 app = Flask(__name__)
 app.register_blueprint(login_api)
@@ -12,9 +13,12 @@ app.register_blueprint(template_api)
 app.register_blueprint(product_api)
 app.register_blueprint(company_api)
 app.register_blueprint(image_api)
+app.register_blueprint(init_api)
 app.secret_key = "ToBeSecret" #TODO: Make Secret key actually secret
+
+app.config["DATABASE_URI"] = "mysql+mysqldb://kynda:u9N3_HM+ARhDYsRQ@kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com/KyndaDB"
 
 if __name__ == "__main__":
     close_current_sessions()
-    init_db_structure()
+    init_db_structure(app.config["DATABASE_URI"])
     app.run(debug=True)

@@ -28,10 +28,11 @@ class Gallery(object):
         self.name = name
 
 class Company(object):
-    def __init__(self, company_id, company_name, Gallery_gallery_id):
+    def __init__(self, company_id, company_name, Gallery_gallery_id, Manual_manual_id):
         self.company_id = company_id
         self.company_name = company_name
         self.Gallery_gallery_id = Gallery_gallery_id
+        self.Manual_manual_id = Manual_manual_id
 
 
 class Role(object):
@@ -72,10 +73,15 @@ class Image(object):
         self.image_path = image_path
         self.Gallery_gallery_id = Gallery_gallery_id
 
+class Manual(object):
+    def __init__(self, manual_id, manual_file):
+        self.manual_id = manual_id
+        self.manual_file = manual_file
+
 #----------------------------------------------------------------------
-#CREATES DATABSE STRUCTURE BY MAPPING ALL TABLE METADATA TO CORRECT ENGINE METADATA
-def init_db_structure():
-    engine = create_engine('mysql+mysqldb://kynda:u9N3_HM+ARhDYsRQ@kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com/KyndaDB', echo=True)
+#CREATES DATABASE STRUCTURE BY MAPPING ALL TABLE METADATA TO CORRECT ENGINE METADATA
+def init_db_structure(database_URI):
+    engine = create_engine(database_URI, echo=True)
     
     metadata = MetaData(engine)
     table_gallery = Table('Gallery', metadata, autoload=True)
@@ -85,6 +91,7 @@ def init_db_structure():
     table_template = Table('Template', metadata, autoload=True)
     table_product = Table('Product', metadata, autoload=True)
     table_image = Table('Image', metadata, autoload=True)
+    table_manual = Table('Manual', metadata, autoload=True)
 
     mapper(Gallery, table_gallery)
     mapper(Company, table_company)
@@ -93,9 +100,10 @@ def init_db_structure():
     mapper(Template, table_template)
     mapper(Product, table_product)
     mapper(Image, table_image)
+    mapper(Manual, table_manual)
 
-def create_db_session():   
-    engine = create_engine('mysql+mysqldb://kynda:u9N3_HM+ARhDYsRQ@kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com/KyndaDB', echo=True)
+def create_db_session(database_URI):   
+    engine = create_engine(database_URI, echo=True)
     Session = sessionmaker(bind=engine)
     session = Session()
     return session
