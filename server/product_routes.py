@@ -75,7 +75,7 @@ def product(company_identifier, product_identifier):
         if product_file_location_ftp is not None:
             #print(type(product_file_location_ftp.product_file), product_file_location_ftp.product_file)
 
-            product_bytes = try_to_get_text_file_ftps(product_file_location_ftp.product_file, company_identifier)
+            product_bytes = try_to_get_text_file_ftps(product_file_location_ftp.product_file, "products", company_identifier)
             if product_bytes is dict: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
                 return product_bytes
 
