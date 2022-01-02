@@ -1,7 +1,6 @@
-from flask import Blueprint, request, jsonify, send_from_directory, send_file
-from flask.scaffold import F
+from flask import Blueprint, request, jsonify
 from user_verification import verify_user
-from ftp_controller import get_image, try_to_get_text_file_ftps, delete_file_ftps, upload_file
+from ftp_controller import get_image, delete_file_ftps, upload_file
 from database_connection import *
 import os
 from os import path
@@ -11,7 +10,7 @@ image_api = Blueprint('image_api', __name__)
 
 #TODO: accepted filetypes
 #TODO: errorhandling
-#TODO: change image[0:10] to just image
+#TODO: change len(img) to just img
 
 @image_api.route("/gallery/<company_identifier>/<gallery_identifier>", methods=["GET","POST"])
 def gallery(company_identifier, gallery_identifier):
@@ -33,7 +32,7 @@ def gallery(company_identifier, gallery_identifier):
                     images.append(
                         dict(
                             image_id = row['image_id'],
-                            image = img[0:10]
+                            image = len(img)
                         )
                     )
                 else:
@@ -101,7 +100,7 @@ def image(company_identifier, gallery_identifier, image_identifier):
             if img is not "":
                 return jsonify(dict(
                     image_id = result["image_id"],
-                    image = img[0:10]
+                    image = len(img)
                 ))
             return {"errorCode": 404, "Message": "This image could not be retrieved from the FTP server"}, 404
         return {"errorCode": 404, "Message": "This image is not available"}, 404
