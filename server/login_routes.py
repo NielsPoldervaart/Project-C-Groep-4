@@ -19,6 +19,8 @@ def login():
         with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
             #REQUESTS `user_id`, `Company_company_id`, `Role_role_id`, `password` FROM DATABASE WHERE EMAIL IS INSERTED EMAIL. RETURNS NONE IF CANNOT FIND MATCH
             user = db_session.query(User.user_id, User.Company_company_id, User.Role_role_id, User.password, User.email).filter_by(username =f'{inserted_username}').first()
+            #print(f"RESULT: {user == None}")
+            #input()
 
         if user: #IF USER OBJECT IS NOT NONE (COULD FIND CORRECT DATA IN DB)
             if not check_password_hash(user.password, inserted_password):

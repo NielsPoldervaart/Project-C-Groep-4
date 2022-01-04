@@ -17,8 +17,9 @@ app.register_blueprint(init_api)
 app.secret_key = "ToBeSecret" #TODO: Make Secret key actually secret
 
 app.config["DATABASE_URI"] = "mysql+mysqldb://kynda:u9N3_HM+ARhDYsRQ@kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com/KyndaDB"
-
+#app.config["DATABASE_URI"] = "sqlite:///C:\\Users\\miame\\source\\repos\\Project-C-Groep-4\\server\\test_sqlite.db"
 if __name__ == "__main__":
     close_current_sessions()
+    #create_all()
     init_db_structure(app.config["DATABASE_URI"])
     app.run(debug=True)
