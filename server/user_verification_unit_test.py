@@ -2,6 +2,7 @@ from server import app
 import unittest
 from database_connection import *
 from user_verification import verify_user
+from db_controller import setup_basic_db
 
 #Existing User
 ExistingAccountName = "admin"
@@ -11,14 +12,19 @@ ExistingAccountCompanyID = 1
 class Test_user_verification_module(unittest.TestCase):
 ###Database creation
     #Database initialization
-    """
+    
     def setUp(self):
-        init_db_structure("sqlite://")
-    """
+        #init_db_structure("sqlite://")
+        #setup_basic_db()
+        pass
+    
     def test_user_verification(self):
         with app.test_client() as client:
+            with app.app_context():
+                setup_basic_db()
             client.get("/") #Create a session by requesting index route 
-            client.get("/init")
+            #setup_basic_db()
+            #client.get("/init")
             self.verify_user_fail()
             self.login_pass(client)
             self.verify_user_pass()
