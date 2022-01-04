@@ -8,9 +8,9 @@ init_api = Blueprint('init_api', __name__)
 
 @init_api.route("/init", methods=["GET"])
 def login():
-    create_connection_sqlite(db_location)
-    init_db_structure(current_app.config["DATABASE_URI"])
-    db_session = create_db_session(current_app.config["DATABASE_URI"])
+    #create_connection_sqlite(db_location)
+    init_db_structure()
+    db_session = create_db_session()
 
     if request.method == "GET":
         roles = db_session.query(Role).first()

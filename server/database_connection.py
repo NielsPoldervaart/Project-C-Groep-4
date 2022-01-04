@@ -19,7 +19,9 @@ def db_connection():
     return conn
 """
 
-db_location = "C:\\Users\\miame\\source\\repos\\Project-C-Groep-4\\server\\test_sqlite.db"
+#db_location = "C:\\Users\\miame\\source\\repos\\Project-C-Groep-4\\server\\test_sqlite.db"
+db_location = "test_sqlite.db"
+
 uri = "sqlite:///C:\\Users\\miame\\source\\repos\\Project-C-Groep-4\\server\\test_sqlite.db"
 #SQLALCHEMY
 
@@ -84,8 +86,8 @@ class Manual(object):
 
 #----------------------------------------------------------------------
 #CREATES DATABASE STRUCTURE BY MAPPING ALL TABLE METADATA TO CORRECT ENGINE METADATA
-def init_db_structure(database_URI):
-    engine = create_engine(database_URI, echo=True)
+def init_db_structure():
+    engine = create_engine(current_app.config["DATABASE_URI"], echo=True)
 
     metadata = MetaData()
 
@@ -176,16 +178,16 @@ def init_db_structure(database_URI):
 
     #return engine
 
-def create_db_session(database_URI):   
-    engine = create_engine(database_URI, echo=True)
+def create_db_session():   
+    engine = create_engine(current_app.config["DATABASE_URI"], echo=True)
     Session = sessionmaker(bind=engine)
     session = Session()
     return session
 
 def createSession():
     create_connection_sqlite(db_location)
-    init_db_structure(uri)
-    session = create_db_session(uri)
+    init_db_structure(current_app.config["DATABASE_URI"])
+    session = create_db_session()
     new_gallery = Gallery(None, "test_gal")
     new_gallery2 = Gallery(None, "test_gal2")
     session.add(new_gallery)

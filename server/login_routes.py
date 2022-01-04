@@ -16,7 +16,7 @@ def login():
         inserted_username = jsonInput["name"]
         inserted_password = jsonInput["password"]
 
-        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+        with create_db_session() as db_session:
             #REQUESTS `user_id`, `Company_company_id`, `Role_role_id`, `password` FROM DATABASE WHERE EMAIL IS INSERTED EMAIL. RETURNS NONE IF CANNOT FIND MATCH
             user = db_session.query(User.user_id, User.Company_company_id, User.Role_role_id, User.password, User.email).filter_by(username =f'{inserted_username}').first()
             #print(f"RESULT: {user == None}")
@@ -42,7 +42,7 @@ def logout():
         session.pop("role_role_id", None)
         return {"Code": 201, "Message": "User logged out"""}
 
-@login_api.route("/register/<company_identifier>", methods = ["POST"])
+@login_api.route("/register/<company_identifier>", methods = ["POST"]) #TODO: FIX ROUTE (ADD VERIFIED COLUMN ETC)
 def register(company_identifier):
     #TODO: COMPANY ID CAN BE RETRIEVED FROM USER DATA IN SESSION
     user_verification = verify_user(company_identifier, [1])
@@ -57,7 +57,7 @@ def register(company_identifier):
         hashed_password = generate_password_hash(inserted_password)
         hashed_email = generate_password_hash(inserted_user_email)
 
-        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+        with create_db_session() as db_session:
             new_user = User(None, inserted_username, hashed_email, hashed_password, True, company_identifier, inserted_role)
             db_session.add(new_user)
             db_session.commit()

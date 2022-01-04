@@ -30,7 +30,7 @@ class TestRoutes(unittest.TestCase):
 ###Database creation
     #Database initialization
     def setUp(self):
-        init_db_structure("sqlite://")
+        init_db_structure()
 
 ###TODO: Security tests before logging in
     #TODO: TEST Company routes

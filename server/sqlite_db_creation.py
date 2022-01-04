@@ -12,6 +12,3 @@ def create_connection_sqlite(db_file):
     finally:
         if conn:
             conn.close()
-
-#if __name__ == '__main__':
-#    create_connection(r"C:\\Users\\miame\\source\\repos\\Project-C-Groep-4\\server\\test_sqlite.db")
