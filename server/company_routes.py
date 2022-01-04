@@ -7,7 +7,7 @@ from os import path
 
 company_api = Blueprint('company_api', __name__)
 
-@company_api.route("/company/<company_identifier>", methods=["GET"])
+@company_api.route("/company/<int:company_identifier>", methods=["GET"])
 def company(company_identifier):
 
     user_verification = verify_user(company_identifier)
@@ -25,7 +25,7 @@ def company(company_identifier):
             )
         return {"errorCode": 404, "Message": "Company Does not exist"""}, 404
 
-@company_api.route("/<company_identifier>/accounts", methods=["GET", "POST"])
+@company_api.route("/<int:company_identifier>/accounts", methods=["GET", "POST"])
 def company_accounts(company_identifier):
 
     user_verification = verify_user(company_identifier) #TODO: WHICH USERS ARE ALLOWED TO MAKE THIS REQUEST (SHOULD IT BE DIFFERENT FOR POST/GET)
@@ -100,7 +100,7 @@ def company_accounts(company_identifier):
     return {"errorCode": 500, "Message": "Internal server error"} , 500 #Something went wrong
 
 
-@company_api.route("/<company_identifier>/manual", methods=["GET", "POST"])
+@company_api.route("/<int:company_identifier>/manual", methods=["GET", "POST"])
 def company_manual(company_identifier):
     
     user_verification = verify_user(company_identifier)

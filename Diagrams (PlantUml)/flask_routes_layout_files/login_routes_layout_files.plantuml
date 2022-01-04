@@ -1,0 +1,29 @@
+@startuml
+rectangle login_routes {
+    file file_login [
+        **login_routes.py**
+    ]
+
+    card login[
+        **/login**
+        ----
+        POST
+    ]
+
+    card logout[
+        **/logout**
+        ----
+        GET
+    ]
+
+    card register[
+        **/register/<int:company_identifier>**
+        ----
+        POST
+    ]
+}
+
+file_login --> login
+file_login --> logout
+file_login --> register
+@enduml

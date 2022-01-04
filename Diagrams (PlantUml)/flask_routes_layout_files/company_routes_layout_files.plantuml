@@ -1,0 +1,39 @@
+@startuml
+rectangle company_routes {
+    file file_company [
+        **company_routes.py**
+    ]
+    card index[
+        **/**
+        ----
+        GET
+    ]
+
+    card company_information[
+        **/company/<int:company_identifier>**
+        ----
+        GET
+    ]
+
+    card account_information[
+        **/<int:company_identifier>/accounts**
+        ----
+        GET
+        ----
+        POST
+    ]
+
+    card manual[
+        **/<int:company_identifier>/manual**
+        ----
+        GET
+        ----
+        POST
+    ]
+}
+
+file_company --> index :index route
+file_company --> company_information
+file_company --> account_information 
+file_company --> manual
+@enduml

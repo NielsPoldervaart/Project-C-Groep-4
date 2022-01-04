@@ -7,16 +7,6 @@ from generate_random_path import generate_random_path
 
 import base64
 
-"""
-def delete_files_from_dir(dir):
-    for file_object in os.listdir(dir):
-            file_object_path = os.path.join(dir, file_object)
-            if os.path.isfile(file_object_path) or os.path.islink(file_object_path):
-                os.unlink(file_object_path)
-            else:
-                shutil.rmtree(file_object_path)
-"""
-
 def try_to_get_text_file_ftps(file_name, file_type, company_id):
     session = FTP('145.24.222.235') #Create session with FTP
     session.login("Controller", "cC2G'Q_&3qY@=D!@")
@@ -87,11 +77,6 @@ def try_to_get_file_ftps_binary(file_name, file_type, company_id):
     session.quit() #Close FTP session
 
     return return_data #Return the extracted Bytes
-
-
-
-
-
 
 def get_image(file_name, file_type, company_id):
     session = FTP('145.24.222.235')

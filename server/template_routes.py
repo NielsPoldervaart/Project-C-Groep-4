@@ -8,7 +8,7 @@ from generate_random_path import generate_random_path
 
 template_api = Blueprint('template_api', __name__)
 
-@template_api.route("/templates/<company_identifier>", methods=["GET", "POST"])
+@template_api.route("/templates/<int:company_identifier>", methods=["GET", "POST"])
 def templates(company_identifier):
 
     db_session = create_db_session()
@@ -102,7 +102,7 @@ def template(company_identifier, template_identifier):
         return attempt_to_remove
 
 
-
+"""
 @template_api.route("/multiplefiles", methods = ["POST"])
 def multiple_files():
     if request.method == "POST":
@@ -119,3 +119,4 @@ def multiple_files():
             os.remove(random_file_path)
     
     return {}
+"""
