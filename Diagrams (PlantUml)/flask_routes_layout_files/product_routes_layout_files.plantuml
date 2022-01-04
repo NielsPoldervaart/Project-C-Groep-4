@@ -1,0 +1,28 @@
+@startuml
+rectangle products {
+    file file_products [
+        **product_routes.py**
+    ]
+
+    card all_products[
+        **/templates/<int:company_identifier>**
+        ----
+        GET
+        ----
+        POST
+    ]
+
+    card specific_template[
+        **/template/<int:company_identifier>/<int:template_identifier>**
+        ----
+        GET
+        ----
+        DELETE
+    ]
+}
+file_templates --> all_templates
+file_templates --> specific_template
+
+
+
+@enduml

@@ -1,0 +1,28 @@
+@startuml
+rectangle templates {
+    file file_templates [
+        **template_routes.py**
+    ]
+
+    card all_templates[
+        **/templates/<int:company_identifier>**
+        ----
+        GET
+        ----
+        POST
+    ]
+
+    card specific_template[
+        **/template/<int:company_identifier>/<int:template_identifier>**
+        ----
+        GET
+        ----
+        DELETE
+    ]
+}
+file_templates --> all_templates
+file_templates --> specific_template
+
+
+
+@enduml
