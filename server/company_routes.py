@@ -15,7 +15,7 @@ def company(company_identifier):
         return user_verification
 
     if request.method == "GET":
-        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+        with create_db_session() as db_session:
             company_information = db_session.query(Company.company_id, Company.company_name).filter_by(company_id = company_identifier).first()
 
         if company_information is not None:
@@ -36,7 +36,7 @@ def company_accounts(company_identifier):
         users_dictionary = {}
         company_has_no_users = True
 
-        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+        with create_db_session() as db_session:
             verified_users_information = db_session.query(User.email, User.username, User.Role_role_id).filter_by(Company_company_id = company_identifier).filter_by(verified = True).all()
             awaiting_users_information = db_session.query(User.email, User.username, User.Role_role_id).filter_by(Company_company_id = company_identifier).filter_by(verified = False).all()
 
@@ -75,7 +75,7 @@ def company_accounts(company_identifier):
     if request.method == "POST":
         form_user_id = request.form['user_id'] #STRING: WHICH USER TO BE ADDED / DECLINED
         form_accepted = request.form['accepted'] #BOOLEAN: WHETHER USER SHOULD BE ADDED TO COMPANY (APPROVED)
-        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+        with create_db_session() as db_session:
             extracted_user = db_session.query(User).filter_by(Company_company_id = company_identifier).filter_by(user_id = form_user_id).first()
 
             if extracted_user is None:
@@ -108,7 +108,7 @@ def company_manual(company_identifier):
         return user_verification
 
     if request.method == "GET": #Open specific manual (to view)
-        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+        with create_db_session() as db_session:
             #result = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
             manual_file_location_ftp = db_session.query(Manual.manual_file).join(Company).filter_by(Manual_manual_id = Manual.manual_id).filter_by(company_id = company_identifier).first()
 
@@ -130,7 +130,7 @@ def company_manual(company_identifier):
         if not (uploaded_manual.filename.endswith(".html") or uploaded_manual.filename.endswith(".htm")):
             return  {"Code": 405, "Message": "No manual file found in request, OR File has no valid extension (.html OR .htm)"}
 
-        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+        with create_db_session() as db_session:
             #Check if company already has a manual, if so, return error code TODO: Should be able to update manual
             company_info = db_session.query(Company).filter_by(company_id = company_identifier).first() #TODO: check if can be safer (query only necessary info)
             if company_info.Manual_manual_id is not None:

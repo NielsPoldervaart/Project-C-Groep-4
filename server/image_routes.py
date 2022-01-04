@@ -16,7 +16,7 @@ image_api = Blueprint('image_api', __name__)
 @image_api.route("/gallery/<company_identifier>/<gallery_identifier>", methods=["GET","POST"])
 def gallery(company_identifier, gallery_identifier):
 
-    db_session = create_db_session('mysql+mysqldb://kynda:u9N3_HM+ARhDYsRQ@kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com/KyndaDB')
+    db_session = create_db_session()
 
     if request.method == "GET": #return all images in the gallery
         user_verification = verify_user(company_identifier)
@@ -88,7 +88,7 @@ def image_endswith(filename):
 @image_api.route("/gallery/<company_identifier>/<gallery_identifier>/<image_identifier>", methods=["GET","DELETE"])
 def image(company_identifier, gallery_identifier, image_identifier):
 
-    db_session = create_db_session('mysql+mysqldb://kynda:u9N3_HM+ARhDYsRQ@kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com/KyndaDB')
+    db_session = create_db_session()
 
     if request.method == "GET": #return the image
         user_verification = verify_user(company_identifier)
