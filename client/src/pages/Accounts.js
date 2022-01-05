@@ -33,7 +33,6 @@ const Accounts = () => {
     return (
         <div className="Accounts">
             <div className="AccountsText">
-                {/* <iframe src="../templates/template1.html" className="LoadedTemplate"/> */}
                 {loading ? DisplayLoader() : <div className='loadedAccounts' dangerouslySetInnerHTML={{__html: templateData}}/>}
             </div>
         </div>
