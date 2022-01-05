@@ -6,7 +6,7 @@ import Loader from '../components/Loader';
 const Accounts = () => {
     let navigate = useNavigate();
 
-    const [templateData, setTemplateData] = useState("")
+    const [accountsData, setAccountsData] = useState("")
     const [loading, setLoading] = useState(true);
 
     const [values, setValues] = useState({
@@ -33,7 +33,7 @@ const Accounts = () => {
     return (
         <div className="Accounts">
             <div className="AccountsText">
-                {loading ? DisplayLoader() : <div className='loadedAccounts' dangerouslySetInnerHTML={{__html: templateData}}/>}
+                {loading ? DisplayLoader() : <div className='loadedAccounts' dangerouslySetInnerHTML={{__html: accountsData}}/>}
             </div>
         </div>
     )
