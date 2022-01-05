@@ -8,7 +8,7 @@ from generate_random_path import generate_random_path
 
 product_api = Blueprint('product_api', __name__)
 
-@product_api.route("/products/<company_identifier>", methods=["GET", "POST"])
+@product_api.route("/products/<int:company_identifier>", methods=["GET", "POST"])
 def products(company_identifier):
 
     user_verification = verify_user(company_identifier)
@@ -54,7 +54,7 @@ def products(company_identifier):
 
         return attempt_to_upload_product
 
-@product_api.route("/product/<int:company_identifier>/<int:product_identifier>", methods=["GET", "DELETE"])
+@product_api.route("/product/<int:company_identifier>/<int:product_identifier>", methods=["GET", "DELETE", "PUT"])
 def product(company_identifier, product_identifier):
 
     user_verification = verify_user(company_identifier)
@@ -78,7 +78,13 @@ def product(company_identifier, product_identifier):
 
         return {"errorCode": 404, "Message": "Product Does not exist"""}
 
-    if request.method == "DELETE" : #Delete a specific product
+
+    if request.method == "PUT": #Update a specific product
+        updated_product = request.file["updated_product"]
+        #TODO: Remove old product from FTP, Change it with this newly created one.
+
+
+    if request.method == "DELETE": #Delete a specific product
 
     #TODO: FIND A WAY TO ACCESS THE product FILE WITH ONE QUERY FOR DELETION, INSTEAD OF HAVING TO QUERY TWICE (SPEED INCR, OPTIONAL)
         product_to_delete = db_session.query(Product).filter_by(product_id = product_identifier).filter_by(Company_company_id = company_identifier).first()
