@@ -63,7 +63,7 @@ class Template(object):
         self.Company_company_id = Company_company_id
 
 class Product(object):
-    def __init__(self, product_id, product_file, price, verified, downloads, template_id, user_id, Gallery_gallery_id):
+    def __init__(self, product_id, product_file, price, verified, downloads, template_id, user_id, Company_company_id):
         self.product_id = product_id
         self.product_file = product_file
         self.price = price
@@ -71,7 +71,7 @@ class Product(object):
         self.downloads = downloads
         self.template_id = template_id
         self.user_id = user_id
-        self.Gallery_gallery_id = Gallery_gallery_id
+        self.Company_company_id = Company_company_id
 
 class Image(object):
     def __init__(self, image_id, image_path, Gallery_gallery_id):

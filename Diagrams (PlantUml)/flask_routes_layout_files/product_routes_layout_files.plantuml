@@ -12,7 +12,7 @@ rectangle products {
         POST
     ]
 
-    card specific_template[
+    card specific_product[
         **/template/<int:company_identifier>/<int:template_identifier>**
         ----
         GET
@@ -20,9 +20,8 @@ rectangle products {
         DELETE
     ]
 }
-file_templates --> all_templates
-file_templates --> specific_template
 
-
+file_products --> all_products
+file_products --> specific_product
 
 @enduml

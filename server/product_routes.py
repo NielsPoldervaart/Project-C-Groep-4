@@ -1,6 +1,6 @@
-from flask import Blueprint, request, jsonify, send_file
+from flask import Blueprint, request, jsonify, send_file, session
 from user_verification import verify_user
-from ftp_controller import try_to_get_text_file_ftps, delete_file_ftps, upload_file
+from ftp_controller import try_to_get_text_file_ftps, delete_file_ftps, upload_file, try_to_copy_template_to_product
 from database_connection import *
 import os
 from os import path
@@ -15,9 +15,8 @@ def products(company_identifier):
     if user_verification != "PASSED":
         return user_verification
 
-    db_session = create_db_session()
-
     if request.method == "GET": #View ALL products from a company
+        db_session = create_db_session()
         #SELECT `Product_id`, `Product_file`, Company_name WHERE `Company_1` = company_identifier
         result = db_session.query(Product.product_id, Product.product_file, Company.company_name).join(Company).filter_by(company_id = f'{company_identifier}').all()
 
@@ -32,32 +31,28 @@ def products(company_identifier):
         if len(products) is not 0:
             return jsonify(products)
         else:
-            return {"errorCode": 404, "Message": "No product in company"""}
+            return {"errorCode": 404, "Message": "No product in company"}
 
     if request.method == "POST": #Add a product to DB and FTP
-        uploaded_product = request.files['product_file']
-        if uploaded_product.filename == '': 
-            return {"Code": 405, "Message": "No product file found in request, OR File has no valid name"}
+        #CHECK IF TEMPLATE EXISTS WITH THE TEMPLATE_FILE, DOWNLOAD TEMPLATE, UPLOAD TEMPLATE TO SERVER
+        requested_template_id = request.form['template_id'] #TODO: CHECK IF THIS SHOULD BE TEMPLATE FILE OR ID
 
-        if not (uploaded_product.filename.endswith(".html") or uploaded_product.filename.endswith(".htm")):
-            return  {"Code": 405, "Message": "No product file found in request, OR File has no valid extension (.html OR .htm)"}
+        with create_db_session() as db_session:
+            requested_template_file_name = db_session.query(Template.template_file).filter_by(template_id = requested_template_id).first()
 
-        random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage + create an empty file with given length + extension
-        if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
-            random_file_path = generate_random_path(24, 'html')
+        if requested_template_file_name.template_file is None:
+            return {"errorCode": 404, "Message": "No template with this ID in company found in database"}
 
-        uploaded_product.save(random_file_path) #Save product to created storage
-        upload_file(random_file_path, f"{uploaded_product.filename}", "products", company_identifier)
-
-        os.remove(random_file_path)
-
+        attempt_to_upload_product = try_to_copy_template_to_product(requested_template_file_name.template_file, company_identifier)
+        if attempt_to_upload_product != ({"Code": 201, "Message": "Product succesfully created"}, 201):
+            return attempt_to_upload_product
         #New Product object is created, None is used for id as it is auto-incremented by SQLAlchemy
-        new_product = Product(None, f"{uploaded_product.filename}", company_identifier)
+        new_product = Product(None, f"{requested_template_file_name}", 0, False, 0, requested_template_id, session["user_id"], company_identifier)
         
         db_session.add(new_product)
         db_session.commit()
 
-        return {"Code": 201, "Message": "Product added to company"}
+        return attempt_to_upload_product
 
 @product_api.route("/product/<int:company_identifier>/<int:product_identifier>", methods=["GET", "DELETE"])
 def product(company_identifier, product_identifier):
