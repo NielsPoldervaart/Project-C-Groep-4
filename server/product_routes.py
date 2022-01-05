@@ -1,10 +1,13 @@
-from flask import Blueprint, request, jsonify, send_file, session
-from user_verification import verify_user
-from ftp_controller import try_to_get_text_file_ftps, delete_file_ftps, upload_file, try_to_copy_template_to_product
-from database_connection import *
 import os
 from os import path
+
+from flask import Blueprint, jsonify, request, send_file, session
+
+from database_connection import *
+from ftp_controller import (delete_file_ftps, try_to_copy_template_to_product,
+                            try_to_get_text_file_ftps, upload_file)
 from generate_random_path import generate_random_path
+from user_verification import verify_user
 
 product_api = Blueprint('product_api', __name__)
 
@@ -47,7 +50,7 @@ def products(company_identifier):
         if attempt_to_upload_product != ({"Code": 201, "Message": "Product succesfully created"}, 201):
             return attempt_to_upload_product
         #New Product object is created, None is used for id as it is auto-incremented by SQLAlchemy
-        new_product = Product(None, f"{requested_template_file_name}", 0, False, 0, requested_template_id, session["user_id"], company_identifier)
+        new_product = Product(None, f"{requested_template_file_name.template_file}", 0, False, 0, requested_template_id, session["user_id"], company_identifier)
         
         db_session.add(new_product)
         db_session.commit()
@@ -80,8 +83,32 @@ def product(company_identifier, product_identifier):
 
 
     if request.method == "PUT": #Update a specific product
-        updated_product = request.file["updated_product"]
-        #TODO: Remove old product from FTP, Change it with this newly created one.
+        updated_product = request.files["updated_product"]
+
+        with create_db_session() as db_session:
+            old_product_object = db_session.query(Product).filter_by(product_id = product_identifier).first()
+
+        if old_product_object is None:
+            return {"errorCode": 404, "Message": "No template with this ID in company found in database"}
+
+        if updated_product.filename != old_product_object.product_file: 
+            return {"errorCode": 404, "Message": "No valid file found in request (Name should be same as old product name"}
+
+        #Remove the old file from the products dir
+        attempt_to_remove = delete_file_ftps(old_product_object.product_file, "products", company_identifier)
+        if attempt_to_remove is not "PASSED":
+            return attempt_to_remove
+        
+        #Add the new file to products dir
+        random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage + create an empty file with given length + extension
+        if os.path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
+            random_file_path = generate_random_path(24, 'html')
+
+        updated_product.save(random_file_path) #Save template to created storage
+        upload_file(random_file_path, f"{updated_product.filename}", "products", company_identifier)
+        os.remove(random_file_path)
+
+        return {"Code": 201, "Message": "File succesfully updated"}, 201
 
 
     if request.method == "DELETE": #Delete a specific product
@@ -94,7 +121,10 @@ def product(company_identifier, product_identifier):
         path = product_to_delete.product_file
         attempt_to_remove = delete_file_ftps(path, 'products', company_identifier) #TODO: Change 'products' to actual dynamic var (will not work with image files currently (can get type from file path[etc] and then set accordingly))
         #TODO: CHECK Value of attempt to remove is 201, if not, dont unlink from database (File is not removed from)
+        if attempt_to_remove is not "PASSED":
+            return attempt_to_remove
+
         db_session.delete(product_to_delete)
         db_session.commit()
         
-        return attempt_to_remove
+        return {"Code": 201, "Message": "File succesfully removed from storage"}, 201

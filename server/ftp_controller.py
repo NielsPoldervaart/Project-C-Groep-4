@@ -168,11 +168,14 @@ def delete_file_ftps(file_path, file_type, company_id):
     if file_type not in session.nlst(): #Check if company dir exists on FTP Server, if not, return
         return {"errorCode": 404, "Message": "Correct file directory does not exist on FTP server"}, 404
 
-    session.cwd(file_type) #Change to the company dir
+    session.cwd(file_type) #Change to the file_type dir (EG: products, templates)
+
+    if file_path not in session.nlst(): #Check if company dir exists on FTP Server, if not, return
+        return {"errorCode": 404, "Message": f"File {file_path}  does not exist on FTP server"}, 404
 
     session.delete(file_path)
     session.quit()
-    return {"Code": 201, "Message": "File succesfully removed from storage"}, 201
+    return "PASSED"
 
 
 #try_to_download_text_file(filename, 1)
