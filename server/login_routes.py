@@ -56,28 +56,9 @@ def register(company_identifier):
         hashed_email = generate_password_hash(inserted_user_email)
 
         with create_db_session() as db_session:
-            new_user = User(None, inserted_username, hashed_email, hashed_password, True, company_identifier, inserted_role)
+            new_user = User(None, inserted_username, hashed_email, hashed_password, False, company_identifier, inserted_role)
             db_session.add(new_user)
             db_session.commit()
 
         return {"Code": 201, "Message": "User added to company"""}
         #TODO: RETURN SOMETHING IF REQUEST IS NOT POST
-
-
-"""
-@login_api.route("/folder", methods = ["POST"])
-def folder():
-    if request.method == "POST":
-        uploaded_files =  request.files.getlist('FileList')
-        #print(uploaded_files)
-        for i in uploaded_files:
-            print(f'file: {i.filename}')
-        return {}
-
-@login_api.route("/singlefile", methods = ["POST"])
-def file():
-    if request.method == "POST":
-        uploaded_files =  request.files['File']
-        print(f"file: {uploaded_files}")
-        return {}
-"""

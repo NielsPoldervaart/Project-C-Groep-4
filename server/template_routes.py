@@ -11,8 +11,6 @@ template_api = Blueprint('template_api', __name__)
 @template_api.route("/templates/<int:company_identifier>", methods=["GET", "POST"])
 def templates(company_identifier):
 
-    db_session = create_db_session()
-
     if request.method == "GET": #View ALL templates from a company
         #SELECT `Template_id`, `Template_file`, Company_name WHERE `Company_1` = company_identifier
 
@@ -20,7 +18,11 @@ def templates(company_identifier):
         if user_verification != "PASSED":
             return user_verification
 
-        result = db_session.query(Template.template_id, Template.template_file, Company.company_name).join(Company).filter_by(company_id = f'{company_identifier}').all()
+        with create_db_session() as db_session:
+            result = db_session.query(Template.template_id, Template.template_file, Company.company_name).join(Company).filter_by(company_id = f'{company_identifier}').all()
+
+        if result == []:
+            return {"code" : 200, "Message": "No templates found within company"}
 
         templates = [
             dict(
@@ -40,10 +42,10 @@ def templates(company_identifier):
     if request.method == "POST": #Add a template to specific company as KYNDA_ADMIN
         uploaded_template = request.files['template_file']
         if uploaded_template.filename == '': 
-            return {"Code": 405, "Message": "No template file found in request, OR File has no valid name"}
+            return {"errorCode": 405, "Message": "No template file found in request, OR File has no valid name"}
 
         if not (uploaded_template.filename.endswith(".html") or uploaded_template.filename.endswith(".htm")):
-            return  {"Code": 405, "Message": "No template file found in request, OR File has no valid extension (.html OR .htm)"}
+            return  {"errorCode": 405, "Message": "No template file found in request, OR File has no valid extension (.html OR .htm)"}
 
         random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage + create an empty file with given length + extension
         if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path

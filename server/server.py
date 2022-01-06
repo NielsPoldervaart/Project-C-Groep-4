@@ -24,7 +24,7 @@ app.config["DATABASE_URI"] = "mysql+mysqldb://kynda:u9N3_HM+ARhDYsRQ@kynda-datab
 
 if __name__ == "__main__":
     close_current_sessions()
-    #create_all()
+
     with app.app_context():
         init_db_structure()
         app.run(debug=True)
