@@ -36,7 +36,7 @@ def gallery(company_identifier, gallery_identifier):
                         )
                     )
                 else:
-                    return {"errorCode": 404, "Message": "One or multiple images could not be retrieved from the FTP server"}
+                    return {"errorCode": 404, "Message": "One or multiple images could not be retrieved from the FTP server"}, 404
             
             if len(images) is not 0:
                 return jsonify(images)
@@ -49,32 +49,32 @@ def gallery(company_identifier, gallery_identifier):
             return user_verification
 
         uploaded_images = request.files.getlist("file[]")
-        for image in uploaded_images:
-            print(image.filename)
-            if image.filename == '': 
-                return {"Code": 405, "Message": "One or multiple images does not have a filename"}, 405
+        if uploaded_images != []:
+            for image in uploaded_images:
+                if image.filename == '': 
+                    return {"errorCode": 405, "Message": "One or multiple images does not have a filename"}, 405
 
-            if not image_endswith(image.filename):
-                return  {"Code": 405, "Message": "One or multiple images does not have a correct filetype"}, 405
+                if not image_endswith(image.filename):
+                    return  {"errorCode": 405, "Message": "One or multiple images does not have a correct filetype"}, 405
 
-            random_file_path = generate_random_path(24, 'jpg') #Generate random file path for temp storage + create an empty file with given length + extension
-            if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
-                random_file_path = generate_random_path(24, 'jpg')
+                random_file_path = generate_random_path(24, 'jpg') #Generate random file path for temp storage + create an empty file with given length + extension
+                if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
+                    random_file_path = generate_random_path(24, 'jpg')
+                image.save(random_file_path) #Save image to created storage
+                upload_attempt = upload_file(random_file_path, f"{random_file_path}", "gallery", company_identifier)
+                os.remove(random_file_path)
+                
+                if not upload_attempt[1] == 201:
+                    return upload_attempt
 
-            image.save(random_file_path) #Save image to created storage
-            upload_attempt = upload_file(random_file_path, f"{random_file_path}", "gallery", company_identifier)
-            os.remove(random_file_path)
-            
-            if not upload_attempt[1] == 201:
-                return upload_attempt
+                #New Image object is created, None is used for id as it is auto-incremented by SQLAlchemy
+                new_image = Image(None, random_file_path, gallery_identifier)
+                with create_db_session() as db_session:
+                    db_session.add(new_image)
+                    db_session.commit()
 
-            #New Image object is created, None is used for id as it is auto-incremented by SQLAlchemy
-            new_image = Image(None, random_file_path, gallery_identifier)
-            with create_db_session() as db_session:
-                db_session.add(new_image)
-                db_session.commit()
-
-        return {"Code": 201, "Message": "Image(s) added to company"}, 201
+            return {"Code": 201, "Message": "Image(s) added to company"}, 201
+        return {"errorCode": 405, "Message": "No images were sent through the request"}, 405
 
 
 def image_endswith(filename):

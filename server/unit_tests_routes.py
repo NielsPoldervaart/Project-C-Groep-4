@@ -7,6 +7,7 @@ from user_verification import verify_user
 from database_connection import *
 from werkzeug.security import generate_password_hash
 import os
+from io import BytesIO
 
 ###Global variables
 #Fake User
@@ -87,11 +88,12 @@ class TestRoutes(unittest.TestCase):
             #self.delete_product_pass(client)
 
             #IMAGE ROUTES
-            #self.view_all_images_empty_pass(client)
-            #self.upload_image_filetype_fail(client)
-            #self.upload_image_pass(client)
-            #self.view_specific_image_pass(client)
-            #self.remove_specific_image_pass(client)
+            self.view_all_images_empty_pass(client)
+            self.upload_image_filetype_fail(client)
+            self.upload_image_pass(client)
+            self.view_all_images_exists_pass(client)
+            self.view_specific_image_pass(client)
+            self.remove_specific_image_pass(client)
 
             #LOGOUT CREATED ACCOUNT
             #self.logout_created_account_pass(client)
@@ -252,24 +254,49 @@ class TestRoutes(unittest.TestCase):
 ###TODO: Image routes
     #TODO: GET view all images of gallery ("/gallery/<company_identifier>/<gallery_identifier>" GET)
     def view_all_images_empty_pass(self, client):
-        pass
+        response = client.get(f"/gallery/{ExistingAccountCompanyID}/1")
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 404)
+        return response
 
     #TODO: POST try to add a file with the wrong filetype ("/gallery/<company_identifier>/<gallery_identifier>" POST)
     def upload_image_filetype_fail(self, client):
-        pass
+        with open("database/gallery/Appa.jpg", "rb") as image:
+            img_tuple = (BytesIO(image.read()), 'test.txt')
+        response = client.post(f"/gallery/{ExistingAccountCompanyID}/1", content_type='multipart/form-data', data={'file[]': img_tuple})
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 405)
+        return response
 
     #TODO: POST add an image to delete ("/gallery/<company_identifier>/<gallery_identifier>" POST)
     def upload_image_pass(self, client):
-        pass
+        with open("database/gallery/Appa.jpg", "rb") as image:
+            img_tuple = (BytesIO(image.read()), 'Appa.jpg')
+        response = client.post(f"/gallery/{ExistingAccountCompanyID}/1", content_type='multipart/form-data', data={'file[]': img_tuple})
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 201)
+        return response
+
+    def view_all_images_exists_pass(self, client):
+        response = client.get(f"/gallery/{ExistingAccountCompanyID}/1")
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 200)
+        return response
 
     #TODO: GET view the selected images from gallery ("/gallery/<company_identifier>/<gallery_identifier>/<image_identifier>" GET)
     def view_specific_image_pass(self, client):
-        pass
+        response = client.get(f"gallery/{ExistingAccountCompanyID}/1/1")
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 200)
+        return response
 
 
     #TODO: DELETE remove the image to be deleted ("/gallery/<company_identifier>/<gallery_identifier>/<image_identifier>" DELETE)
     def remove_specific_image_pass(self, client):
-        pass
+        response = client.delete(f"gallery/{ExistingAccountCompanyID}/1/1")
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 201)
+        return response
 
 ###TODO: Logout Created account
     #TODO: Logout pass
