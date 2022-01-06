@@ -6,16 +6,6 @@ from generate_random_path import generate_random_path
 
 import base64
 
-"""
-def delete_files_from_dir(dir):
-    for file_object in os.listdir(dir):
-            file_object_path = os.path.join(dir, file_object)
-            if os.path.isfile(file_object_path) or os.path.islink(file_object_path):
-                os.unlink(file_object_path)
-            else:
-                shutil.rmtree(file_object_path)
-"""
-
 def try_to_get_text_file_ftps(file_name, file_type, company_id):
     session = FTP('145.24.222.235') #Create session with FTP
     session.login("Controller", "cC2G'Q_&3qY@=D!@")
@@ -87,11 +77,6 @@ def try_to_get_file_ftps_binary(file_name, file_type, company_id):
 
     return return_data #Return the extracted Bytes
 
-
-
-
-
-
 def get_image(file_name, file_type, company_id):
     session = FTP('145.24.222.235')
     session.login("Controller", "cC2G'Q_&3qY@=D!@")
@@ -110,6 +95,43 @@ def get_image(file_name, file_type, company_id):
         return img
     except:
         return img
+
+#Copies a company's template into a company's product directory on FTP
+def try_to_copy_template_to_product(template_name, company_id):
+    session = FTP('145.24.222.235') #Create session with FTP
+    session.login("Controller", "cC2G'Q_&3qY@=D!@")
+
+    if f"{company_id}" not in session.nlst(): #Check if company dir exists on FTP Server, if not, return
+        return {"errorCode": 404, "Message": "Company directory does not exist on FTP server"}, 404
+
+    session.cwd(f'{company_id}') #Change directory on FTP to the company's
+
+    if "templates" not in session.nlst(): #Check if templates dir exists on FTP Server, if not, return
+        return {"errorCode": 404, "Message": f"Company directory does not contain any on FTP server"}, 404
+
+    session.cwd("templates") #Change directory on FTP to the company's
+    
+    if f"{template_name}" not in session.nlst(): #Check if actual file exists on FTP Server in the company id directory, if not, return
+        return {"errorCode": 404, "Message": "Requested file not found on FTP server"}, 404
+
+    random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage
+    if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
+        random_file_path = generate_random_path(24, 'html')
+
+    with open(f'temporary_ftp_storage/{random_file_path}', 'wb') as handle: #Create the local (temporary) file
+        session.retrbinary("RETR " + template_name, handle.write) #Retrieve file from FTP server and write it to created temp file
+
+    session.cwd("../") #Back out of templates dir 
+
+    if "products" not in session.nlst(): #Check if products dir exists on FTP Server, if not, create it
+        session.mkd("products")
+    session.cwd("products")
+    with open(f'temporary_ftp_storage/{random_file_path}', 'rb') as file_to_send:
+        session.storbinary("STOR " + template_name , file_to_send)
+    session.quit()
+    os.remove(f"temporary_ftp_storage/{random_file_path}")
+    return {"Code": 201, "Message": "Product succesfully created"}, 201
+
 
 #upload_file () name of file, file type (gallery OR templates)
 def upload_file(file_path, file_name, file_type, company_id):
@@ -145,11 +167,14 @@ def delete_file_ftps(file_path, file_type, company_id):
     if file_type not in session.nlst(): #Check if company dir exists on FTP Server, if not, return
         return {"errorCode": 404, "Message": "Correct file directory does not exist on FTP server"}, 404
 
-    session.cwd(file_type) #Change to the company dir
+    session.cwd(file_type) #Change to the file_type dir (EG: products, templates)
+
+    if file_path not in session.nlst(): #Check if company dir exists on FTP Server, if not, return
+        return {"errorCode": 404, "Message": f"File {file_path}  does not exist on FTP server"}, 404
 
     session.delete(file_path)
     session.quit()
-    return {"Code": 201, "Message": "File succesfully removed from storage"}, 201
+    return "PASSED"
 
 
 #try_to_download_text_file(filename, 1)

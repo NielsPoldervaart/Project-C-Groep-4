@@ -1,0 +1,27 @@
+@startuml
+skinparam minClassWidth 200
+skinparam nodesep 20
+skinparam ranksep 20
+'skinparam linetype ortho
+
+file **product_routes.py** as file_products #FEFECE {
+    rectangle **/products/<int:company_identifier>** as all_products #ffffff{
+    rectangle "**GET**\n(View company's template metadata)\t\t\t" #Application
+    rectangle "<color:grey>**DELETE**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" #lightgrey
+    rectangle "**POST**\n(Upload new template to company)\t\t\t\t" #technology
+    rectangle "<color:grey>**PUT**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" #lightgrey
+    }
+
+    rectangle **/product/<int:company_identifier>/<int:product_identifier>** as specific_product #ffffff{
+    rectangle "**GET**\n(Retreive specific company product data)\t\t" #Application
+    rectangle "**DELETE**\n(Remove specific company product data)\t\t" #Implementation
+    rectangle "<color:grey>**POST**\n<color:grey>(NOT IMPLEMENTED)  \t\t\t\t\t\t" #lightgrey
+    rectangle "**PUT**\n(Update specific company product data)\t\t\t" #Strategy
+    }
+}
+
+'file_products -d--> all_products
+'file_products ---> specific_product
+all_products --[HIDDEN]-> specific_product
+
+@enduml
