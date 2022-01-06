@@ -1,39 +1,38 @@
 @startuml
-rectangle company_routes {
-    file file_company [
-        **company_routes.py**
-    ]
-    card index[
-        **/**
-        ----
-        GET
-    ]
 
-    card company_information[
-        **/company/<int:company_identifier>**
-        ----
-        GET
-    ]
+skinparam minClassWidth 200
+skinparam nodesep 20
+skinparam ranksep 20
+skinparam linetype ortho
 
-    card account_information[
-        **/<int:company_identifier>/accounts**
-        ----
-        GET
-        ----
-        POST
-    ]
+file **company_routes.py** as file_company #FEFECE {
+    rectangle **/company/<int:company_identifier>** as company_info #ffffff{
+    rectangle "**GET**\n(Retreive specific company's metadata)\t\t\t" as a #Application
+    rectangle "<color:grey>**DELETE**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as b #lightgrey
+    rectangle "<color:grey>**POST**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as c #lightgrey
+    rectangle "<color:grey>**PUT**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as d #lightgrey
+    }
 
-    card manual[
-        **/<int:company_identifier>/manual**
-        ----
-        GET
-        ----
-        POST
-    ]
+    rectangle **/** as index #ffffff{
+    rectangle "**GET**\n(Index route)\t\t\t\t\t\t\t\t" as e #Application
+    rectangle "<color:grey>**DELETE**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as f #lightgrey
+    rectangle "<color:grey>**POST**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as g #lightgrey
+    rectangle "<color:grey>**PUT**\n<color:grey>(OT IMPLEMENTED)\t\\t\t\t\t\t" as h #lightgrey
+    }
+
+    rectangle **/<int:company_identifier>/accounts** as accounts #ffffff{
+    rectangle "**GET**\n(Retreive company's account 'verified' data)\t\t" as i #Application
+    rectangle "<color:grey>**DELETE**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as j #lightgrey
+    rectangle "**POST**\n(Verfiy or deny a specific account request)\t\t" as k #technology
+    rectangle "<color:grey>**PUT**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as l #lightgrey
+    }
+
+    rectangle **/<int:company_identifier>/manual** as manual #ffffff{
+    rectangle "**GET**\n(Retreive company's manual data)\t\t\t\t" as m #Application
+    rectangle "<color:grey>**DELETE**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as n #lightgrey
+    rectangle "**POST**\n(Upload a manual to company)\t\t\t\t" as o #technology
+    rectangle "<color:grey>**PUT**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as p #lightgrey
+    }
 }
 
-file_company --> index :index route
-file_company --> company_information
-file_company --> account_information 
-file_company --> manual
 @enduml
