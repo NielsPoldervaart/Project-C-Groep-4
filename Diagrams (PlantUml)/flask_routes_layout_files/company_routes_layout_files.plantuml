@@ -6,12 +6,6 @@ skinparam ranksep 20
 skinparam linetype ortho
 
 file **company_routes.py** as file_company #FEFECE {
-    rectangle **/company/<int:company_identifier>** as company_info #ffffff{
-    rectangle "**GET**\n(Retreive specific company's metadata)\t\t\t" as a #Application
-    rectangle "<color:grey>**DELETE**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as b #lightgrey
-    rectangle "<color:grey>**POST**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as c #lightgrey
-    rectangle "<color:grey>**PUT**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as d #lightgrey
-    }
 
     rectangle **/** as index #ffffff{
     rectangle "**GET**\n(Index route)\t\t\t\t\t\t\t\t" as e #Application
@@ -19,6 +13,14 @@ file **company_routes.py** as file_company #FEFECE {
     rectangle "<color:grey>**POST**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as g #lightgrey
     rectangle "<color:grey>**PUT**\n<color:grey>(OT IMPLEMENTED)\t\\t\t\t\t\t" as h #lightgrey
     }
+
+    rectangle **/company/<int:company_identifier>** as company_info #ffffff{
+    rectangle "**GET**\n(Retreive specific company's metadata)\t\t\t" as a #Application
+    rectangle "<color:grey>**DELETE**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as b #lightgrey
+    rectangle "<color:grey>**POST**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as c #lightgrey
+    rectangle "<color:grey>**PUT**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as d #lightgrey
+    }
+
 
     rectangle **/<int:company_identifier>/accounts** as accounts #ffffff{
     rectangle "**GET**\n(Retreive company's account 'verified' data)\t\t" as i #Application
@@ -34,5 +36,10 @@ file **company_routes.py** as file_company #FEFECE {
     rectangle "<color:grey>**PUT**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as p #lightgrey
     }
 }
+
+
+index  --[HIDDEN]d-> company_info
+company_info --[HIDDEN]d-> accounts
+accounts --[HIDDEN]d-> manual
 
 @enduml
