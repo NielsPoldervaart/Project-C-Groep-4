@@ -9,8 +9,8 @@ from generate_random_path import generate_random_path
 image_api = Blueprint('image_api', __name__)
 
 #TODO: accepted filetypes
-#TODO: errorhandling
 #TODO: change len(img) to just img
+#TODO: gallery_identifier?
 
 @image_api.route("/gallery/<company_identifier>/<gallery_identifier>", methods=["GET","POST"])
 def gallery(company_identifier, gallery_identifier):
@@ -74,7 +74,7 @@ def gallery(company_identifier, gallery_identifier):
             db_session.add(new_image)
             db_session.commit()
 
-        return {"Code": 201, "Message": "Image added to company"}, 201
+        return {"Code": 201, "Message": "Image(s) added to company"}, 201
 
 
 def image_endswith(filename):

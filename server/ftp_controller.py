@@ -1,7 +1,6 @@
 from ftplib import FTP
 import os
 from os import path
-import shutil
 import io
 from generate_random_path import generate_random_path
 
