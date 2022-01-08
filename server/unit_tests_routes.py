@@ -7,25 +7,36 @@ from user_verification import verify_user
 from database_connection import *
 from werkzeug.security import generate_password_hash
 import os
+from generate_random_path import generate_random_path
 
 ###Global variables
 #Fake User
-FakeAccountName = ""
-FakeAccountPassword = ""
+FakeAccountName = generate_random_path(10, "")
+FakeAccountPassword = generate_random_path(10, "")
+FakeAccountEmail = generate_random_path(10, "@hr.nl")
+FakeAccountCompanyID = 2
+FakeAccountRole_id = 1
 
 #Existing User
-ExistingAccountName = "admin"
+ExistingAccountName = "admin" #TODO: MAYBE MAKE THIS RANDOM TOO?
 ExistingAccountPassword = "KYNDA"
+ExistingAccountEmail = "admin@hr.nl"
 ExistingAccountCompanyID = 1
+ExistingAccountRole_id = 1
 
 #Throwaway account
-ThrowawayAccountName = "" #TODO: Create random values (random path function, daytime function, etc...)
-ThrowawayAccountPassword = ""
-ThrowawayAccountCompanyID = -1
+ThrowawayAccountName = generate_random_path(10, "")
+ThrowawayAccountPassword = generate_random_path(10, "")
+ThrowawayAccountEmail = generate_random_path(10, "@hr.nl")
+ThrowawayAccountCompanyID = 1
+ThrowawayAccountRole_id = 2
+
 #Created account
-CreatedAccountName = ""
-CreatedAccountPassword = ""
-CreatedAccountCompanyID = -1
+CreatedAccountName = generate_random_path(10, "")
+CreatedAccountPassword = generate_random_path(10, "")
+CreatedAccountEmail = generate_random_path(10, "@hr.nl")
+CreatedAccountCompanyID = 1
+CreatedAccountRole_id = 1
 
 tester = None
 
@@ -112,7 +123,7 @@ class TestRoutes(unittest.TestCase):
             db_session.add(Role(None, "COMPANY_EMPLOYEE"))
             db_session.add(Gallery(None, "Kynda_gallery"))
             db_session.add(Company(None, "Kynda", 1, None))
-            db_session.add(User(None, "admin", generate_password_hash("admin@hr.nl"), generate_password_hash("KYNDA"), True, 1, 1))
+            db_session.add(User(None, ExistingAccountName, generate_password_hash(ExistingAccountEmail), generate_password_hash(ExistingAccountPassword), True, ExistingAccountCompanyID, ExistingAccountRole_id))
             db_session.commit()
 
 ###Security tests before logging in
@@ -212,20 +223,23 @@ class TestRoutes(unittest.TestCase):
 
     def register_account_fail(self, client):
         #Register an account without perms (logged into company 1 not 2)
-        response = client.post("/register/2", json={"name": FakeAccountName, "password": FakeAccountPassword})
+        response = client.post(f"/register/{FakeAccountCompanyID}", data={"name": FakeAccountName, "email" : FakeAccountEmail, "password": FakeAccountPassword, "role_id" : FakeAccountRole_id})
         test = response.status_code
-        self.assertEqual(test, 401)
+        self.assertEqual(test, 404)
+        return response
 
     def register_throwaway_account_pass(self, client): #FIX REGISTER (CHECK WHAT SHOULD BE PROVIDED AND WHAT ACTUAL USER NEEDS TO PROVIDE)
-        response = client.post("/register/1", json={"name": ThrowawayAccountName, "password": ThrowawayAccountPassword})
+        response = client.post(f"/register/{ThrowawayAccountCompanyID}", data={"name": ThrowawayAccountName, "email" : ThrowawayAccountEmail, "password": ThrowawayAccountPassword, "role_id" : ThrowawayAccountRole_id})
         test = response.status_code
         self.assertEqual(test, 201)
+        return response
 
     #TODO: Register actual account (verification should get accepted)
     def register_actual_account_pass(self, client):
-        response = client.post("/register/1", json={"name": CreatedAccountName, "password": CreatedAccountPassword})
+        response = client.post(f"/register/{CreatedAccountCompanyID}", data={"name": CreatedAccountName, "email" : CreatedAccountEmail, "password": CreatedAccountPassword, "role_id" : CreatedAccountRole_id})
         test = response.status_code
         self.assertEqual(test, 201)
+        return response
 
 ###TODO: Company routes (View all accounts)
     #TODO: GET view company info pass ("/company/<company_identifier>" GET)

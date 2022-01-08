@@ -42,23 +42,22 @@ def logout():
 
 @login_api.route("/register/<int:company_identifier>", methods = ["POST"]) #TODO: FIX ROUTE (ADD VERIFIED COLUMN ETC)
 def register(company_identifier):
-    #TODO: COMPANY ID CAN BE RETRIEVED FROM USER DATA IN SESSION
-    user_verification = verify_user(company_identifier, [1])
-    if user_verification != "PASSED":
-        return user_verification
-
     if request.method == "POST":
-        inserted_username = request.form["name"]
-        inserted_user_email = request.form["email"]
-        inserted_password = request.form["password"]
-        inserted_role = request.form["role_id"]
-        hashed_password = generate_password_hash(inserted_password)
-        hashed_email = generate_password_hash(inserted_user_email)
+        requested_username = request.form["name"]
+        requested_user_email = request.form["email"]
+        requested_password = request.form["password"]
+        requested_role = request.form["role_id"]
 
         with create_db_session() as db_session:
-            new_user = User(None, inserted_username, hashed_email, hashed_password, False, company_identifier, inserted_role)
+            requested_company = db_session.query(Company.company_id).filter_by(company_id = company_identifier).first()
+            #Verify if requested company exists within DB
+            if requested_company is None:
+                return {"Code": 404, "Message": "Requested company does not exist"}, 404
+
+            new_user = User(None, requested_username, generate_password_hash(requested_user_email), generate_password_hash(requested_password), False, company_identifier, requested_role)
             db_session.add(new_user)
             db_session.commit()
 
-        return {"Code": 201, "Message": "User added to company"""}
+        return {"Code": 201, "Message": "User added to company"}, 201
+
         #TODO: RETURN SOMETHING IF REQUEST IS NOT POST
