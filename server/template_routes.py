@@ -40,6 +40,11 @@ def templates(company_identifier):
         return {"errorCode": 404, "Message": "Template Does not exist"""}, 404
 
     if request.method == "POST": #Add a template to specific company as KYNDA_ADMIN
+
+        user_verification = verify_user(company_identifier) #make sure user is logged in correctly
+        if user_verification != "PASSED":
+            return user_verification
+
         uploaded_template = request.files['template_file']
         if uploaded_template.filename == '': 
             return {"errorCode": 405, "Message": "No template file found in request, OR File has no valid name"}, 405

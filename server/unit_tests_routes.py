@@ -9,25 +9,36 @@ from database_connection import *
 from werkzeug.security import generate_password_hash
 import os
 from io import BytesIO
+from generate_random_path import generate_random_path
 
 ###Global variables
 #Fake User
-FakeAccountName = ""
-FakeAccountPassword = ""
+FakeAccountName = generate_random_path(10, "")
+FakeAccountPassword = generate_random_path(10, "")
+FakeAccountEmail = generate_random_path(10, "@hr.nl")
+FakeAccountCompanyID = 2
+FakeAccountRole_id = 1
 
 #Existing User
-ExistingAccountName = "admin"
+ExistingAccountName = "admin" #TODO: MAYBE MAKE THIS RANDOM TOO?
 ExistingAccountPassword = "KYNDA"
+ExistingAccountEmail = "admin@hr.nl"
 ExistingAccountCompanyID = 1
+ExistingAccountRole_id = 1
 
 #Throwaway account
-ThrowawayAccountName = "" #TODO: Create random values (random path function, daytime function, etc...)
-ThrowawayAccountPassword = ""
-ThrowawayAccountCompanyID = -1
+ThrowawayAccountName = generate_random_path(10, "")
+ThrowawayAccountPassword = generate_random_path(10, "")
+ThrowawayAccountEmail = generate_random_path(10, "@hr.nl")
+ThrowawayAccountCompanyID = 1
+ThrowawayAccountRole_id = 2
+
 #Created account
-CreatedAccountName = ""
-CreatedAccountPassword = ""
-CreatedAccountCompanyID = -1
+CreatedAccountName = generate_random_path(10, "")
+CreatedAccountPassword = generate_random_path(10, "")
+CreatedAccountEmail = generate_random_path(10, "@hr.nl")
+CreatedAccountCompanyID = 1
+CreatedAccountRole_id = 1
 
 #Test image and template location
 TestImage = "database/gallery/Appa.jpg"
@@ -43,16 +54,17 @@ class TestRoutes(unittest.TestCase):
         pass
 
     def test_routes(self):
+        #SETTING UP THE DATABASE
         with app.test_client() as client:
             with app.app_context():
                 setup_basic_db()
             client.get("/") #Create a session by requesting index route
  
             #SECURITY TESTS BEFORE LOGGING IN #SEBASTIAAN BOOMAN
-            #self.company_route_security_test(client)
-            #self.template_route_security_test(client)
-            #self.product_route_security_test(client)
-            #self.image_route_security_test(client)
+            self.company_route_security_test(client)
+            self.template_route_security_test(client)
+            self.product_route_security_test(client)
+            self.image_route_security_test(client)
 
             #LOGIN EXISTING ACCOUNT
             # self.login_fail_all(client)
@@ -61,8 +73,9 @@ class TestRoutes(unittest.TestCase):
             self.login_pass(client) #REQUIRED
 
             #REGISTER NEW ACCOUNTS
-            #self.register_throwaway_account_pass(client)
-            #self.register_actual_account_pass(client) #REQUIRED (Company)
+            self.register_throwaway_account_pass(client)
+            self.register_actual_account_pass(client)
+            self.register_account_fail(client)
 
             #COMPANY ROUTES
             #self.company_info_pass(client)
@@ -119,63 +132,123 @@ class TestRoutes(unittest.TestCase):
             db_session.add(Role(None, "COMPANY_EMPLOYEE"))
             db_session.add(Gallery(None, "Kynda_gallery"))
             db_session.add(Company(None, "Kynda", 1, None))
-            db_session.add(User(None, "admin", generate_password_hash("admin@hr.nl"), generate_password_hash("KYNDA"), True, 1, 1))
+            db_session.add(User(None, ExistingAccountName, generate_password_hash(ExistingAccountEmail), generate_password_hash(ExistingAccountPassword), True, ExistingAccountCompanyID, ExistingAccountRole_id))
             db_session.commit()
 
-###TODO: Security tests before logging in
-    #TODO: TEST Company routes
+###Security tests before logging in
+    #TESTS Company routes
     def company_route_security_test(self, client):
-        pass
+        test1 = client.get("/company/1").status_code
+        self.assertEqual(test1, 401)
 
-    #TODO: TEST Template routes
+        test2 = client.get("/1/accounts").status_code
+        self.assertEqual(test2, 401)
+
+        test3 = client.post("/1/accounts", data={"user_id" : 1, "accepted" : True} ).status_code
+        self.assertEqual(test3, 401)
+
+        test4 = client.get("/1/manual").status_code
+        self.assertEqual(test4, 401)
+
+        test5 = client.post("/1/manual", data = {"manual_file" : None}).status_code #TODO: Add file to this request
+        self.assertEqual(test5, 401)
+
+    #TESTS Template routes
     def template_route_security_test(self, client):
-        pass
+        test1 = client.get("/templates/1").status_code
+        self.assertEqual(test1, 401)
 
-    #TODO: TEST Product routes
+        test2 = client.post("/templates/1", data = {"template_file" : None}).status_code #TODO: Add file to this request
+        self.assertEqual(test2, 401)
+
+        test3 = client.get("/template/1/1").status_code
+        self.assertEqual(test3, 401)
+
+        test4 = client.delete("template/1/1").status_code
+        self.assertEqual(test4, 401)
+
+    #TESTS Product routes
     def product_route_security_test(self, client):
-        pass
+        test1 = client.get("/products/1").status_code
+        self.assertEqual(test1, 401)
 
-    #TODO: TEST image routes
+        test2 = client.post("/products/1", data = {"template_id" : 1}).status_code
+        self.assertEqual(test2, 401)
+
+        test3 = client.get("/product/1/1").status_code
+        self.assertEqual(test3, 401)
+
+        test4 = client.put("/product/1/1", data = {"updated_product" : None}).status_code #TODO: Add file to this request
+        self.assertEqual(test4, 401)
+
+        test5 = client.delete("/product/1/1").status_code
+        self.assertEqual(test5, 401)
+
+    #TESTS image routes
     def image_route_security_test(self, client):
-        pass
+        test1 = client.get("/gallery/1/1").status_code
+        self.assertEqual(test1, 401)
+
+        test2 = client.post("/gallery/1/1", data = {"File[]" : None}).status_code #TODO: Add files to this request
+        self.assertEqual(test2, 401)
+
+        test3 = client.get("/gallery/1/1/1").status_code
+        self.assertEqual(test3, 401)
+
+        test4 = client.delete("/gallery/1/1/1").status_code
+        self.assertEqual(test4, 401)
 
 ###Login Existing account
-
     #POST Login fail ALL
     def login_fail_all(self, client):
         response = client.post("/login", json={"name":FakeAccountName, "password":FakeAccountPassword})
-        statuscode = response.status_code
-        self.assertEqual(statuscode, 406)
+        test = response.status_code
+        self.assertEqual(test, 406)
         return response
 
     #POST Login fail PASSWORD
     def login_fail_password(self, client):
         response = client.post("/login", json={"name":ExistingAccountName, "password":FakeAccountPassword})
-        statuscode = response.status_code
-        self.assertEqual(statuscode, 406)
+        test = response.status_code
+        self.assertEqual(test, 406)
         return response
 
     #POST Login fail USERNAME
     def login_fail_username(self, client):
         response = client.post("/login", json={"name":FakeAccountName, "password":ExistingAccountPassword})
-        statuscode = response.status_code
-        self.assertEqual(statuscode, 406)
+        test = response.status_code
+        self.assertEqual(test, 406)
         return response
 
     #POST Login pass
     def login_pass(self, client):
         response = client.post("/login", json={"name": ExistingAccountName, "password": ExistingAccountPassword})
-        statuscode = response.status_code
-        self.assertEqual(statuscode, 200)
+        test = response.status_code
+        self.assertEqual(test, 200)
         return response
 
 ###TODO: Register new accounts
     #TODO: Register throwaway account (verification should get declined)
-    def register_throwaway_account_pass(self, client):
-        pass
+
+    def register_account_fail(self, client):
+        #Register an account without perms (logged into company 1 not 2)
+        response = client.post(f"/register/{FakeAccountCompanyID}", data={"name": FakeAccountName, "email" : FakeAccountEmail, "password": FakeAccountPassword, "role_id" : FakeAccountRole_id})
+        test = response.status_code
+        self.assertEqual(test, 404)
+        return response
+
+    def register_throwaway_account_pass(self, client): #FIX REGISTER (CHECK WHAT SHOULD BE PROVIDED AND WHAT ACTUAL USER NEEDS TO PROVIDE)
+        response = client.post(f"/register/{ThrowawayAccountCompanyID}", data={"name": ThrowawayAccountName, "email" : ThrowawayAccountEmail, "password": ThrowawayAccountPassword, "role_id" : ThrowawayAccountRole_id})
+        test = response.status_code
+        self.assertEqual(test, 201)
+        return response
+
     #TODO: Register actual account (verification should get accepted)
     def register_actual_account_pass(self, client):
-        pass
+        response = client.post(f"/register/{CreatedAccountCompanyID}", data={"name": CreatedAccountName, "email" : CreatedAccountEmail, "password": CreatedAccountPassword, "role_id" : CreatedAccountRole_id})
+        test = response.status_code
+        self.assertEqual(test, 201)
+        return response
 
 ###TODO: Company routes (View all accounts)
     #TODO: GET view company info pass ("/company/<company_identifier>" GET)
