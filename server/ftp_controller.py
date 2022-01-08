@@ -11,12 +11,12 @@ def try_to_get_text_file_ftps(file_name, file_type, company_id):
     session.login("Controller", "cC2G'Q_&3qY@=D!@")
 
     if f"{company_id}" not in session.nlst(): #Check if company dir exists on FTP Server, if not, return
-        return {"errorCode": 404, "Message": "Company directory does not exist on FTP server"}
+        return {"errorCode": 404, "Message": "Company directory does not exist on FTP server"}, 404
 
     session.cwd(f'{company_id}') #Change directory on FTP to the company's
 
     if file_type not in session.nlst(): #Check if file_type dir exists on FTP Server, if not, return (EG: "templates", "manual")
-        return {"errorCode": 404, "Message": f"Company directory does not contain any {file_type} on FTP server"}
+        return {"errorCode": 404, "Message": f"Company directory does not contain any {file_type} on FTP server"}, 404
 
     session.cwd(file_type) #Change directory on FTP to the company's
     
@@ -26,7 +26,7 @@ def try_to_get_text_file_ftps(file_name, file_type, company_id):
 
     with open(f'temporary_ftp_storage/{random_file_path}', 'w') as handle: #Create the local (temporary) file
         if f"{file_name}" not in session.nlst(): #Check if actual file exists on FTP Server in the company id directory, if not, return
-            return {"errorCode": 404, "Message": "Requested file not found on FTP server"}
+            return {"errorCode": 404, "Message": "Requested file not found on FTP server"}, 404
         session.retrlines("RETR " + file_name, handle.write) #Retrieve file from FTP server and write it to created temp file
 
     return_data = io.BytesIO() #Create variable to store the local file contents
@@ -46,17 +46,17 @@ def try_to_get_file_ftps_binary(file_name, file_type, company_id):
     session.login("Controller", "cC2G'Q_&3qY@=D!@")
 
     if f"{company_id}" not in session.nlst(): #Check if company dir exists on FTP Server, if not, return
-        return {"errorCode": 404, "Message": "Company directory does not exist on FTP server"}
+        return {"errorCode": 404, "Message": "Company directory does not exist on FTP server"}, 404
 
     session.cwd(f'{company_id}') #Change directory on FTP to the company's
 
     if file_type not in session.nlst(): #Check if file_type dir exists on FTP Server, if not, return (EG: "templates", "manual")
-        return {"errorCode": 404, "Message": f"Company directory does not contain any {file_type} on FTP server"}
+        return {"errorCode": 404, "Message": f"Company directory does not contain any {file_type} on FTP server"}, 404
 
     session.cwd(file_type) #Change directory on FTP to the company's
     
     if f"{file_name}" not in session.nlst(): #Check if actual file exists on FTP Server in the company id directory, if not, return
-        return {"errorCode": 404, "Message": "Requested file not found on FTP server"}
+        return {"errorCode": 404, "Message": "Requested file not found on FTP server"}, 404
 
     random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage
     if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path

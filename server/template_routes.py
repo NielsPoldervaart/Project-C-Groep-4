@@ -37,15 +37,15 @@ def templates(company_identifier):
             Dict["user_role"] = session["role_role_id"]
             Dict["templates"] = templates
             return Dict
-        return {"errorCode": 404, "Message": "Template Does not exist"""}
+        return {"errorCode": 404, "Message": "Template Does not exist"""}, 404
 
     if request.method == "POST": #Add a template to specific company as KYNDA_ADMIN
         uploaded_template = request.files['template_file']
         if uploaded_template.filename == '': 
-            return {"errorCode": 405, "Message": "No template file found in request, OR File has no valid name"}
+            return {"errorCode": 405, "Message": "No template file found in request, OR File has no valid name"}, 405
 
         if not (uploaded_template.filename.endswith(".html") or uploaded_template.filename.endswith(".htm")):
-            return  {"errorCode": 405, "Message": "No template file found in request, OR File has no valid extension (.html OR .htm)"}
+            return  {"errorCode": 405, "Message": "No template file found in request, OR File has no valid extension (.html OR .htm)"}, 405
 
         random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage + create an empty file with given length + extension
         if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
@@ -63,7 +63,7 @@ def templates(company_identifier):
             db_session.add(new_template)
             db_session.commit()
 
-        return {"Code": 201, "Message": "Template added to company"}
+        return {"Code": 201, "Message": "Template added to company"}, 201
 
 @template_api.route("/template/<int:company_identifier>/<int:template_identifier>", methods=["GET", "DELETE"])
 def template(company_identifier, template_identifier):
@@ -78,7 +78,7 @@ def template(company_identifier, template_identifier):
             template_file_location_ftp = db_session.query(Template.template_file).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
 
         if template_file_location_ftp is not None:
-            print(type(template_file_location_ftp.template_file), template_file_location_ftp.template_file)
+            #print(type(template_file_location_ftp.template_file), template_file_location_ftp.template_file)
 
             template_bytes = try_to_get_text_file_ftps(template_file_location_ftp.template_file, "templates", company_identifier)
             if template_bytes is dict: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
@@ -86,7 +86,7 @@ def template(company_identifier, template_identifier):
 
             return send_file(template_bytes, mimetype="text/html")
 
-        return {"errorCode": 404, "Message": "Template Does not exist"""}
+        return {"errorCode": 404, "Message": "Template Does not exist"""}, 404
 
     if request.method == "DELETE" : #Delete a specific template as KYNDA_ADMIN or COMPANY_ADMIN
 
@@ -94,7 +94,7 @@ def template(company_identifier, template_identifier):
         with create_db_session() as db_session:
             template_to_delete = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
             if template_to_delete is None:
-                return {"Code": 404, "Message": "Template not found in database"}
+                return {"Code": 404, "Message": "Template not found in database"}, 404
 
             path = template_to_delete.template_file
             attempt_to_remove = delete_file_ftps(path, 'templates', company_identifier) #TODO: Change 'templates' to actual dynamic var (will not work with image files currently (can get type from file path[etc] and then set accordingly))
