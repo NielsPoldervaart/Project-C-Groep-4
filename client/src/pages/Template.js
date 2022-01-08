@@ -16,6 +16,45 @@ const Template = () => {
         display: 'none',
     }
 
+    const checkFile = (file) => {
+        if (file.name.includes('.png') || file.name.includes('.jpg') || file.name.includes('.jpeg')) {
+            return "image"
+        }
+        else if (file.name.includes('.css')) {
+            return "css"
+        }
+        else if (file.name.includes('.html')) {
+            return "html"
+        }
+    }
+
+    const readFile = (file) => {
+        if (checkFile(file) === "image") {
+            return new Promise((resolve, reject) => {
+                let fr = new FileReader();  
+    
+                fr.onload = () => {
+                  resolve(fr.result)
+                };
+                fr.onerror = reject;
+    
+                fr.readAsDataURL(file);
+            });
+        }
+        else if (checkFile(file) === "html" || checkFile(file) === "css") {
+            return new Promise((resolve, reject) => {
+                let fr = new FileReader();  
+    
+                fr.onload = () => {
+                  resolve(fr.result)
+                };
+                fr.onerror = reject;
+    
+                fr.readAsBinaryString(file);
+            });
+        }
+    }
+
     const splitFiles = e => {
         let arr = Object.entries(e.target.files);
         let hasCSS = false;
@@ -29,42 +68,24 @@ const Template = () => {
             const el = arr[i];
 
             // Image Files
-            if (el[1].name.includes('.png') || el[1].name.includes('.jpg') || el[1].name.includes('.jpeg')) {
-
-                let imgReader = new FileReader();
-                
-                imgReader.onloadend = () => {
-                    imgArr.push({name: el[1].name, data: imgReader.result});
-                }
-                imgReader.readAsDataURL(el[1]);
+            if (checkFile(el[1]) === "image") {
+                imgArr.push({name: el[1].name, data: readFile(el[1])});
             }
             // CSS File
-            else if (el[1].name.includes('.css')) {
+            else if (checkFile(el[1]) === "css") {
                 hasCSS = true;
 
-                let cssReader = new FileReader();
-                
-                cssReader.onloadend = () => {
-                    cssArr.push({name: el[1].name, data: cssReader.result});
-                }
-                cssReader.readAsBinaryString(el[1]);
-                
+                cssArr.push({name: el[1].name, data: readFile(el[1])});
             }
             // HTML Files
-            else if (el[1].name.includes('.html')) {
+            else if (checkFile(el[1]) === "html") {
                 hasHTML = true;
-                
-                let htmlReader = new FileReader();
-                
-                htmlReader.onloadend = () => {
-                    htmlArr.push({name: el[1].name, data: htmlReader.result});
-                }
-                htmlReader.readAsBinaryString(el[1]);
 
+                htmlArr.push({name: el[1].name, data: readFile(el[1])});
             }
         }
 
-        if (hasHTML === false || hasCSS === false) {
+        if (!hasHTML || !hasCSS) {
             const input = document.getElementById('DirInput');
             input.value = null;
             alert("Invalid folder, please select another one!");
@@ -72,46 +93,45 @@ const Template = () => {
             return
         }
         else {
-            console.log(imgArr, cssArr, htmlArr);
-            console.log(imgArr.length, cssArr.length, htmlArr.length);
-            // createBaseProduct(imgArr, cssArr, htmlArr);
+            createBaseProduct(imgArr, cssArr, htmlArr);
         }
 
     }
 
-    // const createBaseProduct = (imgArr, cssArr, htmlArr) => {
+    const createBaseProduct = (imgArr, cssArr, htmlArr) => {
         
-    //     console.log(imgArr, cssArr, htmlArr);
-    //     console.log(imgArr.length, cssArr.length, htmlArr.length);
+        console.log(imgArr, imgArr.length);
+        console.log(cssArr, cssArr.length);
+        console.log(htmlArr, htmlArr.length);
 
-    //     // let f = new File([htmlArr[0].data], htmlArr[0].name, {type: "text/html", lastModified: new Date(0)})
-    //     // let tempReader = new FileReader();
-    //     // tempReader.readAsText(f);
+        // let f = new File([htmlArr[0].data], htmlArr[0].name, {type: "text/html", lastModified: new Date(0)})
+        // let tempReader = new FileReader();
+        // tempReader.readAsText(f);
 
-    //     // tempReader.onloadend = () => {
-    //     //     let templateString = tempReader.result;
+        // tempReader.onloadend = () => {
+        //     let templateString = tempReader.result;
 
-    //     //     let parser = new DOMParser();
-    //     //     let parsedTemplate = parser.parseFromString(templateString, 'text/html');
-    //     //     parsedTemplate.querySelector("head link").remove();
+        //     let parser = new DOMParser();
+        //     let parsedTemplate = parser.parseFromString(templateString, 'text/html');
+        //     parsedTemplate.querySelector("head link").remove();
 
-    //     //     var styleElement = document.createElement("STYLE");
-    //     //     styleElement.innerHTML = cssArr[0].data; 
-    //     //     parsedTemplate.querySelector("head").appendChild(styleElement);
+        //     var styleElement = document.createElement("STYLE");
+        //     styleElement.innerHTML = cssArr[0].data; 
+        //     parsedTemplate.querySelector("head").appendChild(styleElement);
 
-    //     //     var tempHTML = parsedTemplate.querySelector("html");
-    //     //     document.querySelector(".templateBody").appendChild(tempHTML);
+        //     var tempHTML = parsedTemplate.querySelector("html");
+        //     document.querySelector(".templateBody").appendChild(tempHTML);
 
-    //     //     // For each element inside the dict, grab the key and add . infront of key
-    //     //     // then for each element that contains the value above ^ replace the backgroundImage calue with the dataURL
-    //     //     // check if there is a way to disable the error message that pops up
-    //     //     // check for a way to disable the style from the template to apply on the website and vice versa
+        //     // For each element inside the dict, grab the key and add . infront of key
+        //     // then for each element that contains the value above ^ replace the backgroundImage calue with the dataURL
+        //     // check if there is a way to disable the error message that pops up
+        //     // check for a way to disable the style from the template to apply on the website and vice versa
 
-    //     //     // console.log(parsedTemplate.querySelectorAll('body *'));
-    //     //     // setTemplate(parsedTemplate);
-    //     //     // console.log(parsedTemplate);
-    //     // }
-    // }
+        //     // console.log(parsedTemplate.querySelectorAll('body *'));
+        //     // setTemplate(parsedTemplate);
+        //     // console.log(parsedTemplate);
+        // }
+    }
 
     const uploadDir = (e) => {
         e.preventDefault()
