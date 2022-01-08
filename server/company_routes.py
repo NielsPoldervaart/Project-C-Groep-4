@@ -22,7 +22,7 @@ def company(company_identifier):
             return dict(
                 company_id = company_information.company_id,
                 company_name = company_information.company_name
-            )
+            ), 200
         return {"errorCode": 404, "Message": "Company Does not exist"""}, 404
 
 @company_api.route("/<int:company_identifier>/accounts", methods=["GET", "POST"])
@@ -40,10 +40,11 @@ def company_accounts(company_identifier):
             verified_users_information = db_session.query(User.email, User.username, User.Role_role_id).filter_by(Company_company_id = company_identifier).filter_by(verified = True).all()
             awaiting_users_information = db_session.query(User.email, User.username, User.Role_role_id).filter_by(Company_company_id = company_identifier).filter_by(verified = False).all()
 
-        if verified_users_information is not None:
-            company_has_no_users = True
+        if verified_users_information is not []:
+            company_has_no_users = False
             users_dictionary["Verified_users"] =[
                 dict(
+                user_id = row["user_id"],
                 email = row["email"],
                 username = row["username"],
                 user_role = row["Role_role_id"]
@@ -53,10 +54,11 @@ def company_accounts(company_identifier):
         else:
             users_dictionary["Verified_users"] = []
 
-        if awaiting_users_information is not None:
-            company_has_no_users = True
+        if awaiting_users_information is not []:
+            company_has_no_users = False
             users_dictionary["Awaiting_users"] =[
                 dict(
+                user_id = row["user_id"],
                 email = row["email"],
                 username = row["username"],
                 user_role = row["Role_role_id"]
