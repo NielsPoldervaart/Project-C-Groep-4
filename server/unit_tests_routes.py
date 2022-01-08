@@ -1,3 +1,4 @@
+from werkzeug.wrappers import response
 from server import app
 import unittest
 #import requests
@@ -28,6 +29,10 @@ CreatedAccountName = ""
 CreatedAccountPassword = ""
 CreatedAccountCompanyID = -1
 
+#Test image and template location
+TestImage = "database/gallery/Appa.jpg"
+TestTemplate = "database/templates/template1.html"
+
 tester = None
 
 class TestRoutes(unittest.TestCase):
@@ -50,53 +55,55 @@ class TestRoutes(unittest.TestCase):
             #self.image_route_security_test(client)
 
             #LOGIN EXISTING ACCOUNT
-            self.login_fail_all(client)
-            self.login_fail_password(client)
-            self.login_fail_username(client)
-            self.login_pass(client)
+            # self.login_fail_all(client)
+            # self.login_fail_password(client)
+            # self.login_fail_username(client)
+            self.login_pass(client) #REQUIRED
 
             #REGISTER NEW ACCOUNTS
-            #self.register_throwaway_account_pass(client) #
-            #self.register_actual_account_pass(client) #
+            #self.register_throwaway_account_pass(client)
+            #self.register_actual_account_pass(client) #REQUIRED (Company)
 
             #COMPANY ROUTES
-            #self.company_info_pass(client) #
-            #self.company_accept_account_pass(client) #
-            #self.company_add_manual_pass(client) #
-            #self.company_view_manual_pass(client) #
-            #self.company_accept_account_pass(client) #
-            #self.company_decline_account_pass(client) #
+            #self.company_info_pass(client)
+            #self.company_accounts_info_pass(client)
+            #self.company_add_manual_pass(client)
+            #self.company_view_manual_pass(client)
+            #self.company_accept_account_pass(client) #REQUIRED (Company)
+            #self.company_decline_account_pass(client)
 
             #LOGOUT EXISTING ACCOUNT
-            #self.logout_existing_account_pass(client)
+            #self.logout_existing_account_pass(client) #REQUIRED
 
             #LOGIN CREATED ACCOUNT
-            #self.login_created_account_pass(self)
+            #self.login_created_account_pass(self) #REQUIRED (Company)
 
             #TEMPLATE ROUTES TOM SCHREUR
-            self.view_all_templates_empty_pass(client)
-            #self.upload_template_filetype_fail(client)
-            #self.upload_template_for_creation_pass(client)
-            #self.upload_template_for_deletion_pass(client)
-            self.view_all_templates_exists_pass(client)
-            #self.view_specific_template_exists_pass(client)
-            #self.delete_specific_template_exists_pass(client)
+            # self.view_all_templates_empty_pass(client)
+            # self.upload_template_filetype_fail(client)
+            self.upload_template_for_creation_pass(client) #REQUIRED (Product)
+            # self.upload_template_for_deletion_pass(client)
+            # self.view_all_templates_exists_pass(client)
+            # self.view_specific_template_exists_pass(client)
+            # self.delete_specific_template_exists_pass(client)
 
             #PRODUCT ROUTES
-            #self.create_product_pass(client)
+            self.create_product_pass(client)
             #self.alter_product_pass(client)
+            #TODO: Verify product
+            #TODO: Download product
             #self.delete_product_pass(client)
 
             #IMAGE ROUTES
-            self.view_all_images_empty_pass(client)
-            self.upload_image_filetype_fail(client)
-            self.upload_image_pass(client)
-            self.view_all_images_exists_pass(client)
-            self.view_specific_image_pass(client)
-            self.remove_specific_image_pass(client)
+            # self.view_all_images_empty_pass(client)
+            # self.upload_image_filetype_fail(client)
+            # self.upload_image_pass(client)
+            # self.view_all_images_exists_pass(client)
+            # self.view_specific_image_pass(client)
+            # self.remove_specific_image_pass(client)
 
             #LOGOUT CREATED ACCOUNT
-            #self.logout_created_account_pass(client)
+            #self.logout_created_account_pass(client) #REQUIRED (Company)
 
             #SECURITY TESTS AFTER LOGGING OUT
             #self.company_route_security_test2(client)
@@ -200,25 +207,39 @@ class TestRoutes(unittest.TestCase):
     def login_created_account_pass(self, client):
         pass
 
-###TODO: Template routes
-    #Template empty pass
+
+
+###TODO: Template routes TOM SCHREUR
+    #GET try to view all templates from empty company ("/templates/<company_identifier>" GET)
     def view_all_templates_empty_pass(self, client): #Test when there is no template in company
         response = client.get(f"/templates/{ExistingAccountCompanyID}")
         statuscode = response.status_code
         self.assertEqual(statuscode, 200)
         return response
 
+    #POST try to add template to company with wrong filetype ("/templates/<company_identifier>" POST) (KYNDA_ADMIN)
     def upload_template_filetype_fail(self, client):
-        pass
+        with open(f'{TestTemplate}', 'rb') as template:
+            response = client.post(f"/templates/{ExistingAccountCompanyID}", content_type='multipart/form-data', data={'template_file': (template, 'test.txt')})
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 405)
+        return response
 
-    #TODO: POST add template to company for product creation ("/templates/<company_identifier>" POST) (KYNDA_ADMIN)
-        #TODO: Create a folder for template to add
+    #POST add template to company for product creation ("/templates/<company_identifier>" POST) (KYNDA_ADMIN)
     def upload_template_for_creation_pass(self, client):
-        pass
+        with open(f'{TestTemplate}', 'rb') as template:
+            response = client.post(f"/templates/{ExistingAccountCompanyID}", content_type='multipart/form-data', data={'template_file': (template, 'template1.html')})
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 201)
+        return response
 
-    #TODO: POST add template to company for deletion test ("/templates/<company_identifier>" POST) (KYNDA_ADMIN)
+    #POST add template to company for deletion test ("/templates/<company_identifier>" POST) (KYNDA_ADMIN)
     def upload_template_for_deletion_pass(self, client):
-        pass
+        with open(f'{TestTemplate}', 'rb') as template:
+            response = client.post(f"/templates/{ExistingAccountCompanyID}", content_type='multipart/form-data', data={'template_file': (template, 'template2.html')})
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 201)
+        return response
 
     #GET view all templates from company ("/templates/<company_identifier>" GET)
     def view_all_templates_exists_pass(self, client): #Test when there are template(s) in company
@@ -229,15 +250,27 @@ class TestRoutes(unittest.TestCase):
         
     #TODO: GET view specific template ("/template/<int:company_identifier>/<int:template_identifier>" GET)
     def view_specific_template_exists_pass(self, client):
-        pass
-    #TODO: DELETE specific template ("/template/<int:company_identifier>/<int:template_identifier>" DELETE)
+        response = client.get(f"/template/{ExistingAccountCompanyID}/1")
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 200)
+        return response
+
+    #DELETE specific template ("/template/<int:company_identifier>/<int:template_identifier>" DELETE)
     def delete_specific_template_exists_pass(self, client):
-        pass
+        response = client.delete(f"/template/{ExistingAccountCompanyID}/2")
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 200)
+        return response
+
+
 
 ###TODO: Product routes
     #TODO: POST add product to company ("/products/<company_identifier>" POST) (COMPANY_ADMIN/COMPANY_EMPLOYEE)
     def create_product_pass(self, client):
-        pass
+        response = client.post(f"/products/{ExistingAccountCompanyID}", json={"template_id": 1})
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 200)
+        return response
 
     #TODO: PUT alter product from company ("/product/<company_identifier>/<product_identifier" PUT) (COMPANY_ADMIN/COMPANY_EMPLOYEE)
     def alter_product_pass(self, client):
@@ -248,42 +281,47 @@ class TestRoutes(unittest.TestCase):
 
     #TODO: DELETE remove product from company ("/product/<company_identifier>/<product_identifier" DELETE) (COMPANY_ADMIN/COMPANY_EMPLOYEE)    
     def delete_product_pass(self, client):
-        pass
+        response = client.delete(f"/product/{ExistingAccountCompanyID}/1")
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 200)
+        return response
 
 
-###TODO: Image routes
-    #TODO: GET view all images of gallery ("/gallery/<company_identifier>/<gallery_identifier>" GET)
+
+###Image routes
+    #GET try to view all images of empty gallery ("/gallery/<company_identifier>/<gallery_identifier>" GET)
     def view_all_images_empty_pass(self, client):
         response = client.get(f"/gallery/{ExistingAccountCompanyID}/1")
         statuscode = response.status_code
         self.assertEqual(statuscode, 404)
         return response
 
-    #TODO: POST try to add a file with the wrong filetype ("/gallery/<company_identifier>/<gallery_identifier>" POST)
+    #POST try to add a file with the wrong filetype ("/gallery/<company_identifier>/<gallery_identifier>" POST)
     def upload_image_filetype_fail(self, client):
-        with open("database/gallery/Appa.jpg", "rb") as image:
+        with open(f'{TestImage}', 'rb') as image:
             img_tuple = (BytesIO(image.read()), 'test.txt')
         response = client.post(f"/gallery/{ExistingAccountCompanyID}/1", content_type='multipart/form-data', data={'file[]': img_tuple})
         statuscode = response.status_code
         self.assertEqual(statuscode, 405)
         return response
 
-    #TODO: POST add an image to delete ("/gallery/<company_identifier>/<gallery_identifier>" POST)
+    #POST add an image to delete ("/gallery/<company_identifier>/<gallery_identifier>" POST)
     def upload_image_pass(self, client):
-        with open("database/gallery/Appa.jpg", "rb") as image:
+        with open(f'{TestImage}', 'rb') as image:
             img_tuple = (BytesIO(image.read()), 'Appa.jpg')
         response = client.post(f"/gallery/{ExistingAccountCompanyID}/1", content_type='multipart/form-data', data={'file[]': img_tuple})
         statuscode = response.status_code
         self.assertEqual(statuscode, 201)
         return response
 
+    #GET view all images of gallery ("/gallery/<company_identifier>/<gallery_identifier>" GET)
     def view_all_images_exists_pass(self, client):
         response = client.get(f"/gallery/{ExistingAccountCompanyID}/1")
         statuscode = response.status_code
         self.assertEqual(statuscode, 200)
         return response
 
-    #TODO: GET view the selected images from gallery ("/gallery/<company_identifier>/<gallery_identifier>/<image_identifier>" GET)
+    #GET view the selected images from gallery ("/gallery/<company_identifier>/<gallery_identifier>/<image_identifier>" GET)
     def view_specific_image_pass(self, client):
         response = client.get(f"gallery/{ExistingAccountCompanyID}/1/1")
         statuscode = response.status_code
@@ -291,12 +329,14 @@ class TestRoutes(unittest.TestCase):
         return response
 
 
-    #TODO: DELETE remove the image to be deleted ("/gallery/<company_identifier>/<gallery_identifier>/<image_identifier>" DELETE)
+    #DELETE remove the image to be deleted ("/gallery/<company_identifier>/<gallery_identifier>/<image_identifier>" DELETE)
     def remove_specific_image_pass(self, client):
         response = client.delete(f"gallery/{ExistingAccountCompanyID}/1/1")
         statuscode = response.status_code
         self.assertEqual(statuscode, 201)
         return response
+
+
 
 ###TODO: Logout Created account
     #TODO: Logout pass
