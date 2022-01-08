@@ -4,9 +4,6 @@ import '../style/Template.css';
 const Template = () => {
 
     const [template, setTemplate] = useState(null);
-    const [imgArr, setImgArr] = useState(null);
-    const [cssFile, setCssFile] = useState(null);
-    const [htmlFile, setHtmlFile] = useState(null);
 
     // const data = new FormData();
 
@@ -21,56 +18,53 @@ const Template = () => {
 
     const splitFiles = e => {
         let arr = Object.entries(e.target.files);
-        let isValid = false;
+        let hasCSS = false;
+        let hasHTML = false;
 
-        var imgArr = [];
-        let cssFile;
-        let htmlFile;
+        let imgArr = [];
+        let cssArr = [];
+        let htmlArr = [];
 
         for (let i = 0; i < arr.length; i++) {
             const el = arr[i];
 
             // Image Files
             if (el[1].name.includes('.png') || el[1].name.includes('.jpg') || el[1].name.includes('.jpeg')) {
+
                 let imgReader = new FileReader();
-                imgReader.readAsDataURL(el[1]);
-
-                imgReader.onloadend = function(){
-                    let dataUrl = imgReader.result;
-                    let imgObj = 
-                    { 
-                        name: el[1].name,
-                        data: dataUrl
-                    };
-
-                    imgArr.push(imgObj);
+                
+                imgReader.onloadend = () => {
+                    imgArr.push({name: el[1].name, data: imgReader.result});
                 }
+                imgReader.readAsDataURL(el[1]);
             }
             // CSS File
             else if (el[1].name.includes('.css')) {
-                setCssFile(el[1]);
+                hasCSS = true;
 
-                // let cssReader = new FileReader();
-                // cssReader.readAsText(el[1]);
-
-                // cssReader.onloadend = function(){
-                //     cssFile = cssReader.result;
-                // }
+                let cssReader = new FileReader();
+                
+                cssReader.onloadend = () => {
+                    cssArr.push({name: el[1].name, data: cssReader.result});
+                }
+                cssReader.readAsBinaryString(el[1]);
+                
             }
             // HTML Files
             else if (el[1].name.includes('.html')) {
-                isValid = true;
+                hasHTML = true;
+                
+                let htmlReader = new FileReader();
+                
+                htmlReader.onloadend = () => {
+                    htmlArr.push({name: el[1].name, data: htmlReader.result});
+                }
+                htmlReader.readAsBinaryString(el[1]);
 
-                // let htmlReader = new FileReader();
-                // htmlReader.readAsBinaryString(el[1]);
-
-                // htmlReader.onloadend = function(){
-                //     htmlFile = htmlReader.result;
-                // }
             }
         }
 
-        if (isValid === false) {
+        if (hasHTML === false || hasCSS === false) {
             const input = document.getElementById('DirInput');
             input.value = null;
             alert("Invalid folder, please select another one!");
@@ -78,60 +72,46 @@ const Template = () => {
             return
         }
         else {
-
-            setImgArr(imgArr);
-            // setCssFile(cssFile);
-            setHtmlFile(htmlFile);
-
-            createBaseProduct();
+            console.log(imgArr, cssArr, htmlArr);
+            console.log(imgArr.length, cssArr.length, htmlArr.length);
+            // createBaseProduct(imgArr, cssArr, htmlArr);
         }
 
     }
 
-    const createBaseProduct = () => {
-
-        console.log(imgArr);
-        console.log(cssFile);
-        console.log(htmlFile);
+    // const createBaseProduct = (imgArr, cssArr, htmlArr) => {
         
-    //                 let f = new File([htmlReader.result], htmlFile.name, {type: "text/html", lastModified: new Date(0)})
-    //                 let tempReader = new FileReader();
-    //                 tempReader.readAsText(f);
+    //     console.log(imgArr, cssArr, htmlArr);
+    //     console.log(imgArr.length, cssArr.length, htmlArr.length);
 
-    //                 tempReader.onloadend = function(){
-    //                     let templateString = tempReader.result;
+    //     // let f = new File([htmlArr[0].data], htmlArr[0].name, {type: "text/html", lastModified: new Date(0)})
+    //     // let tempReader = new FileReader();
+    //     // tempReader.readAsText(f);
 
-    //                     let parser = new DOMParser();
-    //                     let parsedTemplate = parser.parseFromString(templateString, 'text/html');
-    //                     parsedTemplate.querySelector("head link").remove();
+    //     // tempReader.onloadend = () => {
+    //     //     let templateString = tempReader.result;
 
-    //                     var styleElement = document.createElement("STYLE");
-    //                     styleElement.innerHTML = cssFile; 
-    //                     parsedTemplate.querySelector("head").appendChild(styleElement);
+    //     //     let parser = new DOMParser();
+    //     //     let parsedTemplate = parser.parseFromString(templateString, 'text/html');
+    //     //     parsedTemplate.querySelector("head link").remove();
 
-    //                     var tempHTML = parsedTemplate.querySelector("html");
-    //                     document.querySelector(".templateBody").appendChild(tempHTML);
+    //     //     var styleElement = document.createElement("STYLE");
+    //     //     styleElement.innerHTML = cssArr[0].data; 
+    //     //     parsedTemplate.querySelector("head").appendChild(styleElement);
 
-    //                     // For each element inside the dict, grab the key and add . infront of key
-    //                     // then for each element that contains the value above ^ replace the backgroundImage calue with the dataURL
-    //                     // check if there is a way to disable the error message that pops up
-    //                     // check for a way to disable the style from the template to apply on the website and vice versa
+    //     //     var tempHTML = parsedTemplate.querySelector("html");
+    //     //     document.querySelector(".templateBody").appendChild(tempHTML);
 
-    //                     // console.log(parsedTemplate.querySelectorAll('body *'));
-    //                     // setTemplate(parsedTemplate);
-    //                 }
-    //             }
-    //         }
-    //     }
+    //     //     // For each element inside the dict, grab the key and add . infront of key
+    //     //     // then for each element that contains the value above ^ replace the backgroundImage calue with the dataURL
+    //     //     // check if there is a way to disable the error message that pops up
+    //     //     // check for a way to disable the style from the template to apply on the website and vice versa
 
-    //     if (isValid === false) {
-    //         const input = document.getElementById('DirInput');
-    //         input.value = null;
-    //         alert("Invalid folder, please select another one!");
-            
-    //         return
-    //     }
-    }
+    //     //     // console.log(parsedTemplate.querySelectorAll('body *'));
+    //     //     // setTemplate(parsedTemplate);
+    //     //     // console.log(parsedTemplate);
+    //     // }
+    // }
 
     const uploadDir = (e) => {
         e.preventDefault()
@@ -140,8 +120,6 @@ const Template = () => {
         var test = window.getComputedStyle(el);
         
         console.log(test.backgroundImage);
-
-        console.log(cssFile);
 
         // if (template === "") {
         //     alert("Make template first!");
