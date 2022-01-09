@@ -61,14 +61,14 @@ def gallery(company_identifier, gallery_identifier):
                 if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
                     random_file_path = generate_random_path(24, 'jpg')
                 image.save(random_file_path) #Save image to created storage
-                upload_attempt = upload_file(random_file_path, f"{random_file_path}", "gallery", company_identifier)
+                upload_attempt = upload_file(random_file_path, f"{image.filename}", "gallery", company_identifier)
                 os.remove(random_file_path)
                 
                 if not upload_attempt[1] == 201:
                     return upload_attempt
 
                 #New Image object is created, None is used for id as it is auto-incremented by SQLAlchemy
-                new_image = Image(None, random_file_path, gallery_identifier)
+                new_image = Image(None, image.filename, gallery_identifier)
                 with create_db_session() as db_session:
                     db_session.add(new_image)
                     db_session.commit()
