@@ -86,7 +86,7 @@ def template(company_identifier, template_identifier):
             #print(type(template_file_location_ftp.template_file), template_file_location_ftp.template_file)
 
             template_bytes = try_to_get_text_file_ftps(template_file_location_ftp.template_file, "templates", company_identifier)
-            if template_bytes is dict: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
+            if type(template_bytes) is tuple: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
                 return template_bytes
 
             return send_file(template_bytes, mimetype="text/html")

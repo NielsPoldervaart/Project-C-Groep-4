@@ -38,7 +38,7 @@ def logout():
         session.pop("user_id", None)
         session.pop("company_company_id", None)
         session.pop("role_role_id", None)
-        return {"Code": 201, "Message": "User logged out"""}
+        return {"Code": 201, "Message": "User logged out"""}, 201
 
 @login_api.route("/register/<int:company_identifier>", methods = ["POST"]) #TODO: FIX ROUTE (ADD VERIFIED COLUMN ETC)
 def register(company_identifier):
