@@ -140,13 +140,13 @@ def verify_product(company_identifier, product_identifier):
     #Commit to db
     pass
 
-@product_api.route("/product/download/<int:company_identifier>/<int:product_identifier>", methods=["POST"])
+@product_api.route("/product/download/<int:company_identifier>/<int:product_identifier>", methods=["PUT"])
 def download_product(company_identifier, product_identifier):
     user_verification = verify_user(company_identifier)
     if user_verification != "PASSED":
         return user_verification
 
-    if request.method == "POST":
+    if request.method == "PUT":
         with create_db_session() as db_session:
             downloaded_product = db_session.query(Product).filter_by(product_id = product_identifier).filter_by(Company_company_id = company_identifier).first()
 

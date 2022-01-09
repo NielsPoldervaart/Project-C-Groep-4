@@ -361,7 +361,7 @@ class TestRoutes(unittest.TestCase):
     
     #TODO: POST increase downloads of product ("/product/download/<company_identifier>/<product_identifier" POST)
     def download_product_pass(self,client):
-        response = client.post(f"/product/download/{ExistingAccountCompanyID}/1")
+        response = client.put(f"/product/download/{ExistingAccountCompanyID}/1")
         statuscode = response.status_code
         self.assertEqual(statuscode, 402) #TODO: change to 201 after verify product implemented
         return response
