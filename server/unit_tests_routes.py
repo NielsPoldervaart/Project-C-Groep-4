@@ -298,60 +298,53 @@ class TestRoutes(unittest.TestCase):
     #GET try to view all templates from empty company ("/templates/<company_identifier>" GET)
     def view_all_templates_empty_pass(self, client): #Test when there is no template in company
         response = client.get(f"/templates/{CreatedAccountCompanyID}")
-        assert(response, 200)
-        # statuscode = response.status_code
-        # self.assertEqual(statuscode, 200)
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 200)
         return response
 
     #POST try to add template to company with wrong filetype ("/templates/<company_identifier>" POST) (KYNDA_ADMIN)
     def upload_template_filetype_fail(self, client):
         with open(f'{TestTemplate}', 'rb') as template:
             response = client.post(f"/templates/{CreatedAccountCompanyID}", content_type='multipart/form-data', data={'template_file': (template, 'test.txt')})
-        assert(response, 405)
-        # statuscode = response.status_code
-        # self.assertEqual(statuscode, 405)
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 405)
         return response
 
     #POST add template to company for product creation ("/templates/<company_identifier>" POST) (KYNDA_ADMIN)
     def upload_template_for_creation_pass(self, client):
         with open(f'{TestTemplate}', 'rb') as template:
             response = client.post(f"/templates/{CreatedAccountCompanyID}", content_type='multipart/form-data', data={'template_file': (template, 'template1.html')})
-        assert(response, 201)
-        # statuscode = response.status_code
-        # self.assertEqual(statuscode, 201)
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 201)
         return response
 
     #POST add template to company for deletion test ("/templates/<company_identifier>" POST) (KYNDA_ADMIN)
     def upload_template_for_deletion_pass(self, client):
         with open(f'{TestTemplate}', 'rb') as template:
             response = client.post(f"/templates/{CreatedAccountCompanyID}", content_type='multipart/form-data', data={'template_file': (template, 'template2.html')})
-        assert(response, 201)
-        # statuscode = response.status_code
-        # self.assertEqual(statuscode, 201)
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 201)
         return response
 
     #GET view all templates from company ("/templates/<company_identifier>" GET)
     def view_all_templates_exists_pass(self, client): #Test when there are template(s) in company
         response = client.get(f"/templates/{CreatedAccountCompanyID}")
-        assert(response, 200)
-        # statuscode = response.status_code
-        # self.assertEqual(statuscode, 200)
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 200)
         return response
         
     #TODO: GET view specific template ("/template/<int:company_identifier>/<int:template_identifier>" GET)
     def view_specific_template_exists_pass(self, client):
         response = client.get(f"/template/{CreatedAccountCompanyID}/1")
-        assert(response, 200)
-        # statuscode = response.status_code
-        # self.assertEqual(statuscode, 200)
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 200)
         return response
 
     #DELETE specific template ("/template/<int:company_identifier>/<int:template_identifier>" DELETE)
     def delete_specific_template_exists_pass(self, client):
         response = client.delete(f"/template/{CreatedAccountCompanyID}/2")
-        assert(response, 200)
-        # statuscode = response.status_code
-        # self.assertEqual(statuscode, 200)
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 200)
         return response
 
 
@@ -360,18 +353,16 @@ class TestRoutes(unittest.TestCase):
     #TODO: POST add product to company ("/products/<company_identifier>" POST) (COMPANY_ADMIN/COMPANY_EMPLOYEE)
     def create_product_pass(self, client):
         response = client.post(f"/products/{ExistingAccountCompanyID}", data={"template_id": 1})
-        # statuscode = response.status_code
-        # self.assertEqual(statuscode, 201)
-        assert(response, 201)
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 201)
         return response
 
     #TODO: PUT alter product from company ("/product/<company_identifier>/<product_identifier" PUT) (COMPANY_ADMIN/COMPANY_EMPLOYEE)
     def alter_product_pass(self, client):
         with open(f'{AdjustedProduct}', 'rb') as product:
             response = client.put(f"/product/{CreatedAccountCompanyID}/1", content_type='multipart/form-data', data={'updated_product': (product, 'template1.html')})
-        assert(response, 201)
-        # statuscode = response.status_code
-        # self.assertEqual(statuscode, 201)
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 201)
         return response
 
     #TODO: VERIFY PRODUCT (FIRST LOG OUT OF CREATED ACCOUNT, LOG BACK IN TO ADMIN ACCOUNT, VERIFY TESTS, LOG BACK OUT AND IN)
@@ -380,9 +371,8 @@ class TestRoutes(unittest.TestCase):
     #TODO: DELETE remove product from company ("/product/<company_identifier>/<product_identifier" DELETE) (COMPANY_ADMIN/COMPANY_EMPLOYEE)    
     def delete_product_pass(self, client):
         response = client.delete(f"/product/{ExistingAccountCompanyID}/1")
-        assert(response, 201)
-        # statuscode = response.status_code
-        # self.assertEqual(statuscode, 201)
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 201)
         return response
 
 
@@ -391,9 +381,8 @@ class TestRoutes(unittest.TestCase):
     #GET try to view all images of empty gallery ("/gallery/<company_identifier>/<gallery_identifier>" GET)
     def view_all_images_empty_pass(self, client):
         response = client.get(f"/gallery/{ExistingAccountCompanyID}/1")
-        assert(response, 404)
-        # statuscode = response.status_code
-        # self.assertEqual(statuscode, 404)
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 404)
         return response
 
     #POST try to add a file with the wrong filetype ("/gallery/<company_identifier>/<gallery_identifier>" POST)
@@ -401,9 +390,8 @@ class TestRoutes(unittest.TestCase):
         with open(f'{TestImage}', 'rb') as image:
             img_tuple = (BytesIO(image.read()), 'test.txt')
         response = client.post(f"/gallery/{ExistingAccountCompanyID}/1", content_type='multipart/form-data', data={'file[]': img_tuple})
-        assert(response, 405)
-        # statuscode = response.status_code
-        # self.assertEqual(statuscode, 405)
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 405)
         return response
 
     #POST add an image to delete ("/gallery/<company_identifier>/<gallery_identifier>" POST)
@@ -411,59 +399,32 @@ class TestRoutes(unittest.TestCase):
         with open(f'{TestImage}', 'rb') as image:
             img_tuple = (BytesIO(image.read()), 'Appa.jpg')
         response = client.post(f"/gallery/{ExistingAccountCompanyID}/1", content_type='multipart/form-data', data={'file[]': img_tuple})
-        assert(response, 201)
-        # statuscode = response.status_code
-        # self.assertEqual(statuscode, 201)
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 201)
         return response
 
     #GET view all images of gallery ("/gallery/<company_identifier>/<gallery_identifier>" GET)
     def view_all_images_exists_pass(self, client):
         response = client.get(f"/gallery/{ExistingAccountCompanyID}/1")
-        assert(response, 200)
-        # statuscode = response.status_code
-        # self.assertEqual(statuscode, 200)
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 200)
         return response
 
     #GET view the selected images from gallery ("/gallery/<company_identifier>/<gallery_identifier>/<image_identifier>" GET)
     def view_specific_image_pass(self, client):
         response = client.get(f"gallery/{ExistingAccountCompanyID}/1/1")
-        assert(response, 200)
-        # statuscode = response.status_code
-        # self.assertEqual(statuscode, 200)
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 200)
         return response
 
 
     #DELETE remove the image to be deleted ("/gallery/<company_identifier>/<gallery_identifier>/<image_identifier>" DELETE)
     def remove_specific_image_pass(self, client):
         response = client.delete(f"gallery/{ExistingAccountCompanyID}/1/1")
-        assert(response, 201)
-        # statuscode = response.status_code
-        # self.assertEqual(statuscode, 201)
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 201)
         return response
 
-
-
-###TODO: Logout Created account
-    #TODO: Logout pass
-    def logout_created_account_pass(self, client):
-        pass
-
-###TODO: Security tests after logging out
-        #TODO: TEST Company routes
-    def company_route_security_test2(self, client):
-        pass
-
-    #TODO: TEST Template routes
-    def template_route_security_test2(self, client):
-        pass
-
-    #TODO: TEST Product routes
-    def product_route_security_test2(self, client):
-        pass
-
-    #TODO: TEST image routes
-    def image_route_security_test2(self, client):
-        pass
 
     def tearDown(self):
         os.remove("test_sqlite.db")
