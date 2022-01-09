@@ -142,9 +142,21 @@ def verify_product(company_identifier, product_identifier):
 
 @product_api.route("/product/download/<int:company_identifier>/<int:product_identifier>", methods=["POST"])
 def download_product(company_identifier, product_identifier):
-    #Check perms (user verification (all roles))
-    #Query product from DB
-    #increment downloads column value (downloads = downloads + 1)
-    #Commit to DB
-    pass
-    
+    user_verification = verify_user(company_identifier)
+    if user_verification != "PASSED":
+        return user_verification
+
+    if request.method == "POST":
+        with create_db_session() as db_session:
+            downloaded_product = db_session.query(Product).filter_by(product_id = product_identifier).filter_by(Company_company_id = company_identifier).first()
+
+            if downloaded_product is None:
+                return {"Code": 404, "Message": "Product not found in database"}, 404
+            
+            if downloaded_product.verified == False:
+                return {"Code": 402, "Message": "Product has not been verified"}, 402
+
+            downloaded_product.downloads = downloaded_product.downloads + 1
+            db_session.commit()
+
+        return {"Code": 201, "Message": "Product successfully downloaded"}, 201
