@@ -241,26 +241,14 @@ def delete_test_folder_ftp():
     return 0
 
 def deletedir(dirname, ftp):
-
     ftp.cwd(dirname)
-
-    print(dirname)
-
     for file in ftp.nlst():
-
         try:
             ftp.delete(file)
-
         except Exception:
             deletedir(file, ftp)
-
     ftp.cwd("..")
     ftp.rmd(dirname)
-
-
-
-
-
 
 #try_to_download_text_file(filename, 1)
 #get_image("picture.jpg")
