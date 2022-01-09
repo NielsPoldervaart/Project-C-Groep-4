@@ -100,19 +100,19 @@ class TestRoutes(unittest.TestCase):
             self.delete_specific_template_exists_pass(client)
 
             #PRODUCT ROUTES
-            #self.create_product_pass(client)
-            #self.alter_product_pass(client)
-            #TODO: Verify product
+            self.create_product_pass(client)
+            self.alter_product_pass(client)
+            self.verify_product_pass(client)
             #TODO: Download product
-            #self.delete_product_pass(client)
+            self.delete_product_pass(client)
 
             #IMAGE ROUTES
-            # self.view_all_images_empty_pass(client)
-            # self.upload_image_filetype_fail(client)
-            # self.upload_image_pass(client)
-            # self.view_all_images_exists_pass(client)
-            # self.view_specific_image_pass(client)
-            # self.remove_specific_image_pass(client)
+            self.view_all_images_empty_pass(client)
+            self.upload_image_filetype_fail(client)
+            self.upload_image_pass(client)
+            self.view_all_images_exists_pass(client)
+            self.view_specific_image_pass(client)
+            self.remove_specific_image_pass(client)
 
             #LOGOUT CREATED ACCOUNT
             self.logout_account(client) #REQUIRED (Company)
@@ -343,7 +343,7 @@ class TestRoutes(unittest.TestCase):
 ###TODO: Product routes
     #TODO: POST add product to company ("/products/<company_identifier>" POST) (COMPANY_ADMIN/COMPANY_EMPLOYEE)
     def create_product_pass(self, client):
-        response = client.post(f"/products/{ExistingAccountCompanyID}", json={"template_id": 1})
+        response = client.post(f"/products/{CreatedAccountCompanyID}", json={"template_id": 1})
         statuscode = response.status_code
         self.assertEqual(statuscode, 200)
         return response
@@ -353,6 +353,13 @@ class TestRoutes(unittest.TestCase):
         pass
 
     #TODO: VERIFY PRODUCT (FIRST LOG OUT OF CREATED ACCOUNT, LOG BACK IN TO ADMIN ACCOUNT, VERIFY TESTS, LOG BACK OUT AND IN)
+    def verify_product_pass(self, client):
+        response = client.put(f"/product/verify/{CreatedAccountCompanyID}/1", data={"verified": True})
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 201)
+        return response
+
+
     #TODO: DOWNLOAD PRODUCT
 
     #TODO: DELETE remove product from company ("/product/<company_identifier>/<product_identifier" DELETE) (COMPANY_ADMIN/COMPANY_EMPLOYEE)    

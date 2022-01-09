@@ -139,7 +139,7 @@ def verify_product(company_identifier, product_identifier):
          return user_verification
 
         if not request.form["verified"]: #Check if request.form["verified"] == False
-            return {"Code": 404, "Message": "Declining concept product not implemented"}, 404 #TODO: If product is not adequate (request.form["verified"] == False), add options to deny
+            return {"errorCode": 404, "Message": "Declining concept product not implemented"}, 404 #TODO: If product is not adequate (request.form["verified"] == False), add options to deny
 
         with create_db_session() as db_session: #Query product from DB
             product_to_verify = db_session.query(Product).filter_by(product_id = product_identifier).filter_by(Company_company_id = company_identifier).first()
@@ -149,6 +149,7 @@ def verify_product(company_identifier, product_identifier):
 
             product_to_verify.verified = True #Change verified column to True
             db_session.commit() #Commit to db
+            return {"Code": 201, "Message": "Product succesfully verified"}, 201
 
 @product_api.route("/product/download/<int:company_identifier>/<int:product_identifier>", methods=["POST"])
 def download_product(company_identifier, product_identifier):
