@@ -132,13 +132,23 @@ def product(company_identifier, product_identifier):
 
 @product_api.route("/product/verify/<int:company_identifier>/<int:product_identifier>", methods=["PUT"])
 def verify_product(company_identifier, product_identifier):
-    #Check perms (user verification (role 1 or 2))
-    #Query product from DB
-    #Check if request.form["verified"] == True
-    #Change verified column to True
-    #TODO: If product is not adequate (request.form["verified"] == False), add options to deny
-    #Commit to db
-    pass
+    if request.method == "PUT":
+
+        user_verification = verify_user(company_identifier, [1,2]) #Check perms (user verification (role 1 or 2))
+        if user_verification != "PASSED":
+         return user_verification
+
+        if not request.form["verified"]: #Check if request.form["verified"] == False
+            return {"Code": 404, "Message": "Declining concept product not implemented"}, 404 #TODO: If product is not adequate (request.form["verified"] == False), add options to deny
+
+        with create_db_session() as db_session: #Query product from DB
+            product_to_verify = db_session.query(Product).filter_by(product_id = product_identifier).filter_by(Company_company_id = company_identifier).first()
+
+            if product_to_verify is None:
+                return  {"Code": 404, "Message": "Product not found in database"}, 404
+
+            product_to_verify.verified = True #Change verified column to True
+            db_session.commit() #Commit to db
 
 @product_api.route("/product/download/<int:company_identifier>/<int:product_identifier>", methods=["POST"])
 def download_product(company_identifier, product_identifier):
