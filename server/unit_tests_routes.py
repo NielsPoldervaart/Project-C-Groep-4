@@ -44,6 +44,7 @@ CreatedAccountRole_id = 1
 #Test image and template location
 TestImage = "database/gallery/Appa.jpg"
 TestTemplate = "database/templates/template1.html"
+AdjustedProduct = "database/templates/template2.html"
 
 tester = None
 
@@ -62,49 +63,49 @@ class TestRoutes(unittest.TestCase):
             client.get("/") #Create a session by requesting index route
 
             #SECURITY TESTS BEFORE LOGGING IN
-            self.company_route_security_tests(client)
-            self.template_route_security_tests(client)
-            self.product_route_security_tests(client)
-            self.image_route_security_tests(client)
+            # self.company_route_security_tests(client)
+            # self.template_route_security_tests(client)
+            # self.product_route_security_tests(client)
+            # self.image_route_security_tests(client)
 
             #LOGIN EXISTING ACCOUNT
-            self.login_fail_tests(client)
+            # self.login_fail_tests(client)
             self.login_pass(client) #REQUIRED
 
             #REGISTER NEW ACCOUNTS
-            self.register_throwaway_account_pass(client)
-            self.register_actual_account_pass(client)
-            self.register_account_fail(client)
+            self.register_throwaway_account_pass(client) #REQUIRED
+            self.register_actual_account_pass(client) #REQUIRED
+            # self.register_account_fail(client)
 
             #COMPANY ROUTES
-            self.company_info_pass(client)
-            self.company_accounts_info_pass(client)
-            self.company_add_manual_pass(client)
-            self.company_view_manual_pass(client)
-            self.company_accept_account_pass(client) #REQUIRED (Company)
-            self.company_decline_account_pass(client)
+            # self.company_info_pass(client)
+            # self.company_accounts_info_pass(client)
+            # self.company_add_manual_pass(client)
+            # self.company_view_manual_pass(client)
+            self.company_accept_account_pass(client) #REQUIRED
+            # self.company_decline_account_pass(client)
 
             #LOGOUT EXISTING ACCOUNT
             self.logout_account(client) #REQUIRED
 
             #LOGIN CREATED ACCOUNT
-            self.login_created_account_pass(client) #REQUIRED (Company)
+            self.login_created_account_pass(client) #REQUIRED
 
-            #TEMPLATE ROUTES TOM SCHREUR
-            self.view_all_templates_empty_pass(client)
-            self.upload_template_filetype_fail(client)
+            #TEMPLATE ROUTES
+            # self.view_all_templates_empty_pass(client)
+            # self.upload_template_filetype_fail(client)
             self.upload_template_for_creation_pass(client) #REQUIRED (Product)
-            self.upload_template_for_deletion_pass(client)
-            self.view_all_templates_exists_pass(client)
-            self.view_specific_template_exists_pass(client)
-            self.delete_specific_template_exists_pass(client)
+            # self.upload_template_for_deletion_pass(client)
+            # self.view_all_templates_exists_pass(client)
+            # self.view_specific_template_exists_pass(client)
+            # self.delete_specific_template_exists_pass(client)
 
             #PRODUCT ROUTES
-            #self.create_product_pass(client)
-            #self.alter_product_pass(client)
+            self.create_product_pass(client)
+            self.alter_product_pass(client)
             #TODO: Verify product
-            #TODO: Download product
-            #self.delete_product_pass(client)
+            self.download_product_pass(client)
+            self.delete_product_pass(client)
 
             #IMAGE ROUTES
             # self.view_all_images_empty_pass(client)
@@ -115,13 +116,13 @@ class TestRoutes(unittest.TestCase):
             # self.remove_specific_image_pass(client)
 
             #LOGOUT CREATED ACCOUNT
-            self.logout_account(client) #REQUIRED (Company)
+            self.logout_account(client) #REQUIRED
 
             #SECURITY TESTS AFTER LOGGING OUT
-            self.company_route_security_tests(client)
-            self.template_route_security_tests(client)
-            self.product_route_security_tests(client)
-            self.image_route_security_tests(client)
+            # self.company_route_security_tests(client)
+            # self.template_route_security_tests(client)
+            # self.product_route_security_tests(client)
+            # self.image_route_security_tests(client)
 
     def create_db_and_insert_values(self): #CREATES DATABASE FILE + STRUCTURE AND INSERTS NECESSARY VALUES
         init_db_structure()
@@ -280,14 +281,14 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(response, 201)
         return response
 
-###TODO: Login Created account
-    #TODO: Login pass
+###Login Created account
+    #Login pass
     def login_created_account_pass(self, client):
         response = client.post("/login", json={"name": CreatedAccountName, "password": CreatedAccountPassword}).status_code
         self.assertEqual(response, 200)
         return response
 
-###TODO: Template routes TOM SCHREUR
+###Template routes
     #GET try to view all templates from empty company ("/templates/<company_identifier>" GET)
     def view_all_templates_empty_pass(self, client): #Test when there is no template in company
         response = client.get(f"/templates/{CreatedAccountCompanyID}")
@@ -326,7 +327,7 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(statuscode, 200)
         return response
         
-    #TODO: GET view specific template ("/template/<int:company_identifier>/<int:template_identifier>" GET)
+    #GET view specific template ("/template/<int:company_identifier>/<int:template_identifier>" GET)
     def view_specific_template_exists_pass(self, client):
         response = client.get(f"/template/{CreatedAccountCompanyID}/1")
         statuscode = response.status_code
@@ -341,25 +342,35 @@ class TestRoutes(unittest.TestCase):
         return response
 
 ###TODO: Product routes
-    #TODO: POST add product to company ("/products/<company_identifier>" POST) (COMPANY_ADMIN/COMPANY_EMPLOYEE)
+    #POST add product to company ("/products/<company_identifier>" POST) (COMPANY_ADMIN/COMPANY_EMPLOYEE)
     def create_product_pass(self, client):
-        response = client.post(f"/products/{ExistingAccountCompanyID}", json={"template_id": 1})
+        response = client.post(f"/products/{ExistingAccountCompanyID}", data={"template_id": 1})
         statuscode = response.status_code
-        self.assertEqual(statuscode, 200)
+        self.assertEqual(statuscode, 201)
         return response
 
-    #TODO: PUT alter product from company ("/product/<company_identifier>/<product_identifier" PUT) (COMPANY_ADMIN/COMPANY_EMPLOYEE)
+    #PUT alter product from company ("/product/<company_identifier>/<product_identifier" PUT) (COMPANY_ADMIN/COMPANY_EMPLOYEE)
     def alter_product_pass(self, client):
-        pass
+        with open(f'{AdjustedProduct}', 'rb') as product:
+            response = client.put(f"/product/{CreatedAccountCompanyID}/1", content_type='multipart/form-data', data={'updated_product': (product, 'template1.html')})
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 201)
+        return response
 
     #TODO: VERIFY PRODUCT (FIRST LOG OUT OF CREATED ACCOUNT, LOG BACK IN TO ADMIN ACCOUNT, VERIFY TESTS, LOG BACK OUT AND IN)
-    #TODO: DOWNLOAD PRODUCT
+    
+    #TODO: POST increase downloads of product ("/product/download/<company_identifier>/<product_identifier" POST)
+    def download_product_pass(self,client):
+        response = client.put(f"/product/download/{ExistingAccountCompanyID}/1")
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 402) #TODO: change to 201 after verify product implemented
+        return response
 
-    #TODO: DELETE remove product from company ("/product/<company_identifier>/<product_identifier" DELETE) (COMPANY_ADMIN/COMPANY_EMPLOYEE)    
+    #DELETE remove product from company ("/product/<company_identifier>/<product_identifier" DELETE) (COMPANY_ADMIN/COMPANY_EMPLOYEE)    
     def delete_product_pass(self, client):
         response = client.delete(f"/product/{ExistingAccountCompanyID}/1")
         statuscode = response.status_code
-        self.assertEqual(statuscode, 200)
+        self.assertEqual(statuscode, 201)
         return response
 
 ###Image routes
