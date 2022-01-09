@@ -129,3 +129,22 @@ def product(company_identifier, product_identifier):
             db_session.commit()
         
         return {"Code": 201, "Message": "File succesfully removed from storage"}, 201
+
+@product_api.route("/product/verify/<int:company_identifier>/<int:product_identifier>", methods=["PUT"])
+def verify_product(company_identifier, product_identifier):
+    #Check perms (user verification (role 1 or 2))
+    #Query product from DB
+    #Check if request.form["verified"] == True
+    #Change verified column to True
+    #TODO: If product is not adequate (request.form["verified"] == False), add options to deny
+    #Commit to db
+    pass
+
+@product_api.route("/product/download/<int:company_identifier>/<int:product_identifier>", methods=["POST"])
+def download_product(company_identifier, product_identifier):
+    #Check perms (user verification (all roles))
+    #Query product from DB
+    #increment downloads column value (downloads = downloads + 1)
+    #Commit to DB
+    pass
+    
