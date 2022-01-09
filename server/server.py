@@ -19,6 +19,7 @@ app.register_blueprint(init_api)
 app.secret_key = "ToBeSecret" #TODO: Make Secret key actually secret
 
 app.config["TEST_DATABASE_FILENAME"] = "test_sqlite.db"
+app.config["USING_TEST_FTP"] = True #UNCOMMENT WHEN USING TEST DB, TODO: change this to actual test config in flask for better modulation
 #app.config["DATABASE_URI"] = "mysql+mysqldb://kynda:u9N3_HM+ARhDYsRQ@kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com/KyndaDB" #PROD DB CONNECTION
 app.config["DATABASE_URI"] = "sqlite:///" + f"{get_absolute_path(app.config['TEST_DATABASE_FILENAME'])}" #TEST DB CONNECTION
 

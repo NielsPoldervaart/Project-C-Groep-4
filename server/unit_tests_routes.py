@@ -10,6 +10,7 @@ from werkzeug.security import generate_password_hash
 import os
 from io import BytesIO
 from generate_random_path import generate_random_path
+from ftp_controller import delete_test_folder_ftp
 
 ###Global variables
 #Fake User
@@ -61,16 +62,14 @@ class TestRoutes(unittest.TestCase):
                 setup_basic_db()
             client.get("/") #Create a session by requesting index route
 
-            #SECURITY TESTS BEFORE LOGGING IN #SEBASTIAAN BOOMAN
-            # self.company_route_security_test(client)
-            # self.template_route_security_test(client)
-            # self.product_route_security_test(client)
-            # self.image_route_security_test(client)
+            #SECURITY TESTS BEFORE LOGGING IN
+            self.company_route_security_tests(client)
+            self.template_route_security_tests(client)
+            self.product_route_security_tests(client)
+            self.image_route_security_tests(client)
 
             #LOGIN EXISTING ACCOUNT
-            # self.login_fail_all(client)
-            # self.login_fail_password(client)
-            # self.login_fail_username(client)
+            self.login_fail_tests(client)
             self.login_pass(client) #REQUIRED
 
             #REGISTER NEW ACCOUNTS
@@ -79,20 +78,20 @@ class TestRoutes(unittest.TestCase):
             # self.register_account_fail(client)
 
             #COMPANY ROUTES
-            #self.company_info_pass(client)
-            #self.company_accounts_info_pass(client)
-            #self.company_add_manual_pass(client)
-            #self.company_view_manual_pass(client)
-            # self.company_accept_account_pass(client) #REQUIRED (Company)
-            # self.company_decline_account_pass(client)
+            self.company_info_pass(client)
+            self.company_accounts_info_pass(client)
+            self.company_add_manual_pass(client)
+            self.company_view_manual_pass(client)
+            self.company_accept_account_pass(client) #REQUIRED (Company)
+            self.company_decline_account_pass(client)
 
             #LOGOUT EXISTING ACCOUNT
-            # self.logout_existing_account_pass(client) #REQUIRED
+            self.logout_account(client) #REQUIRED
 
             #LOGIN CREATED ACCOUNT
             # self.login_created_account_pass(client) #REQUIRED (Company)
 
-            #TEMPLATE ROUTES TOM SCHREUR
+            #TEMPLATE ROUTES
             # self.view_all_templates_empty_pass(client)
             # self.upload_template_filetype_fail(client)
             self.upload_template_for_creation_pass(client) #REQUIRED (Product)
@@ -117,13 +116,13 @@ class TestRoutes(unittest.TestCase):
             # self.remove_specific_image_pass(client)
 
             #LOGOUT CREATED ACCOUNT
-            #self.logout_created_account_pass(client) #REQUIRED (Company)
+            self.logout_account(client) #REQUIRED (Company)
 
             #SECURITY TESTS AFTER LOGGING OUT
-            #self.company_route_security_test(client)
-            #self.template_route_security_test(client)
-            #self.product_route_security_test(client)
-            #self.image_route_security_test(client)
+            self.company_route_security_tests(client)
+            self.template_route_security_tests(client)
+            self.product_route_security_tests(client)
+            self.image_route_security_tests(client)
 
     def create_db_and_insert_values(self): #CREATES DATABASE FILE + STRUCTURE AND INSERTS NECESSARY VALUES
         init_db_structure()
@@ -138,7 +137,7 @@ class TestRoutes(unittest.TestCase):
 
 ###Security tests before logging in
     #TESTS Company routes
-    def company_route_security_test(self, client):
+    def company_route_security_tests(self, client):
         test1 = client.get("/company/1").status_code
         self.assertEqual(test1, 401)
 
@@ -155,11 +154,11 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(test5, 401)
 
     #TESTS Template routes
-    def template_route_security_test(self, client):
+    def template_route_security_tests(self, client):
         test1 = client.get("/templates/1").status_code
         self.assertEqual(test1, 401)
-
-        test2 = client.post("/templates/1", data = {"template_file" : None}).status_code #TODO: Add file to this request
+        with open(f'{TestTemplate}', 'rb') as template:
+            test2 = client.post(f"/templates/{CreatedAccountCompanyID}", data={'template_file': (template, 'test.txt')}).status_code
         self.assertEqual(test2, 401)
 
         test3 = client.get("/template/1/1").status_code
@@ -169,7 +168,7 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(test4, 401)
 
     #TESTS Product routes
-    def product_route_security_test(self, client):
+    def product_route_security_tests(self, client):
         test1 = client.get("/products/1").status_code
         self.assertEqual(test1, 401)
 
@@ -186,7 +185,7 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(test5, 401)
 
     #TESTS image routes
-    def image_route_security_test(self, client):
+    def image_route_security_tests(self, client):
         test1 = client.get("/gallery/1/1").status_code
         self.assertEqual(test1, 401)
 
@@ -201,25 +200,15 @@ class TestRoutes(unittest.TestCase):
 
 ###Login Existing account
     #POST Login fail ALL
-    def login_fail_all(self, client):
-        response = client.post("/login", json={"name":FakeAccountName, "password":FakeAccountPassword})
-        test = response.status_code
-        self.assertEqual(test, 406)
-        return response
+    def login_fail_tests(self, client):
+        login_fail_all = client.post("/login", json={"name":FakeAccountName, "password":FakeAccountPassword}).status_code
+        self.assertEqual(login_fail_all, 406)
 
-    #POST Login fail PASSWORD
-    def login_fail_password(self, client):
-        response = client.post("/login", json={"name":ExistingAccountName, "password":FakeAccountPassword})
-        test = response.status_code
-        self.assertEqual(test, 406)
-        return response
+        login_fail_password = client.post("/login", json={"name":ExistingAccountName, "password":FakeAccountPassword}).status_code
+        self.assertEqual(login_fail_password, 406)
 
-    #POST Login fail USERNAME
-    def login_fail_username(self, client):
-        response = client.post("/login", json={"name":FakeAccountName, "password":ExistingAccountPassword})
-        test = response.status_code
-        self.assertEqual(test, 406)
-        return response
+        login_fail_username = client.post("/login", json={"name":FakeAccountName, "password":ExistingAccountPassword}).status_code
+        self.assertEqual(login_fail_username, 406)
 
     #POST Login pass
     def login_pass(self, client):
@@ -228,17 +217,17 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(test, 200)
         return response
 
-###TODO: Register new accounts
-    #TODO: Register throwaway account (verification should get declined)
+###Register new accounts
+    #Register throwaway account (verification should get declined)
 
     def register_account_fail(self, client):
-        #Register an account without perms (logged into company 1 not 2)
+        #Register an account to non existing company
         response = client.post(f"/register/{FakeAccountCompanyID}", data={"name": FakeAccountName, "email" : FakeAccountEmail, "password": FakeAccountPassword, "role_id" : FakeAccountRole_id})
         test = response.status_code
         self.assertEqual(test, 404)
         return response
 
-    def register_throwaway_account_pass(self, client): #FIX REGISTER (CHECK WHAT SHOULD BE PROVIDED AND WHAT ACTUAL USER NEEDS TO PROVIDE)
+    def register_throwaway_account_pass(self, client):
         response = client.post(f"/register/{ThrowawayAccountCompanyID}", data={"name": ThrowawayAccountName, "email" : ThrowawayAccountEmail, "password": ThrowawayAccountPassword, "role_id" : ThrowawayAccountRole_id})
         test = response.status_code
         self.assertEqual(test, 201)
@@ -251,48 +240,53 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(test, 201)
         return response
 
-###TODO: Company routes (View all accounts)
-    #TODO: GET view company info pass ("/company/<company_identifier>" GET)
+###Company routes (View all accounts)
+    #GET view company info pass ("/company/<company_identifier>" GET)
     def company_info_pass(self, client):
-        pass
+        test1 = client.get(f"/company/{ExistingAccountCompanyID}").status_code
+        self.assertEqual(test1, 200)
+
     #TODO: GET view company accounts info pass ("/<company_identifier>/accounts" GET)
     def company_accounts_info_pass(self, client):
-        pass
+        test1 = client.get(f"/{ExistingAccountCompanyID}/accounts").status_code
+        self.assertEqual(test1, 200)
+
     #TODO: POST Insert a company manual ("/<company_identifier>/manual" POST)
     def company_add_manual_pass(self, client):
-        pass
+        with open(f'{TestTemplate}', 'rb') as manual: #TODO: MAYBE ADD AN ACTUAL MANUAL FILE
+            test1 = client.post(f"/{CreatedAccountCompanyID}/manual", data={'manual_file': (manual, 'test.html')}).status_code
+        self.assertEqual(test1, 201)
+
     #TODO: GET view company manual ("/<company_identifier>/manual" GET)
     def company_view_manual_pass(self, client):
-        pass
+        test1 = client.get(f"/{ExistingAccountCompanyID}/manual").status_code
+        self.assertEqual(test1, 200)
 
     #TODO: POST decline throwaway account ("/<company_identifier>/accounts" POST)
     def company_accept_account_pass(self, client):
-        response = client.post(f"/{ExistingAccountCompanyID}/accounts", data = {"user_id" : 3, "accepted" : True}) #TODO: FIND WAY TO FIND CREATED USER ID
-        assert(response, 201)
+        response = client.post(f"/{ExistingAccountCompanyID}/accounts", data = {"user_id" : 3, "accepted" : True}).status_code #TODO: FIND WAY TO FIND CREATED USER ID
+        self.assertEqual(response, 201)
         return response
-
 
     #TODO: POST verify newly made account ("/<company_identifier>/accounts" POST)
     def company_decline_account_pass(self, client):
-        response = client.post(f"/{ExistingAccountCompanyID}/accounts", data = {"user_id" : 2, "accepted" : False}) #TODO: FIND WAY TO FIND CREATED USER ID
-        assert(response, 201)
+        response = client.post(f"/{ExistingAccountCompanyID}/accounts", data = {"user_id" : 2, "accepted" : False}).status_code #TODO: FIND WAY TO FIND CREATED USER ID
+        self.assertEqual(response, 201)
         return response
 
-###TODO: Logout Existing account
-    #TODO: Logout pass
-    def logout_existing_account_pass(self, client):
-        response = client.get("/logout")
-        assert(response, 201)
+###Logout account
+    # Logout pass
+    def logout_account(self, client):
+        response = client.get("/logout").status_code
+        self.assertEqual(response, 201)
         return response
 
 ###TODO: Login Created account
     #TODO: Login pass
     def login_created_account_pass(self, client):
-        response = client.post("/login", json={"name": CreatedAccountName, "password": CreatedAccountPassword})
-        assert(response, 201)
+        response = client.post("/login", json={"name": CreatedAccountName, "password": CreatedAccountPassword}).status_code
+        self.assertEqual(response, 200)
         return response
-
-
 
 ###TODO: Template routes
     #GET try to view all templates from empty company ("/templates/<company_identifier>" GET)
@@ -347,8 +341,6 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(statuscode, 200)
         return response
 
-
-
 ###TODO: Product routes
     #TODO: POST add product to company ("/products/<company_identifier>" POST) (COMPANY_ADMIN/COMPANY_EMPLOYEE)
     def create_product_pass(self, client):
@@ -374,8 +366,6 @@ class TestRoutes(unittest.TestCase):
         statuscode = response.status_code
         self.assertEqual(statuscode, 201)
         return response
-
-
 
 ###Image routes
     #GET try to view all images of empty gallery ("/gallery/<company_identifier>/<gallery_identifier>" GET)
@@ -428,6 +418,7 @@ class TestRoutes(unittest.TestCase):
 
     def tearDown(self):
         os.remove("test_sqlite.db")
+        delete_test_folder_ftp()
 
 if __name__ == "__main__":
     unittest.main()
