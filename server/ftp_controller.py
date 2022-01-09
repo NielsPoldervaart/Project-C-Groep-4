@@ -3,14 +3,23 @@ import os
 from os import path
 import io
 from generate_random_path import generate_random_path
+from flask import current_app
 
 import base64
 
 def try_to_get_text_file_ftps(file_name, file_type, company_id):
+
     session = FTP('145.24.222.235') #Create session with FTP
     session.login("Controller", "cC2G'Q_&3qY@=D!@")
 
+    if current_app.config["USING_TEST_FTP"] == True: #If testing == True, we dont want to use regular storage, change to specific ftp storage
+        if "testfolder" not in session.nlst():
+            {"errorCode": 404, "Message": "Test folder does not exist on FTP server"}, 404
+        session.cwd("testfolder")
+
+
     if f"{company_id}" not in session.nlst(): #Check if company dir exists on FTP Server, if not, return
+        session.quit()
         return {"errorCode": 404, "Message": "Company directory does not exist on FTP server"}, 404
 
     session.cwd(f'{company_id}') #Change directory on FTP to the company's
@@ -42,8 +51,15 @@ def try_to_get_text_file_ftps(file_name, file_type, company_id):
     return return_data #Return the extracted Bytes
 
 def try_to_get_file_ftps_binary(file_name, file_type, company_id):
+
     session = FTP('145.24.222.235') #Create session with FTP
     session.login("Controller", "cC2G'Q_&3qY@=D!@")
+
+    if current_app.config["USING_TEST_FTP"] == True: #If testing == True, we dont want to use regular storage, change to specific ftp storage
+        if "testfolder" not in session.nlst():
+            {"errorCode": 404, "Message": "Test folder does not exist on FTP server"}, 404
+        session.cwd("testfolder")
+
 
     if f"{company_id}" not in session.nlst(): #Check if company dir exists on FTP Server, if not, return
         return {"errorCode": 404, "Message": "Company directory does not exist on FTP server"}, 404
@@ -80,6 +96,12 @@ def try_to_get_file_ftps_binary(file_name, file_type, company_id):
 def get_image(file_name, file_type, company_id):
     session = FTP('145.24.222.235')
     session.login("Controller", "cC2G'Q_&3qY@=D!@")
+
+    if current_app.config["USING_TEST_FTP"] == True: #If testing == True, we dont want to use regular storage, change to specific ftp storage
+        if "testfolder" not in session.nlst():
+            {"errorCode": 404, "Message": "Test folder does not exist on FTP server"}, 404
+        session.cwd("testfolder")
+    
     session.cwd(f'{company_id}')
     session.cwd(file_type)
     img = ""
@@ -100,6 +122,11 @@ def get_image(file_name, file_type, company_id):
 def try_to_copy_template_to_product(template_name, company_id):
     session = FTP('145.24.222.235') #Create session with FTP
     session.login("Controller", "cC2G'Q_&3qY@=D!@")
+
+    if current_app.config["USING_TEST_FTP"] == True: #If testing == True, we dont want to use regular storage, change to specific ftp storage
+        if "testfolder" not in session.nlst():
+            {"errorCode": 404, "Message": "Test folder does not exist on FTP server"}, 404
+        session.cwd("testfolder")
 
     if f"{company_id}" not in session.nlst(): #Check if company dir exists on FTP Server, if not, return
         return {"errorCode": 404, "Message": "Company directory does not exist on FTP server"}, 404
@@ -138,6 +165,13 @@ def upload_file(file_path, file_name, file_type, company_id):
 
         session = FTP('145.24.222.235') #Create session with FTP
         session.login("Controller", "cC2G'Q_&3qY@=D!@") #Login to FTP
+
+        if current_app.config["USING_TEST_FTP"] == True: #If testing == True, we dont want to use regular storage, change to specific ftp storage
+            if "testfolder" not in session.nlst():
+                session.mkd("testfolder")
+            session.cwd("testfolder")
+
+
         try:
             file_to_send = open(file_path, 'rb') #Open file to send
         except:
@@ -158,6 +192,10 @@ def upload_file(file_path, file_name, file_type, company_id):
 def delete_file_ftps(file_path, file_type, company_id):
     session = FTP('145.24.222.235')
     session.login("Controller", "cC2G'Q_&3qY@=D!@")
+    if current_app.config["USING_TEST_FTP"] == True: #If testing == True, we dont want to use regular storage, change to specific ftp storage
+        if "testfolder" not in session.nlst():
+            {"errorCode": 404, "Message": "Test folder does not exist on FTP server"}, 404
+        session.cwd("testfolder")
 
     if f"{company_id}" not in session.nlst(): #Check if company dir exists on FTP Server, if not, return
         return {"errorCode": 404, "Message": "Company directory does not exist on FTP server"}, 404
@@ -175,6 +213,53 @@ def delete_file_ftps(file_path, file_type, company_id):
     session.delete(file_path)
     session.quit()
     return "PASSED"
+
+
+def remove_ftp_dir(session, path):
+    for (name, properties) in session.mlsd(path=path):
+        if name in ['.', '..']:
+            continue
+        elif properties['type'] == 'file':
+            session.delete(f"{path}/{name}")
+        elif properties['type'] == 'dir':
+            remove_ftp_dir(session, f"{path}/{name}")
+    session.rmd(path)
+
+def delete_test_folder_ftp():
+    session = FTP('145.24.222.235')
+    session.login("Controller", "cC2G'Q_&3qY@=D!@")
+    if "testfolder" not in session.nlst():
+        return 1
+
+    deletedir("testfolder", session)
+    #session.cwd("testfolder")
+    #for file in session.nlst():
+    #session.delete(file)
+
+    #session.cwd("../")
+    #session.delete("testfolder")
+    return 0
+
+def deletedir(dirname, ftp):
+
+    ftp.cwd(dirname)
+
+    print(dirname)
+
+    for file in ftp.nlst():
+
+        try:
+            ftp.delete(file)
+
+        except Exception:
+            deletedir(file, ftp)
+
+    ftp.cwd("..")
+    ftp.rmd(dirname)
+
+
+
+
 
 
 #try_to_download_text_file(filename, 1)
