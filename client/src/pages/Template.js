@@ -28,7 +28,7 @@ const Template = () => {
         }
     }
 
-    const readFile = (file) => {
+    const readFile = async (file) => {
         if (checkFile(file) === "image") {
             return new Promise((resolve, reject) => {
                 let fr = new FileReader();  
@@ -55,7 +55,7 @@ const Template = () => {
         }
     }
 
-    const splitFiles = e => {
+    const splitFiles = async (e) => {
         let arr = Object.entries(e.target.files);
         let hasCSS = false;
         let hasHTML = false;
@@ -69,19 +69,22 @@ const Template = () => {
 
             // Image Files
             if (checkFile(el[1]) === "image") {
-                imgArr.push({name: el[1].name, data: readFile(el[1])});
+                let data = await readFile(el[1]);
+                imgArr.push({name: el[1].name, data: data});
             }
             // CSS File
             else if (checkFile(el[1]) === "css") {
                 hasCSS = true;
 
-                cssArr.push({name: el[1].name, data: readFile(el[1])});
+                let data = await readFile(el[1]);
+                cssArr.push({name: el[1].name, data: data});
             }
             // HTML Files
             else if (checkFile(el[1]) === "html") {
                 hasHTML = true;
 
-                htmlArr.push({name: el[1].name, data: readFile(el[1])});
+                let data = await readFile(el[1]);
+                htmlArr.push({name: el[1].name, data: data});
             }
         }
 
@@ -99,10 +102,6 @@ const Template = () => {
     }
 
     const createBaseProduct = (imgArr, cssArr, htmlArr) => {
-        
-        console.log(imgArr, imgArr.length);
-        console.log(cssArr, cssArr.length);
-        console.log(htmlArr, htmlArr.length);
 
         // let f = new File([htmlArr[0].data], htmlArr[0].name, {type: "text/html", lastModified: new Date(0)})
         // let tempReader = new FileReader();
