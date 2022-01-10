@@ -9,8 +9,6 @@ from generate_random_path import generate_random_path
 image_api = Blueprint('image_api', __name__)
 
 #TODO: accepted filetypes
-#TODO: change len(img) to just img
-#TODO: gallery_identifier?
 
 @image_api.route("/gallery/<company_identifier>/<gallery_identifier>", methods=["GET","POST"])
 def gallery(company_identifier, gallery_identifier):
@@ -32,7 +30,7 @@ def gallery(company_identifier, gallery_identifier):
                     images.append(
                         dict(
                             image_id = row['image_id'],
-                            image = len(img)
+                            image = img
                         )
                     )
                 else:
@@ -48,6 +46,9 @@ def gallery(company_identifier, gallery_identifier):
         if user_verification != "PASSED":
             return user_verification
 
+        with create_db_session() as db_session:
+            existing_image_names = db_session.query(Image.image_path).filter_by(Gallery_gallery_id = f'{gallery_identifier}').all()
+
         uploaded_images = request.files.getlist("file[]")
         if uploaded_images != []:
             for image in uploaded_images:
@@ -56,6 +57,9 @@ def gallery(company_identifier, gallery_identifier):
 
                 if not image_endswith(image.filename):
                     return  {"errorCode": 405, "Message": "One or multiple images does not have a correct filetype"}, 405
+                
+                if image.filename in existing_image_names:
+                    return {"errorCode": 402, "Message": "The filename of one or multiple images already exists in the gallery"}, 402
 
                 random_file_path = generate_random_path(24, 'jpg') #Generate random file path for temp storage + create an empty file with given length + extension
                 if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
@@ -77,7 +81,7 @@ def gallery(company_identifier, gallery_identifier):
         return {"errorCode": 405, "Message": "No images were sent through the request"}, 405
 
 
-def image_endswith(filename):
+def image_endswith(filename): #Check for accepted filenames
     accepted_files = [".png",".jpg",".jpeg"]
     for type in accepted_files:
         if filename.endswith(type):
@@ -99,7 +103,7 @@ def image(company_identifier, gallery_identifier, image_identifier):
             if img is not "":
                 return jsonify(dict(
                     image_id = result["image_id"],
-                    image = len(img)
+                    image = img
                 ))
             return {"errorCode": 404, "Message": "This image could not be retrieved from the FTP server"}, 404
         return {"errorCode": 404, "Message": "This image is not available"}, 404
