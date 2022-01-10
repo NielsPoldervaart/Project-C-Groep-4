@@ -7,7 +7,7 @@ from os import path
 
 company_api = Blueprint('company_api', __name__)
 
-@company_api.route("/company/<company_identifier>", methods=["GET"])
+@company_api.route("/company/<int:company_identifier>", methods=["GET"])
 def company(company_identifier):
 
     user_verification = verify_user(company_identifier)
@@ -15,17 +15,17 @@ def company(company_identifier):
         return user_verification
 
     if request.method == "GET":
-        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+        with create_db_session() as db_session:
             company_information = db_session.query(Company.company_id, Company.company_name).filter_by(company_id = company_identifier).first()
 
         if company_information is not None:
             return dict(
                 company_id = company_information.company_id,
                 company_name = company_information.company_name
-            )
+            ), 200
         return {"errorCode": 404, "Message": "Company Does not exist"""}, 404
 
-@company_api.route("/<company_identifier>/accounts", methods=["GET", "POST"])
+@company_api.route("/<int:company_identifier>/accounts", methods=["GET", "POST"])
 def company_accounts(company_identifier):
 
     user_verification = verify_user(company_identifier) #TODO: WHICH USERS ARE ALLOWED TO MAKE THIS REQUEST (SHOULD IT BE DIFFERENT FOR POST/GET)
@@ -36,14 +36,15 @@ def company_accounts(company_identifier):
         users_dictionary = {}
         company_has_no_users = True
 
-        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
-            verified_users_information = db_session.query(User.email, User.username, User.Role_role_id).filter_by(Company_company_id = company_identifier).filter_by(verified = True).all()
-            awaiting_users_information = db_session.query(User.email, User.username, User.Role_role_id).filter_by(Company_company_id = company_identifier).filter_by(verified = False).all()
+        with create_db_session() as db_session:
+            verified_users_information = db_session.query(User.user_id, User.email, User.username, User.Role_role_id).filter_by(Company_company_id = company_identifier).filter_by(verified = True).all()
+            awaiting_users_information = db_session.query(User.user_id, User.email, User.username, User.Role_role_id).filter_by(Company_company_id = company_identifier).filter_by(verified = False).all()
 
-        if verified_users_information is not None:
-            company_has_no_users = True
+        if verified_users_information is not []:
+            company_has_no_users = False
             users_dictionary["Verified_users"] =[
                 dict(
+                user_id = row["user_id"],
                 email = row["email"],
                 username = row["username"],
                 user_role = row["Role_role_id"]
@@ -53,10 +54,11 @@ def company_accounts(company_identifier):
         else:
             users_dictionary["Verified_users"] = []
 
-        if awaiting_users_information is not None:
-            company_has_no_users = True
+        if awaiting_users_information is not []:
+            company_has_no_users = False
             users_dictionary["Awaiting_users"] =[
                 dict(
+                user_id = row["user_id"],
                 email = row["email"],
                 username = row["username"],
                 user_role = row["Role_role_id"]
@@ -69,13 +71,13 @@ def company_accounts(company_identifier):
         if company_has_no_users:
             return {"errorCode": 404, "Message": "Company has no accounts"} , 404
 
-        return users_dictionary, 200
+        return (users_dictionary, 200)
 
 
     if request.method == "POST":
         form_user_id = request.form['user_id'] #STRING: WHICH USER TO BE ADDED / DECLINED
         form_accepted = request.form['accepted'] #BOOLEAN: WHETHER USER SHOULD BE ADDED TO COMPANY (APPROVED)
-        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+        with create_db_session() as db_session:
             extracted_user = db_session.query(User).filter_by(Company_company_id = company_identifier).filter_by(user_id = form_user_id).first()
 
             if extracted_user is None:
@@ -100,7 +102,7 @@ def company_accounts(company_identifier):
     return {"errorCode": 500, "Message": "Internal server error"} , 500 #Something went wrong
 
 
-@company_api.route("/<company_identifier>/manual", methods=["GET", "POST"])
+@company_api.route("/<int:company_identifier>/manual", methods=["GET", "POST"])
 def company_manual(company_identifier):
     
     user_verification = verify_user(company_identifier)
@@ -108,14 +110,14 @@ def company_manual(company_identifier):
         return user_verification
 
     if request.method == "GET": #Open specific manual (to view)
-        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+        with create_db_session() as db_session:
             #result = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
             manual_file_location_ftp = db_session.query(Manual.manual_file).join(Company).filter_by(Manual_manual_id = Manual.manual_id).filter_by(company_id = company_identifier).first()
 
 
         if manual_file_location_ftp is not None:
             manual_bytes = try_to_get_file_ftps_binary(manual_file_location_ftp.manual_file, "manual", company_identifier)
-            if manual_bytes is dict: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
+            if type(manual_bytes) is tuple: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
                 return manual_bytes
 
             return send_file(manual_bytes, mimetype="text/html")
@@ -125,24 +127,25 @@ def company_manual(company_identifier):
     if request.method == "POST": #Upload a manual to Company
         uploaded_manual = request.files['manual_file']
         if uploaded_manual.filename == '': 
-            return {"Code": 405, "Message": "No manual file found in request, OR File has no valid name"}
+            return {"errorCode": 405, "Message": "No manual file found in request, OR File has no valid name"}, 405
 
         if not (uploaded_manual.filename.endswith(".html") or uploaded_manual.filename.endswith(".htm")):
-            return  {"Code": 405, "Message": "No manual file found in request, OR File has no valid extension (.html OR .htm)"}
+            return  {"errorCode": 405, "Message": "No manual file found in request, OR File has no valid extension (.html OR .htm)"}, 405
 
-        with create_db_session(current_app.config["DATABASE_URI"]) as db_session:
+        with create_db_session() as db_session:
             #Check if company already has a manual, if so, return error code TODO: Should be able to update manual
             company_info = db_session.query(Company).filter_by(company_id = company_identifier).first() #TODO: check if can be safer (query only necessary info)
             if company_info.Manual_manual_id is not None:
-                return {"Code": 400, "Message": "Company already has a manual connected. Contact Kynda for more information"}
+                return {"errorCode": 400, "Message": "Company already has a manual connected. Contact Kynda for more information"}, 400
 
             random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage + create an empty file with given length + extension
             if path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
                 random_file_path = generate_random_path(24, 'html')
 
             uploaded_manual.save(random_file_path) #Save manual to created storage
-            upload_file(random_file_path, f"{uploaded_manual.filename}", "manual", company_identifier)
-
+            try_to_upload_file_to_ftp = upload_file(random_file_path, f"{uploaded_manual.filename}", "manual", company_identifier)
+            #if try_to_upload_file_to_ftp is not "PASSED":
+            #    return {"Code": 201, "Message": "Manual added to company"}, 201 #TODO: ADD THIS CHECK BACK IN (GOTTA FIX THE RETURN OF upload_file to PASSED FIRST!!!!)
             os.remove(random_file_path) #Delete manual from created storage (temp storage)
 
             new_manual = Manual(None, f"{uploaded_manual.filename}")
@@ -152,7 +155,7 @@ def company_manual(company_identifier):
             company_info.Manual_manual_id = manual_identifier
             db_session.commit()
 
-        return {"Code": 201, "Message": "Manual added to company"}
+        return {"Code": 201, "Message": "Manual added to company"}, 201
 
 @company_api.route("/", methods=["GET"])
 def index():
