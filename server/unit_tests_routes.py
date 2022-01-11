@@ -49,18 +49,18 @@ AdjustedProduct = "database/templates/template2.html"
 tester = None
 
 class TestRoutes(unittest.TestCase):
-###Database creation
-    #Database initialization
 
     def setUp(self):
+        #IDEALLY WE WOULD CREATE THE DATABASE AND INSERT THE VALUES HERE, BUT USING THE test_client() CONTEXT MADE IT DIFFUCULT
         pass
 
     def test_routes(self):
-        #SETTING UP THE DATABASE
+        #CREATING A TEST_CLIENT FLASK CONTEXT
         with app.test_client() as client:
+            #SETUP DATABASE WITHIN CONTEXT
             with app.app_context():
                 setup_basic_db()
-            client.get("/") #Create a session by requesting index route
+            client.get("/") #CREATE DB SESSION USING INDEX ROUTE
 
             #SECURITY TESTS BEFORE LOGGING IN
             self.company_route_security_tests(client)
