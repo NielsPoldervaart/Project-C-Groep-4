@@ -6,22 +6,38 @@ skinparam ranksep 20
 
 file **product_routes.py** as file_products #FEFECE {
     rectangle **/products/<int:company_identifier>** as all_products #ffffff{
-    rectangle "**GET**\n(View company's template metadata)\t\t\t" #Application
-    rectangle "<color:grey>**DELETE**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" #lightgrey
-    rectangle "**POST**\n(Upload new template to company)\t\t\t\t" #technology
-    rectangle "<color:grey>**PUT**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" #lightgrey
+    rectangle "**GET**\n(View company's template metadata)\t\t\t" as a #Application
+    rectangle "<color:grey>**DELETE**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as b #lightgrey
+    rectangle "**POST**\n(Upload new template to company)\t\t\t\t" as c #technology
+    rectangle "<color:grey>**PUT**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as d #lightgrey
     }
 
-    rectangle **/product/<int:company_identifier>/<int:product_identifier>** as specific_product #ffffff{
-    rectangle "**GET**\n(Retreive specific company product data)\t\t" #Application
-    rectangle "**DELETE**\n(Remove specific company product data)\t\t" #Implementation
-    rectangle "<color:grey>**POST**\n<color:grey>(NOT IMPLEMENTED)  \t\t\t\t\t\t" #lightgrey
-    rectangle "**PUT**\n(Update specific company product data)\t\t\t" #Strategy
+    rectangle **/product/verify/<int:company_identifier>/<int:product_identifier>** as verify_product #ffffff{
+    rectangle "<color:grey>**GET**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as i #lightgrey
+    rectangle "<color:grey>**DELETE**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as j #lightgrey
+    rectangle "<color:grey>**POST**\n<color:grey>(NOT IMPLEMENTED)  \t\t\t\t\t\t" as k#lightgrey
+    rectangle "**PUT**\n(Verify specific company product)\t\t\t\t"  as l#Strategy
     }
+    rectangle **/product/<int:company_identifier>/<int:product_identifier>** as specific_product #ffffff{
+    rectangle "**GET**\n(Retreive specific company product data)\t\t" as e#Application
+    rectangle "**DELETE**\n(Remove specific company product data)\t\t" as f #Implementation
+    rectangle "<color:grey>**POST**\n<color:grey>(NOT IMPLEMENTED)  \t\t\t\t\t\t" as g#lightgrey
+    rectangle "**PUT**\n(Update specific company product data)\t\t\t" as h #Strategy
+    }
+
+    rectangle **/product/download/<int:company_identifier>/<int:product_identifier>** as download_product #ffffff{
+    rectangle "<color:grey>**GET**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as m #lightgrey
+    rectangle "<color:grey>**DELETE**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as n #lightgrey
+    rectangle "<color:grey>**POST**\n<color:grey>(NOT IMPLEMENTED)  \t\t\t\t\t\t" as o#lightgrey
+    rectangle "**PUT**\n(Download specific company product)\t\t\t"  as p #Strategy
+    }
+
 }
 
 'file_products -d--> all_products
 'file_products ---> specific_product
 all_products --[HIDDEN]-> specific_product
+specific_product --[HIDDEN]-> verify_product
+verify_product --[HIDDEN]-> download_product
 
 @enduml

@@ -4,8 +4,7 @@ from os import path
 from flask import Blueprint, jsonify, request, send_file, session
 
 from database_connection import *
-from ftp_controller import (delete_file_ftps, try_to_copy_template_to_product,
-                            try_to_get_text_file_ftps, upload_file)
+from ftp_controller import try_to_delete_file_ftps, try_to_copy_template_to_product, try_to_get_file_ftps_binary, try_to_upload_file_ftps
 from generate_random_path import generate_random_path
 from user_verification import verify_user
 
@@ -33,7 +32,7 @@ def products(company_identifier):
         if len(products) is not 0:
             return jsonify(products)
         else:
-            return {"errorCode": 404, "Message": "No product in company"}
+            return {"errorCode": 404, "Message": "No product in company"}, 404
 
     if request.method == "POST": #Add a product to DB and FTP
         #CHECK IF TEMPLATE EXISTS WITH THE TEMPLATE_FILE, DOWNLOAD TEMPLATE, UPLOAD TEMPLATE TO SERVER
@@ -69,16 +68,16 @@ def product(company_identifier, product_identifier):
         with create_db_session() as db_session:
             product_file_location_ftp = db_session.query(Product.product_file).filter_by(product_id = product_identifier).filter_by(Company_company_id = company_identifier).first()
 
-        if product_file_location_ftp is not None:
-            #print(type(product_file_location_ftp.product_file), product_file_location_ftp.product_file)
+        if product_file_location_ftp is None:
+            return {"errorCode": 404, "Message": "Product Does not exist"}, 404
 
-            product_bytes = try_to_get_text_file_ftps(product_file_location_ftp.product_file, "products", company_identifier)
-            if product_bytes is dict: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
-                return product_bytes
+        product_bytes = try_to_get_file_ftps_binary(product_file_location_ftp.product_file, "products", company_identifier)
+        if type(product_bytes) is tuple: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
+            return product_bytes
 
-            return send_file(product_bytes, mimetype="text/html")
+        return send_file(product_bytes, mimetype="text/html")
 
-        return {"errorCode": 404, "Message": "Product Does not exist"""}, 404
+
 
 
     if request.method == "PUT": #Update a specific product
@@ -94,7 +93,7 @@ def product(company_identifier, product_identifier):
             return {"errorCode": 404, "Message": "No valid file found in request (Name should be same as old product name"}, 404
 
         #Remove the old file from the products dir
-        attempt_to_remove = delete_file_ftps(old_product_object.product_file, "products", company_identifier)
+        attempt_to_remove = try_to_delete_file_ftps(old_product_object.product_file, "products", company_identifier)
         if attempt_to_remove is not "PASSED":
             return attempt_to_remove
         
@@ -104,8 +103,11 @@ def product(company_identifier, product_identifier):
             random_file_path = generate_random_path(24, 'html')
 
         updated_product.save(random_file_path) #Save template to created storage
-        upload_file(random_file_path, f"{updated_product.filename}", "products", company_identifier)
+
+        upload_attempt = try_to_upload_file_ftps(random_file_path, f"{updated_product.filename}", "products", company_identifier)
         os.remove(random_file_path)
+        if upload_attempt is not "PASSED":
+            return upload_attempt
 
         return {"Code": 201, "Message": "File succesfully updated"}, 201
 
@@ -119,8 +121,7 @@ def product(company_identifier, product_identifier):
             return {"Code": 404, "Message": "Product not found in database"}, 404
 
         path = product_to_delete.product_file
-        attempt_to_remove = delete_file_ftps(path, 'products', company_identifier) #TODO: Change 'products' to actual dynamic var (will not work with image files currently (can get type from file path[etc] and then set accordingly))
-        #TODO: CHECK Value of attempt to remove is 201, if not, dont unlink from database (File is not removed from)
+        attempt_to_remove = try_to_delete_file_ftps(path, 'products', company_identifier)
         if attempt_to_remove is not "PASSED":
             return attempt_to_remove
 
@@ -132,21 +133,34 @@ def product(company_identifier, product_identifier):
 
 @product_api.route("/product/verify/<int:company_identifier>/<int:product_identifier>", methods=["PUT"])
 def verify_product(company_identifier, product_identifier):
-    #Check perms (user verification (role 1 or 2))
-    #Query product from DB
-    #Check if request.form["verified"] == True
-    #Change verified column to True
-    #TODO: If product is not adequate (request.form["verified"] == False), add options to deny
-    #Commit to db
-    pass
+    if request.method == "PUT":
+
+        user_verification = verify_user(company_identifier, [1,2]) #Check perms (user verification (role 1 or 2))
+        if user_verification != "PASSED":
+         return user_verification
+
+        if not request.form["verified"]: #Check if request.form["verified"] == False
+            return {"errorCode": 404, "Message": "Declining concept product not implemented"}, 404 #TODO: If product is not adequate (request.form["verified"] == False), add options to deny
+
+        with create_db_session() as db_session: #Query product from DB
+            product_to_verify = db_session.query(Product).filter_by(product_id = product_identifier).filter_by(Company_company_id = company_identifier).first()
+
+            if product_to_verify is None:
+                return  {"Code": 404, "Message": "Product not found in database"}, 404
+
+            product_to_verify.verified = True #Change verified column to True
+            db_session.commit()
+            return {"Code": 201, "Message": "Product succesfully verified"}, 201
 
 @product_api.route("/product/download/<int:company_identifier>/<int:product_identifier>", methods=["PUT"])
 def download_product(company_identifier, product_identifier):
-    user_verification = verify_user(company_identifier)
-    if user_verification != "PASSED":
-        return user_verification
 
     if request.method == "PUT":
+
+        user_verification = verify_user(company_identifier)
+        if user_verification != "PASSED":
+            return user_verification
+
         with create_db_session() as db_session:
             downloaded_product = db_session.query(Product).filter_by(product_id = product_identifier).filter_by(Company_company_id = company_identifier).first()
 

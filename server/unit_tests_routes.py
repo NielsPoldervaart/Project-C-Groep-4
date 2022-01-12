@@ -49,41 +49,41 @@ AdjustedProduct = "database/templates/template2.html"
 tester = None
 
 class TestRoutes(unittest.TestCase):
-###Database creation
-    #Database initialization
 
     def setUp(self):
+        #IDEALLY WE WOULD CREATE THE DATABASE AND INSERT THE VALUES HERE, BUT USING THE test_client() CONTEXT MADE IT DIFFUCULT
         pass
 
     def test_routes(self):
-        #SETTING UP THE DATABASE
+        #CREATING A TEST_CLIENT FLASK CONTEXT
         with app.test_client() as client:
+            #SETUP DATABASE WITHIN CONTEXT
             with app.app_context():
                 setup_basic_db()
-            client.get("/") #Create a session by requesting index route
+            client.get("/") #CREATE DB SESSION USING INDEX ROUTE
 
             #SECURITY TESTS BEFORE LOGGING IN
-            # self.company_route_security_tests(client)
-            # self.template_route_security_tests(client)
-            # self.product_route_security_tests(client)
-            # self.image_route_security_tests(client)
+            self.company_route_security_tests(client)
+            self.template_route_security_tests(client)
+            self.product_route_security_tests(client)
+            self.image_route_security_tests(client)
 
             #LOGIN EXISTING ACCOUNT
-            # self.login_fail_tests(client)
+            self.login_fail_tests(client)
             self.login_pass(client) #REQUIRED
 
             #REGISTER NEW ACCOUNTS
             self.register_throwaway_account_pass(client) #REQUIRED
             self.register_actual_account_pass(client) #REQUIRED
-            # self.register_account_fail(client)
+            self.register_account_fail(client)
 
             #COMPANY ROUTES
-            # self.company_info_pass(client)
-            # self.company_accounts_info_pass(client)
-            # self.company_add_manual_pass(client)
-            # self.company_view_manual_pass(client)
+            self.company_info_pass(client)
+            self.company_accounts_info_pass(client)
+            self.company_add_manual_pass(client)
+            self.company_view_manual_pass(client)
             self.company_accept_account_pass(client) #REQUIRED
-            # self.company_decline_account_pass(client)
+            self.company_decline_account_pass(client)
 
             #LOGOUT EXISTING ACCOUNT
             self.logout_account(client) #REQUIRED
@@ -92,37 +92,37 @@ class TestRoutes(unittest.TestCase):
             self.login_created_account_pass(client) #REQUIRED
 
             #TEMPLATE ROUTES
-            # self.view_all_templates_empty_pass(client)
-            # self.upload_template_filetype_fail(client)
+            self.view_all_templates_empty_pass(client)
+            self.upload_template_filetype_fail(client)
             self.upload_template_for_creation_pass(client) #REQUIRED (Product)
-            # self.upload_template_for_deletion_pass(client)
-            # self.view_all_templates_exists_pass(client)
-            # self.view_specific_template_exists_pass(client)
-            # self.delete_specific_template_exists_pass(client)
+            self.upload_template_for_deletion_pass(client)
+            self.view_all_templates_exists_pass(client)
+            self.view_specific_template_exists_pass(client)
+            self.delete_specific_template_exists_pass(client)
 
             #PRODUCT ROUTES
             self.create_product_pass(client)
             self.alter_product_pass(client)
-            #TODO: Verify product
+            self.verify_product_pass(client)
             self.download_product_pass(client)
             self.delete_product_pass(client)
 
             #IMAGE ROUTES
-            # self.view_all_images_empty_pass(client)
-            # self.upload_image_filetype_fail(client)
-            # self.upload_image_pass(client)
-            # self.view_all_images_exists_pass(client)
-            # self.view_specific_image_pass(client)
-            # self.remove_specific_image_pass(client)
+            self.view_all_images_empty_pass(client)
+            self.upload_image_filetype_fail(client)
+            self.upload_image_pass(client)
+            self.view_all_images_exists_pass(client)
+            self.view_specific_image_pass(client)
+            self.remove_specific_image_pass(client)
 
             #LOGOUT CREATED ACCOUNT
             self.logout_account(client) #REQUIRED
 
             #SECURITY TESTS AFTER LOGGING OUT
-            # self.company_route_security_tests(client)
-            # self.template_route_security_tests(client)
-            # self.product_route_security_tests(client)
-            # self.image_route_security_tests(client)
+            self.company_route_security_tests(client)
+            self.template_route_security_tests(client)
+            self.product_route_security_tests(client)
+            self.image_route_security_tests(client)
 
     def create_db_and_insert_values(self): #CREATES DATABASE FILE + STRUCTURE AND INSERTS NECESSARY VALUES
         init_db_structure()
@@ -233,7 +233,7 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(test, 201)
         return response
 
-    #TODO: Register actual account (verification should get accepted)
+    #Register actual account (verification should get accepted)
     def register_actual_account_pass(self, client):
         response = client.post(f"/register/{CreatedAccountCompanyID}", data={"name": CreatedAccountName, "email" : CreatedAccountEmail, "password": CreatedAccountPassword, "role_id" : CreatedAccountRole_id})
         test = response.status_code
@@ -246,12 +246,12 @@ class TestRoutes(unittest.TestCase):
         test1 = client.get(f"/company/{ExistingAccountCompanyID}").status_code
         self.assertEqual(test1, 200)
 
-    #TODO: GET view company accounts info pass ("/<company_identifier>/accounts" GET)
+    #GET view company accounts info pass ("/<company_identifier>/accounts" GET)
     def company_accounts_info_pass(self, client):
         test1 = client.get(f"/{ExistingAccountCompanyID}/accounts").status_code
         self.assertEqual(test1, 200)
 
-    #TODO: POST Insert a company manual ("/<company_identifier>/manual" POST)
+    #POST Insert a company manual ("/<company_identifier>/manual" POST)
     def company_add_manual_pass(self, client):
         with open(f'{TestTemplate}', 'rb') as manual: #TODO: MAYBE ADD AN ACTUAL MANUAL FILE
             test1 = client.post(f"/{CreatedAccountCompanyID}/manual", data={'manual_file': (manual, 'test.html')}).status_code
@@ -293,7 +293,7 @@ class TestRoutes(unittest.TestCase):
     def view_all_templates_empty_pass(self, client): #Test when there is no template in company
         response = client.get(f"/templates/{CreatedAccountCompanyID}")
         statuscode = response.status_code
-        self.assertEqual(statuscode, 200)
+        self.assertEqual(statuscode, 404)
         return response
 
     #POST try to add template to company with wrong filetype ("/templates/<company_identifier>" POST) (KYNDA_ADMIN)
@@ -357,13 +357,20 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(statuscode, 201)
         return response
 
-    #TODO: VERIFY PRODUCT (FIRST LOG OUT OF CREATED ACCOUNT, LOG BACK IN TO ADMIN ACCOUNT, VERIFY TESTS, LOG BACK OUT AND IN)
+    #VERIFY PRODUCT (FIRST LOG OUT OF CREATED ACCOUNT, LOG BACK IN TO ADMIN ACCOUNT, VERIFY TESTS, LOG BACK OUT AND IN)
+    def verify_product_pass(self, client):
+        response = client.put(f"/product/verify/{CreatedAccountCompanyID}/1", data={"verified": True})
+        statuscode = response.status_code
+        self.assertEqual(statuscode, 201)
+        return response
+
+
     
-    #TODO: POST increase downloads of product ("/product/download/<company_identifier>/<product_identifier" POST)
+    #POST increase downloads of product ("/product/download/<company_identifier>/<product_identifier" POST)
     def download_product_pass(self,client):
         response = client.put(f"/product/download/{ExistingAccountCompanyID}/1")
         statuscode = response.status_code
-        self.assertEqual(statuscode, 402) #TODO: change to 201 after verify product implemented
+        self.assertEqual(statuscode, 201) #TODO: change to 201 after verify product implemented
         return response
 
     #DELETE remove product from company ("/product/<company_identifier>/<product_identifier" DELETE) (COMPANY_ADMIN/COMPANY_EMPLOYEE)    
