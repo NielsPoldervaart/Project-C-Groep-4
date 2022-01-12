@@ -116,7 +116,7 @@ def image(company_identifier, gallery_identifier, image_identifier):
             return user_verification
 
         with create_db_session() as db_session:
-            image = db_session.query(Image).filter_by(image_id = f'{image_identifier}').first()
+            image = db_session.query(Image).filter_by(image_id = f'{image_identifier}').filter_by(Gallery_gallery_id = f'{gallery_identifier}').first()
             if image is None:
                 return {"errorCode": 404, "Message": "Image could not be found in the database"}, 404
 
