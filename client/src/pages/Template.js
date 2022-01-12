@@ -12,10 +12,6 @@ const Template = () => {
     //     data.append("File", fileData);
     // };
 
-    const testStyle = {
-        display: 'none',
-    }
-
     const checkFile = (file) => {
         if (file.name.includes('.png') || file.name.includes('.jpg') || file.name.includes('.jpeg')) {
             return "image"
@@ -98,47 +94,66 @@ const Template = () => {
         else {
             createBaseProduct(imgArr, cssArr, htmlArr);
         }
-
     }
 
-    const createBaseProduct = (imgArr, cssArr, htmlArr) => {
+    const overwriteCss = async (cssArr, imgArr) => {
+        let css = cssArr[0].data;
 
-        // let f = new File([htmlArr[0].data], htmlArr[0].name, {type: "text/html", lastModified: new Date(0)})
-        // let tempReader = new FileReader();
-        // tempReader.readAsText(f);
+        imgArr.forEach(imgObj => {
+            if (css.includes(`assets/${imgObj.name}`)) {
+                css = css.replace(`assets/${imgObj.name}`, imgObj.data);
+            }
+        });
 
-        // tempReader.onloadend = () => {
-        //     let templateString = tempReader.result;
+        return css
+    }
 
-        //     let parser = new DOMParser();
-        //     let parsedTemplate = parser.parseFromString(templateString, 'text/html');
-        //     parsedTemplate.querySelector("head link").remove();
+    const overwriteHtml = async (htmlArr, imgArr) => {
+        let html = htmlArr[0].data;
 
-        //     var styleElement = document.createElement("STYLE");
-        //     styleElement.innerHTML = cssArr[0].data; 
-        //     parsedTemplate.querySelector("head").appendChild(styleElement);
+        imgArr.forEach(imgObj => {
+            if (html.includes(`assets/${imgObj.name}`)) {
+                html = html.replace(`assets/${imgObj.name}`, imgObj.data);
+            }
+        });
 
-        //     var tempHTML = parsedTemplate.querySelector("html");
-        //     document.querySelector(".templateBody").appendChild(tempHTML);
+        return html
+    }
 
-        //     // For each element inside the dict, grab the key and add . infront of key
-        //     // then for each element that contains the value above ^ replace the backgroundImage calue with the dataURL
-        //     // check if there is a way to disable the error message that pops up
-        //     // check for a way to disable the style from the template to apply on the website and vice versa
+    const createBaseProduct = async (imgArr, cssArr, htmlArr) => {
+        let newCss = await overwriteCss(cssArr, imgArr);
+        let newHtml = await overwriteHtml(htmlArr, imgArr);
 
-        //     // console.log(parsedTemplate.querySelectorAll('body *'));
-        //     // setTemplate(parsedTemplate);
-        //     // console.log(parsedTemplate);
-        // }
+        let parser = new DOMParser();
+        let parsedTemplate = parser.parseFromString(newHtml, "text/html");
+        parsedTemplate.querySelector("head link").remove();
+
+        let styleElement = document.createElement("STYLE");
+        styleElement.textContent = newCss; 
+        parsedTemplate.querySelector("head").appendChild(styleElement);
+
+        let templateName = htmlArr[0].name;
+        templateName = `.${templateName.replace('.html', '')}`;
+        parsedTemplate.querySelector(templateName).style.overflow = "hidden";
+
+        var templateHTML = parsedTemplate.querySelector("html");
+        document.querySelector(".templateBody").appendChild(templateHTML);
+
+        let htmlString = document.querySelector(".templateBody").innerHTML;
+
+        // TODO: wordpress shit
+
+        let f = new File([htmlString], htmlArr[0].name, {type: "text/html", lastModified: new Date(0)});
+        let a = await readFile(f);
+
+        console.log(a);
+
+        // setTemplate(parsedTemplate);
+        // console.log(parsedTemplate);
     }
 
     const uploadDir = (e) => {
         e.preventDefault()
-
-        var el = document.querySelector(".x13a0159baggerenschoonouwenapril2020");
-        var test = window.getComputedStyle(el);
-        
-        console.log(test.backgroundImage);
 
         // if (template === "") {
         //     alert("Make template first!");
@@ -161,7 +176,7 @@ const Template = () => {
                 {/* <input name='File' className='FileInputBar' type='file' onChange={handleChange}/> */}
                 <input type="submit" value="Upload" />
             </form>
-            <div className='templateBody' style={testStyle}>
+            <div className='templateBody'>
 
             </div>
         </div>
