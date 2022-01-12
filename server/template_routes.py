@@ -1,6 +1,6 @@
 from flask import Blueprint, request, send_file, session
 from user_verification import verify_user
-from ftp_controller import try_to_get_text_file_ftps, delete_file_ftps, upload_file
+from ftp_controller import try_to_get_file_ftps_binary, try_to_delete_file_ftps, try_to_upload_file_ftps
 from database_connection import *
 import os
 from os import path
@@ -21,8 +21,8 @@ def templates(company_identifier):
         with create_db_session() as db_session:
             result = db_session.query(Template.template_id, Template.template_file, Company.company_name).join(Company).filter_by(company_id = f'{company_identifier}').all()
 
-        if result == []:
-            return {"code" : 200, "Message": "No templates found within company"}
+        if len(result) is 0:
+            return {"errorCode": 404, "Message": "No templates found within company"}, 404
 
         templates = [
             dict(
@@ -31,13 +31,11 @@ def templates(company_identifier):
                 )
                 for row in result
         ]
-        if len(templates) != 0:
-            Dict = {}
-            Dict["company_name"] = result[0].company_name
-            Dict["user_role"] = session["role_role_id"]
-            Dict["templates"] = templates
-            return Dict
-        return {"errorCode": 404, "Message": "Template Does not exist"""}, 404
+        Dict = {}
+        Dict["company_name"] = result[0].company_name
+        Dict["user_role"] = session["role_role_id"]
+        Dict["templates"] = templates
+        return Dict, 200
 
     if request.method == "POST": #Add a template to specific company as KYNDA_ADMIN
 
@@ -57,9 +55,11 @@ def templates(company_identifier):
             random_file_path = generate_random_path(24, 'html')
 
         uploaded_template.save(random_file_path) #Save template to created storage
-        upload_file(random_file_path, f"{uploaded_template.filename}", "templates", company_identifier)
+        upload_attempt = try_to_upload_file_ftps(random_file_path, f"{uploaded_template.filename}", "templates", company_identifier)
 
         os.remove(random_file_path)
+        if upload_attempt is not "PASSED":
+            return upload_attempt
 
         #New Template object is created, None is used for id as it is auto-incremented by SQLAlchemy
         new_template = Template(None, f"{uploaded_template.filename}", company_identifier)
@@ -73,11 +73,11 @@ def templates(company_identifier):
 @template_api.route("/template/<int:company_identifier>/<int:template_identifier>", methods=["GET", "DELETE"])
 def template(company_identifier, template_identifier):
 
-    user_verification = verify_user(company_identifier)
-    if user_verification != "PASSED":
-        return user_verification
-
     if request.method == "GET": #Open specific template (to view or to create a product)
+        user_verification = verify_user(company_identifier)
+        if user_verification != "PASSED":
+            return user_verification
+
         #result = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
         with create_db_session() as db_session:
             template_file_location_ftp = db_session.query(Template.template_file).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
@@ -85,7 +85,7 @@ def template(company_identifier, template_identifier):
         if template_file_location_ftp is not None:
             #print(type(template_file_location_ftp.template_file), template_file_location_ftp.template_file)
 
-            template_bytes = try_to_get_text_file_ftps(template_file_location_ftp.template_file, "templates", company_identifier)
+            template_bytes = try_to_get_file_ftps_binary(template_file_location_ftp.template_file, "templates", company_identifier)
             if type(template_bytes) is tuple: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
                 return template_bytes
 
@@ -94,7 +94,10 @@ def template(company_identifier, template_identifier):
         return {"errorCode": 404, "Message": "Template Does not exist"""}, 404
 
     if request.method == "DELETE" : #Delete a specific template as KYNDA_ADMIN or COMPANY_ADMIN
-
+        user_verification = verify_user(company_identifier, [1,2])
+        if user_verification != "PASSED":
+            return user_verification
+            
     #TODO: FIND A WAY TO ACCESS THE TEMPLATE FILE WITH ONE QUERY FOR DELETION, INSTEAD OF HAVING TO QUERY TWICE (SPEED INCR, OPTIONAL)
         with create_db_session() as db_session:
             template_to_delete = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
@@ -102,8 +105,10 @@ def template(company_identifier, template_identifier):
                 return {"Code": 404, "Message": "Template not found in database"}, 404
 
             path = template_to_delete.template_file
-            attempt_to_remove = delete_file_ftps(path, 'templates', company_identifier) #TODO: Change 'templates' to actual dynamic var (will not work with image files currently (can get type from file path[etc] and then set accordingly))
-            #TODO: CHECK Value of attempt to remove is 201, if not, dont unlink from database (File is not removed from)
+            attempt_to_remove = try_to_delete_file_ftps(path, 'templates', company_identifier)
+            if attempt_to_remove is not "PASSED":
+                return attempt_to_remove
+
             db_session.delete(template_to_delete)
             db_session.commit()
             

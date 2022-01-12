@@ -293,7 +293,7 @@ class TestRoutes(unittest.TestCase):
     def view_all_templates_empty_pass(self, client): #Test when there is no template in company
         response = client.get(f"/templates/{CreatedAccountCompanyID}")
         statuscode = response.status_code
-        self.assertEqual(statuscode, 200)
+        self.assertEqual(statuscode, 404)
         return response
 
     #POST try to add template to company with wrong filetype ("/templates/<company_identifier>" POST) (KYNDA_ADMIN)
