@@ -1,9 +1,12 @@
 import React, { useState } from 'react'
 import '../style/Template.css';
+import Loader from '../components/Loader';
 
 const Template = () => {
 
     const [template, setTemplate] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [hasTemplate, setHasTemplate] = useState(false);
 
     // const data = new FormData();
 
@@ -52,6 +55,7 @@ const Template = () => {
     }
 
     const splitFiles = async (e) => {
+        setLoading(true);
         let arr = Object.entries(e.target.files);
         let hasCSS = false;
         let hasHTML = false;
@@ -92,7 +96,7 @@ const Template = () => {
             return
         }
         else {
-            createBaseProduct(imgArr, cssArr, htmlArr);
+            createBaseTemplate(imgArr, cssArr, htmlArr);
         }
     }
 
@@ -120,9 +124,11 @@ const Template = () => {
         return html
     }
 
-    const createBaseProduct = async (imgArr, cssArr, htmlArr) => {
+    const createBaseTemplate = async (imgArr, cssArr, htmlArr) => {
         let newCss = await overwriteCss(cssArr, imgArr);
         let newHtml = await overwriteHtml(htmlArr, imgArr);
+
+        setHasTemplate(true);
 
         let parser = new DOMParser();
         let parsedTemplate = parser.parseFromString(newHtml, "text/html");
@@ -136,20 +142,38 @@ const Template = () => {
         templateName = `.${templateName.replace('.html', '')}`;
         parsedTemplate.querySelector(templateName).style.overflow = "hidden";
 
+        let children = parsedTemplate.querySelector(templateName).children
+        for (var i = 0; i < children.length; i++) {
+            var child = children[i];
+            if (child.textContent !== "") {
+                child.classList.add("templateText");
+            }
+        }
+
+        imgArr.forEach(img => {
+            let a = `${img.name.replace('.png', '')}`;
+            for (var i = 0; i < children.length; i++) {
+                var child = children[i];
+                if (child.classList.contains(a)) {
+                    child.classList.add("templateImage");
+                }
+            }
+        });
+
+        setLoading(false);
+
         var templateHTML = parsedTemplate.querySelector("html");
         document.querySelector(".templateBody").appendChild(templateHTML);
 
-        let htmlString = document.querySelector(".templateBody").innerHTML;
-
-        // TODO: wordpress shit
-
-        let f = new File([htmlString], htmlArr[0].name, {type: "text/html", lastModified: new Date(0)});
-        let a = await readFile(f);
-
-        console.log(a);
-
-        // setTemplate(parsedTemplate);
-        // console.log(parsedTemplate);
+        // document.querySelector(".templateBody").addEventListener('click', (e) => {
+        //     if (e.target.classList.contains("templateText") || e.target.classList.contains("templateImage")) {
+        //         // e.target.classList.add("selectedElement");
+        //     }
+        // });
+        
+        // let htmlString = document.querySelector(".templateBody").innerHTML;
+        // let template = new File([htmlString], htmlArr[0].name, {type: "text/html", lastModified: new Date(0)});
+        // setTemplate(template);
     }
 
     const uploadDir = (e) => {
@@ -169,17 +193,42 @@ const Template = () => {
         // .then(res =>  res.json())
         // .catch(error => console.log('Authorization failed : ' + error.message));
     }
+
+    const DisplayLoader = () => {
+        return (
+          <div className='loaderDiv'>
+            <Loader />
+          </div>
+        )
+    }
+
+    const DisplayElement = () => {
+        if (loading === false && hasTemplate === false) {
+            return (
+                <form method="post" id="DirForm">
+                    <input name='Dir' className='DirInputBar' id='DirInput' type='file' multiple="" directory="" webkitdirectory="" mozdirectory="" onChange={splitFiles} />
+                </form>
+            )
+        }
+        else {
+            return (
+                <div>
+                    <div className='headerSpacing' />
+                    <div className='templateBody'>
+
+                    </div>
+                </div>
+                
+            )
+        }
+    }
+
+    // TODO: add if statement to or display upload shit, or the template with the custom menu
     return (
         <div>
-            <form method="post" id="DirForm" onSubmit={(e) => uploadDir(e)}>
-                <input name='Dir' className='DirInputBar' id='DirInput' type='file' multiple="" directory="" webkitdirectory="" mozdirectory="" onChange={splitFiles} />
-                {/* <input name='File' className='FileInputBar' type='file' onChange={handleChange}/> */}
-                <input type="submit" value="Upload" />
-            </form>
-            <div className='templateBody'>
-
-            </div>
+            { loading ? DisplayLoader() : DisplayElement() }
         </div>
+        
     )
 }
 
