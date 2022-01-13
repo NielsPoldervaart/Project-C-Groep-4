@@ -7,6 +7,10 @@ from flask import current_app
 
 import base64
 
+accepted_extensions_template = [".htm", ".html"]
+accepted_extensions_image = [".jpg", ".jpeg", ".png"]
+
+
 def try_to_get_file_ftps_binary(file_name, file_type, company_id):
     #session = FTP('145.24.222.235') #Create session with FTP
     with FTP('145.24.222.235') as session:
@@ -144,11 +148,29 @@ def try_to_upload_file_ftps(file_path, file_name, file_type, company_id):
         if file_type not in session.nlst(): #file_type = template, product or gallery
             session.mkd(file_type)
 
-        session.cwd(file_type) #Change to the gallery/templates dir
+        if not(os.path.isfile(file_path)):
+            return {"errorCode": 404, "Message": "No file found in request"}, 404
+        file_extension = os.path.splitext(file_path)[-1].lower()
+
+
+        if file_extension in accepted_extensions_template: #TODO: NICE_TO_HAVE: CHANGE THIS INTO SEPARATE FUNCTIONS
+            if file_type == "manual":
+                session.cwd("manual")
+            elif file_type == "templates":    
+                session.cwd("templates") #Change to the gallery/templates dir
+            else:
+                return {"errorCode": 404, "Message": "Extension not supported for this type of file"}, 404
+
+        elif file_extension in accepted_extensions_image:
+            if file_type == "gallery":
+                session.cwd("gallery")
+            else: 
+                return {"errorCode": 404, "Message": "Extension not supported for this type of file"}, 404
+        else:
+            {"errorCode": 404, "Message": "No valid extension"}, 404
 
         with open(file_path, 'rb') as file_to_send: #Open file to send
             session.storbinary("STOR " + file_name, file_to_send) #Send file through as binary
-        #os.remove(file_path)
         return "PASSED"
 
 def try_to_delete_file_ftps(file_path, file_type, company_id):
@@ -171,7 +193,7 @@ def try_to_delete_file_ftps(file_path, file_type, company_id):
         session.cwd(file_type) #Change to the file_type dir (EG: products, templates)
 
         if file_path not in session.nlst(): #Check if company dir exists on FTP Server, if not, return
-            return {"errorCode": 404, "Message": f"File {file_path}  does not exist on FTP server"}, 404
+            return {"errorCode": 404, "Message": f"File does not exist on FTP server"}, 404
 
         session.delete(file_path)
         return "PASSED"

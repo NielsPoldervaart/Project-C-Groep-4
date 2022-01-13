@@ -10,8 +10,10 @@ from io import BytesIO
 #Company_id to use
 CompanyID = 1
 TemplatePath = "database/templates/template1.html"
+TemplatePath2 = r"database\templates\template2.html"
 TemplateName = "template1.html"
 ImagePath = "database/gallery/Horse.jpg"
+ImagePath2 = r"database\gallery\Appa.jpg"
 ImageName = "Horse.jpg"
 ProductName = TemplateName
 
@@ -34,8 +36,8 @@ class Test_user_verification_module(unittest.TestCase):
             self.retrieve_template_test_fail()
             self.retrieve_product_test_fail()
             self.retrieve_image_test_fail()
-            # self.upload_template_test_file_fail()
-            # self.upload_template_test_ext_fail()
+            self.upload_template_test_file_fail()
+            self.upload_template_test_ext_fail()
             self.upload_template_test_pass()
             self.create_product_test_wrong_template_fail()
             self.create_product_test_pass()
@@ -43,7 +45,7 @@ class Test_user_verification_module(unittest.TestCase):
             self.retrieve_template_test_pass()
             self.retrieve_product_test_pass()
             self.retrieve_image_test_pass()
-            #self.remove_template_test_pass()
+            self.remove_template_test_pass()
             self.remove_product_test_pass()
             self.remove_image_test_pass()
             self.remove_test_folder()
@@ -54,7 +56,7 @@ class Test_user_verification_module(unittest.TestCase):
     #TRY TO RETRIEVE TEMPLATE WHEN THERES NOTHING IN FTP
     def retrieve_template_test_fail(self):
         test = try_to_get_file_ftps_binary("fake_template.html", "templates", CompanyID)
-        expected_result = ({"errorCode": 404, "Message": "Test folder does not exist on FTP server"}, 404)
+        expected_result = ({'Message': 'Test folder does not exist on FTP server', 'errorCode': 404}, 404)
         self.assertEqual(test, expected_result)
 
     #TRY TO RETRIEVE PRODUCT WHEN THERES NOTHING IN FTP
@@ -72,15 +74,19 @@ class Test_user_verification_module(unittest.TestCase):
 ###UPLOAD TESTS
     #TRY UPLOAD TEMPLATE FAIL WITH NO TEMPLATE PROVIDED
     def upload_template_test_file_fail(self):
-        pass
+        test = try_to_upload_file_ftps("", "filename.html", "templates", CompanyID)
+        expected_result = ({"errorCode": 404, "Message": "No file found in request"}, 404)
+        self.assertEqual(test, expected_result)
 
     #TRY TO UPLOAD A TEMPLATE WITH WRONG EXTENSION
     def upload_template_test_ext_fail(self): 
-        pass
+        test = try_to_upload_file_ftps(ImagePath2, "test.jpg", "templates", CompanyID)
+        expected_result = ({'Message': 'Extension not supported for this type of file', 'errorCode': 404}, 404)
+        self.assertEqual(test, expected_result)
 
     def upload_template_test_pass(self): #UPLOAD TEMPLATE PASS ()
-        test = try_to_upload_file_ftps(TemplatePath, TemplateName, "templates", CompanyID)
-        expected_result = "PASSED"
+        test = try_to_upload_file_ftps(TemplatePath2, TemplateName, "templates", CompanyID)
+        expected_result = 'PASSED'
         self.assertEqual(test, expected_result)
 
     #MAKE PRODUCT
@@ -122,7 +128,9 @@ class Test_user_verification_module(unittest.TestCase):
 ###REMOVE TESTS
     #REMOVE TEMPLATE
     def remove_template_test_pass(self):
-        pass
+        test = try_to_delete_file_ftps(TemplateName, "templates", CompanyID)
+        expected_result = 'PASSED'
+        self.assertEqual(test, expected_result)
 
     #REMOVE PRODUCT
     def remove_product_test_pass(self):
@@ -142,8 +150,8 @@ class Test_user_verification_module(unittest.TestCase):
 
 
     def tearDown(self):
-        os.remove("test_sqlite.db") #TODO: INVESTIGATE THIS REMOVAL (NEEDED?)
         delete_test_folder_ftp()
+        os.remove("test_sqlite.db")
 
 if __name__ == "__main__":
     unittest.main()
