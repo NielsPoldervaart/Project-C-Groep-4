@@ -22,8 +22,8 @@ const Templates = () => {
           res => res.json()
         ).then(
           data => {
-            setTemplates(data)
-            setLoading(false)
+            setTemplates(data.templates);
+            setLoading(false);
           }
         )
 
@@ -187,8 +187,8 @@ const Templates = () => {
         setMadeTemplate(false);
 
         
-        let template = new File([htmlString], htmlArr[0].name, {type: "text/html", lastModified: new Date(0)});
-        uploadFile(template);
+        let newTemplate = new File([htmlString], htmlArr[0].name, {type: "text/html", lastModified: new Date(0)});
+        uploadFile(newTemplate);
 
         // document.querySelector(".templateBody").addEventListener('click', (e) => {
         //     if (e.target.classList.contains("templateText") || e.target.classList.contains("templateImage")) {
