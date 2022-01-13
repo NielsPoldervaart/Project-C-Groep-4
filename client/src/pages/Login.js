@@ -35,7 +35,7 @@ const Login = () => {
         })
         .then(res =>  res.json())
         .then(data => {
-            if (data.Code === 201) {
+            if (data.Code === 200) {
                 navigate('/1')
             }
             else {
