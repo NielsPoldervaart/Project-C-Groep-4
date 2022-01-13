@@ -2,36 +2,12 @@ from flask import current_app
 from sqlalchemy import create_engine, MetaData, Table, Column, String, Integer, ForeignKey, Boolean, DECIMAL
 from sqlalchemy.orm import mapper, sessionmaker, close_all_sessions
 from sqlite_db_creation import create_connection_sqlite
-"""
-def db_connection():
-    conn = None
-    try:
-        conn = pymysql.connect(
-            host="kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com",
-            database="KyndaDB",
-            user="kynda",
-            password="u9N3_HM+ARhDYsRQ",
-            charset='utf8mb4',
-            cursorclass=pymysql.cursors.DictCursor
-        )
-    except pymysql.Error as e:
-        print("\n\n\nERROR:", e)
-    return conn
-"""
-
-#db_location = "C:\\Users\\miame\\source\\repos\\Project-C-Groep-4\\server\\test_sqlite.db"
-db_location = "test_sqlite.db"
-
-uri = "sqlite:///C:\\Users\\miame\\source\\repos\\Project-C-Groep-4\\server\\test_sqlite.db"
-#SQLALCHEMY
 
 #CLASSES, INIT DEFINED FOR OBJECT CREATION (NEEDED FOR INSERTING INTO DB)
-
 class Gallery(object):
     def __init__(self, gallery_id, name):
         self.gallery_id = gallery_id
         self.name = name
-
 
 class Company(object):
     def __init__(self, company_id, company_name, Gallery_gallery_id, Manual_manual_id):
@@ -184,6 +160,7 @@ def create_db_session():
     session = Session()
     return session
 
+"""
 def createSession():
     create_connection_sqlite(db_location)
     init_db_structure(current_app.config["DATABASE_URI"])
@@ -201,3 +178,4 @@ def close_current_sessions():
     close_all_sessions()
 
 #createSession()
+"""
