@@ -8,14 +8,14 @@ import '../style/Templates.css';
 const Templates = () => {
     let navigate = useNavigate();
 
-    const { company_id } = useParams()
+    const { company_id } = useParams();
 
-    const [templates, setTemplates] = useState([])
-    const [company, setCompany] = useState([])
+    const [templates, setTemplates] = useState([]);
+    const [company, setCompany] = useState([]);
     const [loading, setLoading] = useState(true);
     const [madeTemplate, setMadeTemplate] = useState(false);
 
-    const inputFile = useRef(null)
+    const inputFile = useRef(null);
 
     useEffect(() => {
         fetch(`/templates/${company_id}`).then(
@@ -34,11 +34,7 @@ const Templates = () => {
             setCompany(data)
           }
         )
-
-        DisplayElement()
-    }, [company_id])
-
-    const [template, setTemplate] = useState(null);
+    }, [company_id]);
 
     const checkFile = (file) => {
         if (file.name.includes('.png') || file.name.includes('.jpg') || file.name.includes('.jpeg')) {
@@ -190,15 +186,16 @@ const Templates = () => {
 
         setMadeTemplate(false);
 
+        
+        let template = new File([htmlString], htmlArr[0].name, {type: "text/html", lastModified: new Date(0)});
+        uploadFile(template);
+
         // document.querySelector(".templateBody").addEventListener('click', (e) => {
         //     if (e.target.classList.contains("templateText") || e.target.classList.contains("templateImage")) {
         //         // e.target.classList.add("selectedElement");
         //     }
         // });
-        
-        let template = new File([htmlString], htmlArr[0].name, {type: "text/html", lastModified: new Date(0)});
-        uploadFile(template);
-    }
+      }
 
     const uploadFile = (file) => {
 
