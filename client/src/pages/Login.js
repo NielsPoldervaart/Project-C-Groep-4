@@ -5,7 +5,7 @@ import '../style/Login.css';
 const Login = () => {
     let navigate = useNavigate();
     const [formData, setFormData] = useState({
-        username: "",
+        name: "",
         password: "",
     });
 
@@ -17,7 +17,7 @@ const Login = () => {
     header.append('Access-Control-Allow-Credentials', 'true');
 
     const HandleUsernameChange = (e) => {
-        setFormData({...formData, username: e.target.value})
+        setFormData({...formData, name: e.target.value})
     }
 
     const HandlePasswordChange = (e) => {
@@ -27,6 +27,7 @@ const Login = () => {
     const verifyUser = (e) => {
         e.preventDefault()
 
+        console.log(formData)
         fetch('/login', {
             method: 'POST',
             body: JSON.stringify(formData),
@@ -34,7 +35,7 @@ const Login = () => {
         })
         .then(res =>  res.json())
         .then(data => {
-            if (data.Code === 201) {
+            if (data.Code === 200) {
                 navigate('/1')
             }
             else {
@@ -48,18 +49,18 @@ const Login = () => {
         <div className="login">
             <div className="loginBox">
                 <div className="logoBox">
-                    <img src="https://excelsiorrotterdam.nl/wp-content/uploads/2018/01/kynda_web.png" alt="kyndaLogo" width="250" />    
+                    <img src="https://excelsiorrotterdam.nl/wp-content/uploads/2018/01/kynda_web.png" alt="kyndaLogo" width="250" />
                 </div>
-                <form className="loginForm" method="post" action id="form" onSubmit={(e) => verifyUser(e)}>
+                <form className="loginForm" method="post" id="form" onSubmit={(e) => verifyUser(e)}>
                     <div className="loginInput">
                         <div className="email">
-                            <label className="inputLabel" for="email">
+                            <label className="inputLabel" htmlFor="email">
                             Gebruikersnaam
                             </label>
-                            <input className="inputInput" type="text" name="username" id="username" required="required" maxLength="100" tabIndex="1" autoFocus="autofocus" value={formData.username} onChange={HandleUsernameChange} />
+                            <input className="inputInput" type="text" name="username" id="username" required="required" maxLength="100" tabIndex="1" autoFocus="autofocus" value={formData.name} onChange={HandleUsernameChange} />
                         </div>
                         <div className="password">
-                            <label className="inputLabel" for="password">
+                            <label className="inputLabel" htmlFor="password">
                             Wachtwoord
                             </label>
                             <input className="inputInput" type="password" name="password" id="password" required="required" maxLength="100" tabIndex="2" autoComplete="off" value={formData.password} onChange={HandlePasswordChange} />

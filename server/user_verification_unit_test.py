@@ -61,8 +61,9 @@ class Test_user_verification_module(unittest.TestCase):
 
     #CHECK IF MODULE WORKS WITH ROLES ENABLED THAT ARE NOT IN USER HIS ROLE, BUT WITH CORRECT COMPANY_ID
     def verify_user_fail_access(self):
-        test = verify_user(ExistingAccountCompanyID, [2,3]) 
-        self.assertEqual(test, ({"errorCode" : 403, "Message" : "Required Role not within User's roles"}, 403))
+        test = verify_user(ExistingAccountCompanyID, [2,3])
+        expected_result = ({"errorCode" : 403, "Message" : "Required Role not within User's roles"}, 403)
+        self.assertEqual(test, expected_result)
 
     #CHECK IF MODULE WORKS WHEN LOGGED INTO THE WRONG COMPANY, BUT WITH ALL ROLES ENABLED
     def verify_user_fail_company(self):

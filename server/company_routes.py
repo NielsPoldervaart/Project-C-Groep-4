@@ -1,7 +1,7 @@
 from flask import Blueprint, request, send_file, current_app
 from user_verification import verify_user
 from database_connection import *
-from ftp_controller import try_to_get_text_file_ftps, generate_random_path, upload_file, try_to_get_file_ftps_binary
+from ftp_controller import generate_random_path, try_to_upload_file_ftps, try_to_get_file_ftps_binary
 import os
 from os import path
 
@@ -10,11 +10,12 @@ company_api = Blueprint('company_api', __name__)
 @company_api.route("/company/<int:company_identifier>", methods=["GET"])
 def company(company_identifier):
 
-    user_verification = verify_user(company_identifier)
-    if user_verification != "PASSED":
-        return user_verification
-
     if request.method == "GET":
+
+        user_verification = verify_user(company_identifier)
+        if user_verification != "PASSED":
+            return user_verification
+
         with create_db_session() as db_session:
             company_information = db_session.query(Company.company_id, Company.company_name).filter_by(company_id = company_identifier).first()
 
@@ -28,11 +29,10 @@ def company(company_identifier):
 @company_api.route("/<int:company_identifier>/accounts", methods=["GET", "POST"])
 def company_accounts(company_identifier):
 
-    user_verification = verify_user(company_identifier) #TODO: WHICH USERS ARE ALLOWED TO MAKE THIS REQUEST (SHOULD IT BE DIFFERENT FOR POST/GET)
-    if user_verification != "PASSED":
-        return user_verification
-
     if request.method == "GET":
+        user_verification = verify_user(company_identifier, [1]) #ONLY KYNDA_ADMIN IS ALLOWED TO USE THIS FUNCTIONALITY
+        if user_verification != "PASSED":
+            return user_verification
         users_dictionary = {}
         company_has_no_users = True
 
@@ -75,6 +75,10 @@ def company_accounts(company_identifier):
 
 
     if request.method == "POST":
+        user_verification = verify_user(company_identifier, [1]) #ONLY KYNDA_ADMIN IS ALLOWED TO USE THIS FUNCTIONALITY
+        if user_verification != "PASSED":
+            return user_verification
+
         form_user_id = request.form['user_id'] #STRING: WHICH USER TO BE ADDED / DECLINED
         form_accepted = request.form['accepted'] #BOOLEAN: WHETHER USER SHOULD BE ADDED TO COMPANY (APPROVED)
         with create_db_session() as db_session:
@@ -99,17 +103,20 @@ def company_accounts(company_identifier):
                 return {"returnCode": 201, "Message": "User deleted from system"} , 201
 
 
-    return {"errorCode": 500, "Message": "Internal server error"} , 500 #Something went wrong
+    #return {"errorCode": 500, "Message": "Internal server error"} , 500 #Something went wrong
 
 
 @company_api.route("/<int:company_identifier>/manual", methods=["GET", "POST"])
 def company_manual(company_identifier):
     
-    user_verification = verify_user(company_identifier)
-    if user_verification != "PASSED":
-        return user_verification
+
 
     if request.method == "GET": #Open specific manual (to view)
+
+        user_verification = verify_user(company_identifier)
+        if user_verification != "PASSED":
+            return user_verification
+
         with create_db_session() as db_session:
             #result = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
             manual_file_location_ftp = db_session.query(Manual.manual_file).join(Company).filter_by(Manual_manual_id = Manual.manual_id).filter_by(company_id = company_identifier).first()
@@ -125,6 +132,11 @@ def company_manual(company_identifier):
         return {"errorCode": 404, "Message": "Manual Does not exist"""}
 
     if request.method == "POST": #Upload a manual to Company
+
+        user_verification = verify_user(company_identifier, [1,2])
+        if user_verification != "PASSED":
+            return user_verification
+
         uploaded_manual = request.files['manual_file']
         if uploaded_manual.filename == '': 
             return {"errorCode": 405, "Message": "No manual file found in request, OR File has no valid name"}, 405
@@ -143,10 +155,10 @@ def company_manual(company_identifier):
                 random_file_path = generate_random_path(24, 'html')
 
             uploaded_manual.save(random_file_path) #Save manual to created storage
-            try_to_upload_file_to_ftp = upload_file(random_file_path, f"{uploaded_manual.filename}", "manual", company_identifier)
-            #if try_to_upload_file_to_ftp is not "PASSED":
-            #    return {"Code": 201, "Message": "Manual added to company"}, 201 #TODO: ADD THIS CHECK BACK IN (GOTTA FIX THE RETURN OF upload_file to PASSED FIRST!!!!)
+            try_to_upload_file_to_ftp = try_to_upload_file_ftps(random_file_path, f"{uploaded_manual.filename}", "manual", company_identifier)
             os.remove(random_file_path) #Delete manual from created storage (temp storage)
+            if try_to_upload_file_to_ftp is not "PASSED":
+                return try_to_upload_file_to_ftp
 
             new_manual = Manual(None, f"{uploaded_manual.filename}")
             db_session.add(new_manual)
