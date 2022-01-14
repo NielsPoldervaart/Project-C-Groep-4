@@ -11,6 +11,7 @@ const Template = () => {
             res => res.text()
           ).then(
             data => {
+              console.log(data);
             }
           )
     }, [company_id, template_id]);
