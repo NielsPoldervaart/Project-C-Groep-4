@@ -29,6 +29,7 @@ const Template = () => {
         document.querySelector(".templateBody").addEventListener('click', (e) => {
             if (e.target.classList.contains("templateText") || e.target.classList.contains("templateImage")) {
                 // e.target.classList.add("selectedElement");
+                console.log(e.target);
             }
         });
     }
