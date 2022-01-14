@@ -10,12 +10,11 @@ const Logout = () => {
     .then(
         data => {
             if (data.Code === 201) {
-                navigate('/login')
-                console.log("Logout succesful!")
+                window.location.href = "/login";
             }
         }
-    ).catch(error => console.log('Logout failed : ' + error.message));
-  }, [])
+    ).catch(error => console.error(`Logout failed : ${error.message}`));
+  }, [navigate])
 
     return (
         <div>
