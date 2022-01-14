@@ -51,16 +51,16 @@ const Login = () => {
                 <div className="logoBox">
                     <img src="https://excelsiorrotterdam.nl/wp-content/uploads/2018/01/kynda_web.png" alt="kyndaLogo" width="250" />
                 </div>
-                <form className="loginForm" method="post" action id="form" onSubmit={(e) => verifyUser(e)}>
+                <form className="loginForm" method="post" id="form" onSubmit={(e) => verifyUser(e)}>
                     <div className="loginInput">
                         <div className="email">
-                            <label className="inputLabel" for="email">
+                            <label className="inputLabel" htmlFor="email">
                             Gebruikersnaam
                             </label>
                             <input className="inputInput" type="text" name="username" id="username" required="required" maxLength="100" tabIndex="1" autoFocus="autofocus" value={formData.name} onChange={HandleUsernameChange} />
                         </div>
                         <div className="password">
-                            <label className="inputLabel" for="password">
+                            <label className="inputLabel" htmlFor="password">
                             Wachtwoord
                             </label>
                             <input className="inputInput" type="password" name="password" id="password" required="required" maxLength="100" tabIndex="2" autoComplete="off" value={formData.password} onChange={HandlePasswordChange} />

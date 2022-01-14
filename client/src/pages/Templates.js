@@ -22,7 +22,7 @@ const Templates = () => {
           res => res.json()
         ).then(
           data => {
-            setTemplates(data.templates);
+            setTemplates(data);
             setLoading(false);
           }
         )
@@ -236,8 +236,8 @@ const Templates = () => {
     }
 
     const DisplayElement = () => {
-      if (templates.errorCode === 401) {
-        navigate(`/login`)
+      if (templates.errorCode === 401 || templates.errorCode === 403) {
+        window.location.href = "/login";
       }
       else {
         return (
@@ -246,7 +246,7 @@ const Templates = () => {
             <h1 className="CompanyName">{company.Company_name}</h1>
             <ul className="TemplateList">
                 {
-                    templates.map((template) => 
+                    templates.templates.map((template) => 
                         <div className="TemplateComp"  key={template.template_id}>
                             <h2 className="TitleCard">Template {template.template_id}</h2>
                             <div className="TemplateCard">
