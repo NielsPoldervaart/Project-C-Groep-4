@@ -179,3 +179,6 @@ def close_current_sessions():
 
 #createSession()
 """
+
+def close_current_sessions():
+    close_all_sessions()
