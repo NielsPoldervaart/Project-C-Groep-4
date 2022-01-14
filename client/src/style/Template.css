@@ -1,0 +1,21 @@
+@import url('Variables.css');
+
+.editPage {
+    display: flex;
+    padding-top: var(--NavBarHeight);
+    justify-content: space-between;
+}
+
+.editBox {
+    height: 100vh;
+    width: 150px;
+    background-color: #FFFFFF;
+    position: fixed;
+    right: 0;
+    display: none;
+}
+
+.templateBody {
+    position: relative;
+    width: 100%;
+}

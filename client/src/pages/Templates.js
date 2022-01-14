@@ -158,7 +158,10 @@ const Templates = () => {
 
       let templateName = htmlArr[0].name;
       templateName = `.${templateName.replace('.html', '')}`;
+      parsedTemplate.querySelector("html body").style.display = "flex";
+      parsedTemplate.querySelector("html body").style.justifyContent = "center";
       parsedTemplate.querySelector(templateName).style.overflow = "hidden";
+      parsedTemplate.querySelector(templateName).style.position = "unset";
 
       let children = parsedTemplate.querySelector(templateName).children
       for (var i = 0; i < children.length; i++) {
