@@ -162,12 +162,14 @@ const Templates = () => {
       parsedTemplate.querySelector("html body").style.justifyContent = "center";
       parsedTemplate.querySelector(templateName).style.overflow = "hidden";
       parsedTemplate.querySelector(templateName).style.position = "unset";
+      parsedTemplate.querySelector(templateName).style.pointerEvents = "none";
 
       let children = parsedTemplate.querySelector(templateName).children
       for (var i = 0; i < children.length; i++) {
           var child = children[i];
           if (child.textContent !== "") {
               child.classList.add("templateText");
+              child.style.pointerEvents = "auto";
           }
       }
 
@@ -177,6 +179,7 @@ const Templates = () => {
               var child = children[i];
               if (child.classList.contains(a)) {
                   child.classList.add("templateImage");
+                  child.style.pointerEvents = "auto";
               }
           }
       });
