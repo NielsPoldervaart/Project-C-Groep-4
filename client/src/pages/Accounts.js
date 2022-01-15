@@ -19,7 +19,11 @@ const Accounts = () => {
 
     const HandleDecline = () => {
         setValues({...values, accepted: false})
-        //TODO: delete declined account from database
+        YeetUser();
+    }
+
+    const YeetUser = () => {
+        //keeg
     }
 
     const DisplayLoader = () => {
@@ -29,6 +33,16 @@ const Accounts = () => {
           </div>
         )
     }
+
+    useEffect(() => {
+        fetch(`/accounts`).then(
+          res => res.json()
+        ).then(
+          data => {
+            console.log(data);
+          }
+        )
+    });
 
     return (
         <div className="Accounts">
