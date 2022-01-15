@@ -3,7 +3,7 @@ import '../style/Password.css';
 const Password = () => {
     return (
         <div className="Password">
-            <h1 className="PasswordText">Forgot Password</h1>
+            <h1 className="PasswordText">[ FORGOT PASSWORD - WORK IN PROGRESS ]</h1>
         </div>
     );
 };

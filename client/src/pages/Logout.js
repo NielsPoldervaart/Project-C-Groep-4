@@ -1,18 +1,20 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Logout = () => {
-    const [logoutData, setLogoutData] = useState([])
+  let navigate = useNavigate();
 
-    useEffect(() => {
-        fetch(`/logout`).then(
-            res => res.json()
-          ).then(
-            data => {
-                setLogoutData(data)
-              console.log(data)
+  useEffect(() => {
+    fetch(`/logout`)
+    .then(res => res.json())
+    .then(
+        data => {
+            if (data.Code === 201) {
+                window.location.href = "/login";
             }
-          )
-    }, [])
+        }
+    ).catch(error => console.error(`Logout failed : ${error.message}`));
+  }, [navigate])
 
     return (
         <div>

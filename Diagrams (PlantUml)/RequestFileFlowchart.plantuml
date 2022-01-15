@@ -1,0 +1,32 @@
+@startuml GET Request Template File
+start
+->//API Endpoint: "/template/<int:company_identifier>/<int:template_identifier>"//;
+#yellow: GET Request (template file);
+#pink:if (User logged in correctly?) then (no)
+    #powderblue: Return error code;
+    stop
+else (yes)
+    #powderblue: Query database for file location on FTP;
+    #powderblue:if (Template info found in database?) then (no)
+        #powderblue: Return error code;
+        stop
+    else (yes)
+        #palegreen: Connects to FTP server to retrieve file;
+        #palegreen:if (File found in FTP Server) then (no)
+        #palegreen: Return error code;
+        #powderblue: Return error code;
+        stop
+        else (yes)
+        #palegreen: Download file from FTP to local file;
+        #palegreen: Extract bytes from file;
+        #palegreen: Delete local file;
+        #powderblue: Return file to Client;
+stop
+ legend
+ |= |= Module Legend |
+ | <#yellow>  | Client |
+ | <#powderblue>       | Flask back-end (template_routes.py) |
+ | <#palegreen>       | Flask back-end (ftp_controller.py) |
+ | <#pink>       | Flask back-end (user_verification.py) |
+ endlegend
+@enduml

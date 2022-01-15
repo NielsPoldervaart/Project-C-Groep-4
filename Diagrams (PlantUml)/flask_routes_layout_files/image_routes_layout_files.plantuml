@@ -1,0 +1,27 @@
+@startuml
+skinparam minClassWidth 200
+skinparam nodesep 20
+skinparam ranksep 20
+'skinparam linetype ortho
+
+file **image_routes.py** as file_images #FEFECE {
+    rectangle **/gallery/<company_identifier>/<gallery_identifier>** as gallery #ffffff{
+    rectangle "**GET**\n(Retreive all company's images)\t\t\t\t" #Application
+    rectangle "<color:grey>**DELETE**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" #lightgrey
+    rectangle "**POST**\n(Upload new image to company)\t\t\t\t" #technology
+    rectangle "<color:grey>**PUT**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" #lightgrey
+    }
+
+    rectangle **/gallery/<company_identifier>/<gallery_identifier>/<image_identifier>** as specific_image #ffffff{
+    rectangle "**GET**\n(Retreive specific image data)\t\t\t\t\t" #Application
+    rectangle "**DELETE**\n(Remove specific image data)\t\t\t\t\t" #Implementation
+    rectangle "<color:grey>**POST**\n<color:grey>(NOT IMPLEMENTED)  \t\t\t\t\t\t" #lightgrey
+    rectangle "<color:grey>**PUT**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as e #lightgrey
+    }
+}
+
+'file_products -d--> all_products
+'file_products ---> specific_product
+gallery --[HIDDEN]-> specific_image
+
+@enduml

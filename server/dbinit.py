@@ -3,17 +3,16 @@ import pymysql
 
 ##Database information
 conn = pymysql.connect(
-    host="sql11.freesqldatabase.com",
-    database="sql11449887",
-    user="sql11449887",
-    password="j8Rl1xpF4g",
-    charset="utf8mb4",
-    cursorclass=pymysql.cursors.DictCursor
-)
-
+            host="kynda-database.cgmcelrbhqyr.eu-west-2.rds.amazonaws.com",
+            database="KyndaDB",
+            user="kynda",
+            password="u9N3_HM+ARhDYsRQ",
+            charset='utf8mb4',
+            cursorclass=pymysql.cursors.DictCursor
+        )
 cursor = conn.cursor()
 
-sql_query = [
+sql_creation = [
 """
 CREATE TABLE IF NOT EXISTS  `Gallery` (
   `gallery_id` INT NOT NULL AUTO_INCREMENT,
@@ -64,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `User` (
   `first_name` VARCHAR(45) NOT NULL,
   `last_name` VARCHAR(45) NOT NULL,
   `email` VARCHAR(45) NOT NULL,
-  `password` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
   `Company_company_id` INT NOT NULL,
   `Role_role_id` INT NOT NULL,
   PRIMARY KEY (`user_id`),
@@ -86,7 +85,7 @@ ENGINE = InnoDB;
 """
 CREATE TABLE IF NOT EXISTS `Template` (
   `template_id` INT NOT NULL AUTO_INCREMENT,
-  `tamplate_file` VARCHAR(255) NOT NULL,
+  `template_file` VARCHAR(255) NOT NULL,
   `Company_company_id` INT NOT NULL,
   PRIMARY KEY (`template_id`),
   UNIQUE INDEX `template_id_UNIQUE` (`template_id` ASC),
@@ -158,11 +157,20 @@ ENGINE = InnoDB;
 """
 ]
 
-sql_query2 = """INSERT INTO `Role` Values(default, "Company_Admin"),(default, "Company_Worker");"""
-sql_query1 = """SELECT * FROM `User`;"""
-cursor.execute(sql_query1)
+sql_insert = [
+  f"""INSERT INTO `Gallery` VALUES (default)""",
+  f"""INSERT INTO `Collection` VALUES (default, 'TestCollection1', 1)""",
+  f"""INSERT INTO `Company` VALUES (default, 'TestCompany1', 1)""",
+  f"""INSERT INTO `Role` VALUES (default, 'KYNDA_ADMIN'), (default, 'COMPANY_ADMIN'), (default, 'COMPANY_WORKER')""",
+  f"""INSERT INTO `Template` VALUES (default, 'Cassettes.html', 1)""",
+  f"""INSERT INTO `User` Values (default, 'Test', 'User', 'TestUser@hr.nl', 'admin', 1, 1)"""
+]
+
+#sql_query = """DELETE FROM `User` WHERE `User_id` = 1"""
+sql_query = """SELECT * FROM `User`;"""
+cursor.execute(sql_query)
 print(cursor.fetchall())
-#for query in sql_query2:
+#for query in sql_insert:
 #    cursor.execute(query)
 #for i in temps:
 #  print(i)
