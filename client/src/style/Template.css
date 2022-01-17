@@ -22,5 +22,6 @@
 
 .templateText:hover, .templateImage:hover {
     cursor: pointer!important;
+    filter: invert(15%);
     box-shadow:inset 0 0 0 2000px rgba(0, 0, 0, 0.35)!important;
 }
