@@ -162,28 +162,30 @@ const Templates = () => {
       parsedTemplate.querySelector("html body").style.justifyContent = "center";
       parsedTemplate.querySelector(templateName).style.overflow = "hidden";
       parsedTemplate.querySelector(templateName).style.position = "unset";
-      parsedTemplate.querySelector(templateName).style.pointerEvents = "none";
 
       let children = parsedTemplate.querySelector(templateName).children
+      imgArr.forEach(img => {
+        let a = `${img.name.replace('.png', '')}`;
+        for (var i = 0; i < children.length; i++) {
+          var child = children[i];
+          if (child.classList.contains(a)) {
+            child.classList.add("templateImage");
+            child.style.pointerEvents = "auto";
+          }
+        }
+      });
+
       for (var i = 0; i < children.length; i++) {
           var child = children[i];
           if (child.textContent !== "") {
               child.classList.add("templateText");
               child.style.pointerEvents = "auto";
           }
-      }
 
-      imgArr.forEach(img => {
-          let a = `${img.name.replace('.png', '')}`;
-          for (var i = 0; i < children.length; i++) {
-              var child = children[i];
-              if (child.classList.contains(a)) {
-                  child.classList.add("templateImage");
-                  child.style.pointerEvents = "auto";
-              }
+          if (!child.classList.contains("templateText") && !child.classList.contains("templateImage") ) {
+            child.style.pointerEvents = "none";
           }
-      });
-
+      }
       setMadeTemplate(true);
 
       var templateHTML = parsedTemplate.querySelector("html");
@@ -191,7 +193,7 @@ const Templates = () => {
       let htmlString = document.querySelector(".templateBodyHidden").innerHTML;
 
       setMadeTemplate(false);
-      
+
       let newTemplate = new File([htmlString], htmlArr[0].name, {type: "text/html", lastModified: new Date(0)});
       uploadFile(newTemplate);
     }
@@ -244,7 +246,6 @@ const Templates = () => {
       else {
         return (
           <div className="TemplatesBody">
-          
             <h1 className="CompanyName">{company.Company_name}</h1>
             <ul className="TemplateList">
                 {
