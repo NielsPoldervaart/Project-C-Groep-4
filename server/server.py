@@ -9,7 +9,8 @@ from database_connection import init_db_structure, close_current_sessions
 from image_routes import image_api
 from init_routes import init_api
 
-app = Flask(__name__)
+application = Flask(__name__)
+app = application
 app.register_blueprint(login_api)
 app.register_blueprint(template_api)
 app.register_blueprint(product_api)
