@@ -34,13 +34,27 @@ const Accounts = () => {
         )
     }
 
-    useEffect(() => {
-        fetch(`/accounts`).then(
+    useEffect(async () => {
+        let userData = {};
+  
+        await fetch(`/login`).then(
           res => res.json()
         ).then(
           data => {
-            console.log(data);
+              if (data.Code === 500 || data.Code === 404) {
+                window.location.href = "/login";
+              } else {
+                userData = data;
+              }
           }
+        )
+
+        fetch(`/accounts/${userData.company_company_id}`).then(
+            res => res.json()
+        ).then(
+            data => {
+                console.log(data)
+            }
         )
     });
 
