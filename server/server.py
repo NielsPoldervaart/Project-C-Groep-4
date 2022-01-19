@@ -8,6 +8,7 @@ from product_routes import product_api
 from database_connection import init_db_structure, close_current_sessions
 from image_routes import image_api
 from init_routes import init_api
+from generate_random_path import generate_random_path
 
 app = Flask(__name__)
 app.register_blueprint(login_api)
@@ -16,7 +17,7 @@ app.register_blueprint(product_api)
 app.register_blueprint(company_api)
 app.register_blueprint(image_api)
 app.register_blueprint(init_api)
-app.secret_key = "ToBeSecret" #TODO: Make Secret key actually secret
+app.secret_key = generate_random_path(20, "") #Random string with 20 characters as secret key gets generated
 
 app.config["TEST_DATABASE_FILENAME"] = "test_sqlite.db"
 app.config["USING_TEST_FTP"] = False #UNCOMMENT WHEN USING TEST DB, TODO: change this to actual test config in flask for better modulation
