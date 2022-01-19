@@ -108,8 +108,6 @@ def company_accounts(company_identifier):
 
 @company_api.route("/<int:company_identifier>/manual", methods=["GET", "POST"])
 def company_manual(company_identifier):
-    
-
 
     if request.method == "GET": #Open specific manual (to view)
 
