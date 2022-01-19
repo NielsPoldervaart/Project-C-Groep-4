@@ -1,0 +1,41 @@
+@import url('Variables.css');
+
+.editPage {
+    display: flex;
+    padding-top: var(--NavBarHeight);
+    justify-content: space-between;
+}
+
+/* .editOverlay {
+    height: 100vh;
+    width: 100%;
+    background-color: rgba(0, 0, 0, .25);
+    position: fixed;
+    z-index: 999;
+    top: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+} */
+
+.editBox {
+    width: 25%;
+    height: 25%;
+    background-color: #FFFFFF;
+}
+
+.editBox input {
+    height: 32px;
+    width: 75%;
+}
+
+.templateBody {
+    position: relative;
+    width: 100%;
+}
+
+.templateText:hover, .templateImage:hover {
+    cursor: pointer!important;
+    filter: invert(15%);
+    box-shadow:inset 0 0 0 2000px rgba(0, 0, 0, 0.35)!important;
+}

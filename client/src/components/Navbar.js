@@ -5,7 +5,7 @@ import Login from '../pages/Login';
 import Template from '../pages/Template';
 import Templates from '../pages/Templates';
 import Logout from '../pages/Logout';
-import Product from '../pages/Product';
+// import Product from '../pages/Product';
 // import Products from '../pages/Products';
 import Register from '../pages/Register';
 import Password from '../pages/Password';
@@ -26,7 +26,6 @@ const Navbar = () => {
                 <nav>
                     <ul className="NavLinks">
                         <li><Link className="Link" to="/1">Templates</Link></li>
-                        <li><Link className="Link" to="/template">Template</Link></li>
                         <li><Link className="Link" to="/images">Beeldbank</Link></li>
                         <li><Link className="Link" to="/accounts">Accounts</Link></li>
                     </ul>
@@ -43,8 +42,7 @@ const Navbar = () => {
             </header>
             <Routes>
                 <Route path="/:company_id" element={<Templates />}/>
-                <Route path="/template" element={<Template />}/>
-                <Route path="/:company_id/:template_id" element={<Product />}/>
+                <Route path="/:company_id/:template_id" element={<Template />}/>
                 <Route path="/login" element={<Login />}/>
                 <Route path="/register" element={<Register />}/>
                 <Route path="/forgotpassword" element={<Password />}/>

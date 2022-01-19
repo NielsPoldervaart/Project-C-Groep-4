@@ -17,23 +17,37 @@ const Templates = () => {
 
     const inputFile = useRef(null);
 
-    useEffect(() => {
-        fetch(`/templates/${company_id}`).then(
-          res => res.json()
-        ).then(
-          data => {
-            setTemplates(data);
-            setLoading(false);
-          }
-        )
+    useEffect(async () => {
+      let userData = {};
 
-        fetch(`/company/${company_id}`).then(
-          res => res.json()
-        ).then(
-          data => {
-            setCompany(data)
-          }
-        )
+      await fetch(`/login`).then(
+        res => res.json()
+      ).then(
+        data => {
+            if (data.Code === 500 || data.Code === 404) {
+              window.location.href = "/login";
+            } else {
+              userData = data;
+            }
+        }
+      )
+
+      fetch(`/templates/${userData.company_company_id}`).then(
+        res => res.json()
+      ).then(
+        data => {
+          setTemplates(data);
+          setLoading(false);
+        }
+      )
+
+      fetch(`/company/${userData.company_company_id}`).then(
+        res => res.json()
+      ).then(
+        data => {
+          setCompany(data)
+        }
+      )
     }, [company_id]);
 
     const checkFile = (file) => {
@@ -76,148 +90,154 @@ const Templates = () => {
     }
 
     const splitFiles = async (e) => {
-        let arr = Object.entries(e.target.files);
-        let hasCSS = false;
-        let hasHTML = false;
+      let arr = Object.entries(e.target.files);
+      let hasCSS = false;
+      let hasHTML = false;
 
-        let imgArr = [];
-        let cssArr = [];
-        let htmlArr = [];
+      let imgArr = [];
+      let cssArr = [];
+      let htmlArr = [];
 
-        for (let i = 0; i < arr.length; i++) {
-            const el = arr[i];
+      for (let i = 0; i < arr.length; i++) {
+          const el = arr[i];
 
-            // Image Files
-            if (checkFile(el[1]) === "image") {
-                let data = await readFile(el[1]);
-                imgArr.push({name: el[1].name, data: data});
-            }
-            // CSS File
-            else if (checkFile(el[1]) === "css") {
-                hasCSS = true;
+          // Image Files
+          if (checkFile(el[1]) === "image") {
+              let data = await readFile(el[1]);
+              imgArr.push({name: el[1].name, data: data});
+          }
+          // CSS File
+          else if (checkFile(el[1]) === "css") {
+              hasCSS = true;
 
-                let data = await readFile(el[1]);
-                cssArr.push({name: el[1].name, data: data});
-            }
-            // HTML Files
-            else if (checkFile(el[1]) === "html") {
-                hasHTML = true;
+              let data = await readFile(el[1]);
+              cssArr.push({name: el[1].name, data: data});
+          }
+          // HTML Files
+          else if (checkFile(el[1]) === "html") {
+              hasHTML = true;
 
-                let data = await readFile(el[1]);
-                htmlArr.push({name: el[1].name, data: data});
-            }
-        }
+              let data = await readFile(el[1]);
+              htmlArr.push({name: el[1].name, data: data});
+          }
+      }
 
-        if (!hasHTML || !hasCSS) {
-            const input = document.getElementById('DirInput');
-            input.value = null;
-            alert("Invalid folder, please select another one!");
-            
-            return
-        }
-        else {
-            createBaseTemplate(imgArr, cssArr, htmlArr);
-        }
+      if (!hasHTML || !hasCSS) {
+          const input = document.getElementById('DirInput');
+          input.value = null;
+          alert("Invalid folder, please select another one!");
+          
+          return
+      }
+      else {
+          createBaseTemplate(imgArr, cssArr, htmlArr);
+      }
     }
 
     const overwriteCss = async (cssArr, imgArr) => {
-        let css = cssArr[0].data;
+      let css = cssArr[0].data;
 
-        imgArr.forEach(imgObj => {
-            if (css.includes(`assets/${imgObj.name}`)) {
-                css = css.replace(`assets/${imgObj.name}`, imgObj.data);
-            }
-        });
+      imgArr.forEach(imgObj => {
+          if (css.includes(`assets/${imgObj.name}`)) {
+              css = css.replace(`assets/${imgObj.name}`, imgObj.data);
+          }
+      });
 
-        return css
+      return css
     }
 
     const overwriteHtml = async (htmlArr, imgArr) => {
-        let html = htmlArr[0].data;
+      let html = htmlArr[0].data;
 
-        imgArr.forEach(imgObj => {
-            if (html.includes(`assets/${imgObj.name}`)) {
-                html = html.replace(`assets/${imgObj.name}`, imgObj.data);
-            }
-        });
+      imgArr.forEach(imgObj => {
+          if (html.includes(`assets/${imgObj.name}`)) {
+              html = html.replace(`assets/${imgObj.name}`, imgObj.data);
+          }
+      });
 
-        return html
+      return html
     }
 
     const createBaseTemplate = async (imgArr, cssArr, htmlArr) => {
-        let newCss = await overwriteCss(cssArr, imgArr);
-        let newHtml = await overwriteHtml(htmlArr, imgArr);
+      let newCss = await overwriteCss(cssArr, imgArr);
+      let newHtml = await overwriteHtml(htmlArr, imgArr);
 
-        let parser = new DOMParser();
-        let parsedTemplate = parser.parseFromString(newHtml, "text/html");
-        parsedTemplate.querySelector("head link").remove();
+      let parser = new DOMParser();
+      let parsedTemplate = parser.parseFromString(newHtml, "text/html");
+      parsedTemplate.querySelector("head link").remove();
 
-        let styleElement = document.createElement("STYLE");
-        styleElement.textContent = newCss; 
-        parsedTemplate.querySelector("head").appendChild(styleElement);
+      let styleElement = document.createElement("STYLE");
+      styleElement.textContent = newCss; 
+      parsedTemplate.querySelector("head").appendChild(styleElement);
 
-        let templateName = htmlArr[0].name;
-        templateName = `.${templateName.replace('.html', '')}`;
-        parsedTemplate.querySelector(templateName).style.overflow = "hidden";
+      let templateName = htmlArr[0].name;
+      templateName = `.${templateName.replace('.html', '')}`;
+      parsedTemplate.querySelector("html body").style.display = "flex";
+      parsedTemplate.querySelector("html body").style.justifyContent = "center";
+      parsedTemplate.querySelector(templateName).style.overflow = "hidden";
+      parsedTemplate.querySelector(templateName).style.position = "unset";
 
-        let children = parsedTemplate.querySelector(templateName).children
+      let children = parsedTemplate.querySelector(templateName).children
+      imgArr.forEach(img => {
+        let a = `${img.name.replace('.png', '')}`;
         for (var i = 0; i < children.length; i++) {
-            var child = children[i];
-            if (child.textContent !== "") {
-                child.classList.add("templateText");
-            }
+          var child = children[i];
+          if (child.classList.contains(a)) {
+            child.classList.add("templateImage");
+            child.classList.add("editable");
+            child.style.pointerEvents = "auto";
+          }
         }
+      });
 
-        imgArr.forEach(img => {
-            let a = `${img.name.replace('.png', '')}`;
-            for (var i = 0; i < children.length; i++) {
-                var child = children[i];
-                if (child.classList.contains(a)) {
-                    child.classList.add("templateImage");
-                }
-            }
-        });
+      for (var i = 0; i < children.length; i++) {
+          var child = children[i];
+          if (child.textContent !== "") {
+              child.classList.add("templateText");
+              child.classList.add("editable");
+              child.style.pointerEvents = "auto";
+          }
 
-        setMadeTemplate(true);
-
-        var templateHTML = parsedTemplate.querySelector("html");
-        document.querySelector(".templateBody").appendChild(templateHTML);
-        let htmlString = document.querySelector(".templateBody").innerHTML;
-
-        setMadeTemplate(false);
-
-        
-        let newTemplate = new File([htmlString], htmlArr[0].name, {type: "text/html", lastModified: new Date(0)});
-        uploadFile(newTemplate);
-
-        // document.querySelector(".templateBody").addEventListener('click', (e) => {
-        //     if (e.target.classList.contains("templateText") || e.target.classList.contains("templateImage")) {
-        //         // e.target.classList.add("selectedElement");
-        //     }
-        // });
+          if (!child.classList.contains("templateText") && !child.classList.contains("templateImage") ) {
+            child.style.pointerEvents = "none";
+          }
       }
+      setMadeTemplate(true);
+
+      var templateHTML = parsedTemplate.querySelector("html");
+      document.querySelector(".templateBodyHidden").appendChild(templateHTML);
+      let htmlString = document.querySelector(".templateBodyHidden").innerHTML;
+
+      setMadeTemplate(false);
+
+      let newTemplate = new File([htmlString], htmlArr[0].name, {type: "text/html", lastModified: new Date(0)});
+      uploadFile(newTemplate);
+    }
 
     const uploadFile = (file) => {
-
       const data = new FormData();
-      data.append("File", file);
+      data.append("template_file", file);
 
-      if (file === null) {
-          alert("Make template first!");
-      } else {
-          console.log(file);
-      }
+      fetch(`/templates/${company_id}`, {
+          method: 'POST',
+          body: data,
+      })
+      .then(res => {
+        res.json();
+        window.location.reload();
+      })
+      .catch(error => console.log('Authorization failed : ' + error.message));
+    }
 
-      console.log("Post");
-      // fetch('/singlefile', {
-      //     method: 'POST',
-      //     body: data,
-      // })
-      // .then(res => {
-      //   res.json()
-      //   console.log(res);
-      // })
-      // .catch(error => console.log('Authorization failed : ' + error.message));
+    const deleteTemplate = (templateID) => {
+      fetch(`/template/${company_id}/${templateID}`, {
+        method: 'DELETE'
+      })
+      .then(res => {
+        res.json()
+        window.location.reload();
+      })
+      .catch(error => console.log('Authorization failed : ' + error.message));
     }
 
     const DisplayLoader = () => {
@@ -230,7 +250,7 @@ const Templates = () => {
 
     const DisplayHidden = () => {
       return (
-        <div className='templateBody' style={{display: 'none'}}>
+        <div className='templateBodyHidden' style={{display: 'none'}}>
         </div>
       )
     }
@@ -242,7 +262,6 @@ const Templates = () => {
       else {
         return (
           <div className="TemplatesBody">
-          
             <h1 className="CompanyName">{company.Company_name}</h1>
             <ul className="TemplateList">
                 {
@@ -251,7 +270,7 @@ const Templates = () => {
                             <h2 className="TitleCard">Template {template.template_id}</h2>
                             <div className="TemplateCard">
                                 <p className="CardIcon View" onClick={() => navigate(`/${company_id}/${template.template_id}`)}><FaRegEye /></p>
-                                <p className="CardIcon Delete"><FaRegTrashAlt /></p>
+                                <p className="CardIcon Delete" onClick={() => deleteTemplate(template.template_id)}><FaRegTrashAlt /></p>
                             </div>
                         </div>
                     )
