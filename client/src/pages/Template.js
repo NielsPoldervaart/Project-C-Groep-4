@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import Loader from '../components/Loader';
+import EditOverlay from '../components/EditOverlay';
 import '../style/Template.css';
 
 const Template = () => {
     const { company_id, template_id } = useParams();
 
     const [loading, setLoading] = useState(true);
+    const [textElProps, setTextElProps] = useState({
+        text: "",
+        editable: true,
+    });
 
     useEffect(() => {
         fetch(`/template/${company_id}/${template_id}`).then(
@@ -19,6 +24,18 @@ const Template = () => {
           )
     }, [company_id, template_id]);
 
+
+    // Set element as state. when the element has been set as state, call editOverlay with the element as prop. As return use the html from the editOverlay component to render for the editBox
+    const editBox = (el) => {
+        setTextElProps({...textElProps, text: el.textContent});
+        // document.querySelector(".editOverlay").style.display = "flex";
+        return (
+            <div>
+                <EditOverlay el={el} />
+            </div>
+        )
+    }
+
     const editTemplate = (data) => {
         let parser = new DOMParser();
         let parsedTemplate = parser.parseFromString(data, "text/html");
@@ -29,7 +46,7 @@ const Template = () => {
         document.querySelector(".templateBody").addEventListener('click', (e) => {
             if (e.target.classList.contains("templateText") || e.target.classList.contains("templateImage")) {
                 // e.target.classList.add("selectedElement");
-                console.log(e.target);
+                editBox(e.target);
             }
         });
     }
@@ -44,12 +61,10 @@ const Template = () => {
 
     const displayElement = () => {
         return (
-            <div className='editPage'>
-                <div className="templateBody">
-                </div>
-                <div className='editBox'>
-                    <button>Save</button>
-                    <button>Cancle</button>
+            <div>
+                <div className='editPage'>
+                    <div className="templateBody">
+                    </div>
                 </div>
             </div>
         )

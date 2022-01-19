@@ -6,13 +6,27 @@
     justify-content: space-between;
 }
 
-.editBox {
+/* .editOverlay {
     height: 100vh;
-    width: 150px;
-    background-color: #FFFFFF;
+    width: 100%;
+    background-color: rgba(0, 0, 0, .25);
     position: fixed;
-    right: 0;
+    z-index: 999;
+    top: 0;
     display: none;
+    justify-content: center;
+    align-items: center;
+} */
+
+.editBox {
+    width: 25%;
+    height: 25%;
+    background-color: #FFFFFF;
+}
+
+.editBox input {
+    height: 32px;
+    width: 75%;
 }
 
 .templateBody {
