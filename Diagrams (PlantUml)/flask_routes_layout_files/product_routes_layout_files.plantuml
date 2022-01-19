@@ -19,8 +19,8 @@ file **product_routes.py** as file_products #FEFECE {
     rectangle "**PUT**\n(Verify specific company product)\t\t\t\t"  as l#Strategy
     }
     rectangle **/product/<int:company_identifier>/<int:product_identifier>** as specific_product #ffffff{
-    rectangle "**GET**\n(Retreive specific company product data)\t\t" as e#Application
     rectangle "**DELETE**\n(Remove specific company product data)\t\t" as f #Implementation
+    rectangle "**GET**\n(Retreive specific company product data)\t\t" as e#Application
     rectangle "<color:grey>**POST**\n<color:grey>(NOT IMPLEMENTED)  \t\t\t\t\t\t" as g#lightgrey
     rectangle "**PUT**\n(Update specific company product data)\t\t\t" as h #Strategy
     }

@@ -6,7 +6,7 @@ from database_connection import *
 
 login_api = Blueprint('login_api', __name__)
 
-@login_api.route("/login", methods=["POST"])
+@login_api.route("/login", methods=["POST", "GET"])
 def login():
     #db_session = create_db_session(current_app.config["DATABASE_URI"])
 
@@ -31,6 +31,23 @@ def login():
 
         else:
            return {"Code": 406, "Message": "Incorrect User credentials (NAME)"}, 406 #TODO: REMOVE "(NAME) FROM RESPONSE"
+
+
+    if request.method == "GET":
+        try:
+            returnDict = {}
+            returnDict["user_id"] = session["user_id"]
+            returnDict["company_company_id"] = session["company_company_id"]
+            returnDict["role_role_id"] = session["role_role_id"]
+            if returnDict is not None:
+                return returnDict
+            return {"Code": 404, "Message": "Session data not found"}, 404
+        except:
+            return {"Code": 500, "Message": "Internal server error (Session)"}, 500
+
+
+
+
 
 @login_api.route("/logout", methods = ["GET"])
 def logout():

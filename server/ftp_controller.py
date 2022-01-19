@@ -158,6 +158,8 @@ def try_to_upload_file_ftps(file_path, file_name, file_type, company_id):
                 session.cwd("manual")
             elif file_type == "templates":    
                 session.cwd("templates") #Change to the gallery/templates dir
+            elif file_type == "products":
+                session.cwd("products")
             else:
                 return {"errorCode": 404, "Message": "Extension not supported for this type of file"}, 404
 
