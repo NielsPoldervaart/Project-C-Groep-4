@@ -21,9 +21,9 @@ const Template = () => {
         ).then(
             data => {
                 if (data.Code === 500 || data.Code === 404) {
-                window.location.href = "/login";
+                    window.location.href = "/login";
                 } else {
-                userData = data;
+                    userData = data;
                 }
             }
         )
