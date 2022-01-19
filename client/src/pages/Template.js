@@ -13,8 +13,22 @@ const Template = () => {
         editable: true,
     });
 
-    useEffect(() => {
-        fetch(`/template/${company_id}/${template_id}`).then(
+    useEffect(async () => {
+        let userData = {};
+
+        await fetch(`/login`).then(
+            res => res.json()
+        ).then(
+            data => {
+                if (data.Code === 500 || data.Code === 404) {
+                window.location.href = "/login";
+                } else {
+                userData = data;
+                }
+            }
+        )
+
+        fetch(`/template/${userData.company_company_id}/${template_id}`).then(
             res => res.text()
           ).then(
             data => {

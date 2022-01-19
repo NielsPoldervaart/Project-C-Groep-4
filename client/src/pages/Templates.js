@@ -17,23 +17,37 @@ const Templates = () => {
 
     const inputFile = useRef(null);
 
-    useEffect(() => {
-        fetch(`/templates/${company_id}`).then(
-          res => res.json()
-        ).then(
-          data => {
-            setTemplates(data);
-            setLoading(false);
-          }
-        )
+    useEffect(async () => {
+      let userData = {};
 
-        fetch(`/company/${company_id}`).then(
-          res => res.json()
-        ).then(
-          data => {
-            setCompany(data)
-          }
-        )
+      await fetch(`/login`).then(
+        res => res.json()
+      ).then(
+        data => {
+            if (data.Code === 500 || data.Code === 404) {
+              window.location.href = "/login";
+            } else {
+              userData = data;
+            }
+        }
+      )
+
+      fetch(`/templates/${userData.company_company_id}`).then(
+        res => res.json()
+      ).then(
+        data => {
+          setTemplates(data);
+          setLoading(false);
+        }
+      )
+
+      fetch(`/company/${userData.company_company_id}`).then(
+        res => res.json()
+      ).then(
+        data => {
+          setCompany(data)
+        }
+      )
     }, [company_id]);
 
     const checkFile = (file) => {
