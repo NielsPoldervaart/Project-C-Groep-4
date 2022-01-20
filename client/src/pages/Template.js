@@ -33,7 +33,9 @@ const Template = () => {
                 }
             )
 
-            fetch(`/template/${userData.company_company_id}/${template_id}`).then(
+            fetch(`/template/${userData.company_company_id}/${template_id}`, {
+                method: 'GET'
+            }).then(
                 res => res.text()
               ).then(
                 data => {
@@ -124,23 +126,21 @@ const Template = () => {
         e.preventDefault();
 
         let htmlString = document.querySelector(".templateBody").innerHTML;
-
         let templateName = document.querySelector(".templateBody html body div").className.split(" ")[0];
-
         let updatedTemplate = new File([htmlString], templateName, {type: "text/html", lastModified: new Date(0)});
 
         const data = new FormData();
         data.append("updated_template", updatedTemplate);
 
-        console.log(`/template/${userData.company_company_id}/${template_id}`);
-
         fetch(`/template/${userData.company_company_id}/${template_id}`, {
             method: 'PUT',
             body: data,
+            headers: {"Content-Type": "multipart/form-data"}
         })
         .then(res => {
             res.json();
-            window.location.href = `/${userData.company_company_id}`;
+            console.log(res);
+            // window.location.href = `/${userData.company_company_id}`;
         })
         .catch(error => console.log('Authorization failed : ' + error.message));
     }
