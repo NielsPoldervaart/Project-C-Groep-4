@@ -70,7 +70,7 @@ def templates(company_identifier):
 
         return {"Code": 201, "Message": "Template added to company"}, 201
 
-@template_api.route("/template/<int:company_identifier>/<int:template_identifier>", methods=["GET", "DELETE", "PUT"])
+@template_api.route("/template/<int:company_identifier>/<int:template_identifier>", methods=["GET", "DELETE", "POST"])
 def template(company_identifier, template_identifier):
 
     if request.method == "GET": #Open specific template (to view or to create a product)
@@ -94,7 +94,7 @@ def template(company_identifier, template_identifier):
         return {"errorCode": 404, "Message": "Template Does not exist"""}, 404
 
 
-    if request.method == "PUT": #Update a specific product as KYNDA_ADMIN
+    if request.method == "POST": #Update a specific product as KYNDA_ADMIN
         user_verification = verify_user(company_identifier, [1])
         if user_verification != "PASSED":
             return user_verification
@@ -111,7 +111,7 @@ def template(company_identifier, template_identifier):
             return {"errorCode": 404, "Message": "No valid file found in request (Name should be same as old product name"}, 404
 
         #Remove the old file from the templates dir
-        attempt_to_remove = try_to_delete_file_ftps(old_template_object.template_file, "template", company_identifier)
+        attempt_to_remove = try_to_delete_file_ftps(old_template_object.template_file, "templates", company_identifier)
         if attempt_to_remove is not "PASSED":
             return attempt_to_remove
         

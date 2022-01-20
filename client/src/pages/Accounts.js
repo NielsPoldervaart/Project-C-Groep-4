@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router';
 import React, { useState, useEffect } from 'react'
 import '../style/Accounts.css'
 import Loader from '../components/Loader';
@@ -6,33 +7,11 @@ import Loader from '../components/Loader';
 const Accounts = () => {
     let navigate = useNavigate();
 
-    const [accountsData, setAccountsData] = useState("")
+    const { company_id } = useParams();
+
+    const [awaitingUsers, setAwaitingUsers] = useState([]);
+    const [verifiedUsers, setVerifiedUsers] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    const [values, setValues] = useState({
-        accepted: false,
-    });
-
-    const HandleAccept = () => {
-        setValues({...values, accepted: true})
-    }
-
-    const HandleDecline = () => {
-        setValues({...values, accepted: false})
-        YeetUser();
-    }
-
-    const YeetUser = () => {
-        //keeg
-    }
-
-    const DisplayLoader = () => {
-        return (
-          <div className='loaderDiv'>
-            <Loader />
-          </div>
-        )
-    }
 
     useEffect(async () => {
         let userData = {};
@@ -49,20 +28,66 @@ const Accounts = () => {
           }
         )
 
-        fetch(`/accounts/${userData.company_company_id}`).then(
+        fetch(`/${userData.company_company_id}/accounts`).then(
             res => res.json()
         ).then(
             data => {
-                console.log(data)
+                setAwaitingUsers(data.Awaiting_users);
+                setVerifiedUsers(data.Verified_users);
                 setLoading(false);
             }
         )
-    });
+    }, [company_id]);
+
+    const DisplayLoader = () => {
+        return (
+          <div className='loaderDiv'>
+            <Loader />
+          </div>
+        )
+    }
+
+    const DisplayAccounts = () => {
+        return (
+            <div>
+                <div className='accountsList'>
+                    <div className='awaitingUsers'> AWAITING USERS
+                        {
+                            awaitingUsers.map((user) => 
+                                <div className='id'>{user.user_id}
+                                    <div className='email'>{user.email}
+                                        <div className='username'>{user.username}
+                                            <div className='role'>{user.user_role}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        }
+                    </div>
+                    <div className='verifiedUsers'> VERIFIED USERS
+                        {
+                            verifiedUsers.map((user) => 
+                                <div className='id'>{user.user_id}
+                                    <div className='email'>{user.email}
+                                        <div className='username'>{user.username}
+                                            <div className='role'>{user.user_role}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        }
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="Accounts">
             <div className="AccountsText">
-                {loading ? DisplayLoader() : null}
+                {loading ? DisplayLoader() : DisplayAccounts()}
             </div>
         </div>
     )
