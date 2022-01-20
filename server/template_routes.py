@@ -99,7 +99,7 @@ def template(company_identifier, template_identifier):
         if user_verification != "PASSED":
             return user_verification
 
-        updated_template = request.files["updated_product"]
+        updated_template = request.files["updated_template"]
 
         with create_db_session() as db_session:
             old_template_object = db_session.query(Template).filter_by(template_id = template_identifier).first()
@@ -122,7 +122,7 @@ def template(company_identifier, template_identifier):
 
         updated_template.save(random_file_path) #Save template to created storage
 
-        upload_attempt = try_to_upload_file_ftps(random_file_path, f"{updated_template.filename}", "products", company_identifier)
+        upload_attempt = try_to_upload_file_ftps(random_file_path, f"{updated_template.filename}", "templates", company_identifier)
         os.remove(random_file_path)
         if upload_attempt is not "PASSED":
             return upload_attempt
