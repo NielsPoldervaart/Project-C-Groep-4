@@ -172,7 +172,7 @@ def try_to_upload_file_ftps(file_path, file_name, file_type, company_id):
 
         with open(file_path, 'rb') as file_to_send: #Open file to send
             session.storbinary("STOR " + file_name, file_to_send) #Send file through as binary
-        return "PASSED"
+            return "PASSED"
 
 def try_to_delete_file_ftps(file_path, file_type, company_id):
     #session = FTP('145.24.222.235')
