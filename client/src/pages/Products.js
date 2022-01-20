@@ -79,30 +79,6 @@ const Products = () => {
             return
         }
 
-        // let templateName = document.querySelector(".templateBody html body div").className.split(" ")[0];
-        // let htmlString = document.querySelector(".templateBody").innerHTML;
-
-        // let parser = new DOMParser();
-        // let parsedTemplate = parser.parseFromString(htmlString, "text/html");
-
-        // let children = parsedTemplate.querySelector(`.${templateName}`).children
-        // for (var i = 0; i < children.length; i++) {
-        //     var child = children[i];
-  
-        //     if (child.classList.contains("templateText")) {
-        //         child.classList.remove("templateText");
-        //     }
-        //     else if (child.classList.contains("templateImage")) {
-        //         child.classList.remove("templateImage");
-        //     }
-        // }
-
-        // var templateHTML = parsedTemplate.querySelector("html");
-        // document.querySelector(".templateBodyHidden").appendChild(templateHTML);
-        // htmlString = document.querySelector(".templateBodyHidden").innerHTML;
-
-        // let newTemplate = new File([htmlString], `${templateName}.html`, {type: "text/html", lastModified: new Date(0)});
-
         const data = new FormData();
         data.append("template_id", templateId);
 
