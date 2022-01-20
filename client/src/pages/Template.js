@@ -130,19 +130,31 @@ const Template = () => {
         let updatedTemplate = new File([htmlString], templateName, {type: "text/html", lastModified: new Date(0)});
 
         const data = new FormData();
-        data.append("updated_template", updatedTemplate);
+        data.append("file", updatedTemplate);
 
-        fetch(`/template/${userData.company_company_id}/${template_id}`, {
-            method: 'PUT',
-            body: data,
-            headers: {"Content-Type": "multipart/form-data"}
-        })
-        .then(res => {
-            res.json();
-            console.log(res);
-            // window.location.href = `/${userData.company_company_id}`;
-        })
-        .catch(error => console.log('Authorization failed : ' + error.message));
+        fetch(`/put`, {
+                method: 'PUT',
+                body: data,
+                headers: {"Content-Type": "application/json"}
+            })
+            .then(res => {
+                res.json();
+                console.log(res);
+                // window.location.href = `/${userData.company_company_id}`;
+            })
+            .catch(error => console.log('Authorization failed : ' + error));
+
+        // fetch(`/template/${userData.company_company_id}/${template_id}`, {
+        //     method: 'PUT',
+        //     body: data,
+        //     headers: {"Content-Type": "multipart/form-data"}
+        // })
+        // .then(res => {
+        //     res.json();
+        //     console.log(res);
+        //     // window.location.href = `/${userData.company_company_id}`;
+        // })
+        // .catch(error => console.log('Authorization failed : ' + error.message));
     }
 
     const displayElement = () => {
