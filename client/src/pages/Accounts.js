@@ -54,6 +54,7 @@ const Accounts = () => {
         ).then(
             data => {
                 console.log(data)
+                setLoading(false);
             }
         )
     });
@@ -61,7 +62,7 @@ const Accounts = () => {
     return (
         <div className="Accounts">
             <div className="AccountsText">
-                {loading ? DisplayLoader() : <div className='loadedAccounts' dangerouslySetInnerHTML={{__html: accountsData}}/>}
+                {loading ? DisplayLoader() : null}
             </div>
         </div>
     )
