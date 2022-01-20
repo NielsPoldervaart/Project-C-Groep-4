@@ -39,7 +39,7 @@ def templates(company_identifier):
 
     if request.method == "POST": #Add a template to specific company as KYNDA_ADMIN
 
-        user_verification = verify_user(company_identifier) #make sure user is logged in correctly
+        user_verification = verify_user(company_identifier, [1]) #make sure user is logged in correctly
         if user_verification != "PASSED":
             return user_verification
 
