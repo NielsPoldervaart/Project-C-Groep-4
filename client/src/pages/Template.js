@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import Loader from '../components/Loader';
 import EditOverlay from '../components/EditOverlay';
@@ -120,10 +120,29 @@ const Template = () => {
         )
     }
 
-    const uploadEdit = (e) => {
+    const uploadEdit = (e, userData) => {
         e.preventDefault();
 
-        console.log("post!");
+        let htmlString = document.querySelector(".templateBody").innerHTML;
+
+        let templateName = document.querySelector(".templateBody html body div").className.split(" ")[0];
+
+        let updatedTemplate = new File([htmlString], templateName, {type: "text/html", lastModified: new Date(0)});
+
+        const data = new FormData();
+        data.append("updated_template", updatedTemplate);
+
+        console.log(`/template/${userData.company_company_id}/${template_id}`);
+
+        fetch(`/template/${userData.company_company_id}/${template_id}`, {
+            method: 'PUT',
+            body: data,
+        })
+        .then(res => {
+            res.json();
+            window.location.href = `/${userData.company_company_id}`;
+        })
+        .catch(error => console.log('Authorization failed : ' + error.message));
     }
 
     const displayElement = () => {
@@ -135,7 +154,7 @@ const Template = () => {
                     <div className='editFunctionBtns'>
                         <form onSubmit={(e) => uploadEdit(e)}>
                             <input type="button" value="Annuleren" className='editAnnulerenBtn' onClick={() => window.location.href = `/${userData.company_company_id}`}/>
-                            <input type="submit" value="Opslaan" className='editOpslaanBtn'/>
+                            <input type="submit" value="Opslaan" className='editOpslaanBtn' onClick={(e) => uploadEdit(e, userData)}/>
                         </form>
                     </div>
                 </div>
