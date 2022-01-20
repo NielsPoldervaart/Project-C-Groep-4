@@ -89,8 +89,7 @@ def try_to_get_image_ftps(file_name, file_type, company_id):
 
 #Copies a company's template into a company's product directory on FTP
 def try_to_copy_template_to_product(template_name, company_id):
-    #session = FTP('145.24.222.235') #Create session with FTP
-    with FTP('145.24.222.235') as session:
+    with FTP('145.24.222.235') as session: #Create session with FTP
         session.login("Controller", "cC2G'Q_&3qY@=D!@")
 
         if current_app.config["USING_TEST_FTP"]: #If testing == True, we dont want to use regular storage, change to specific ftp storage

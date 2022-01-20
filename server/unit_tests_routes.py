@@ -253,7 +253,7 @@ class TestRoutes(unittest.TestCase):
 
     #POST Insert a company manual ("/<company_identifier>/manual" POST)
     def company_add_manual_pass(self, client):
-        with open(f'{TestTemplate}', 'rb') as manual: #TODO: MAYBE ADD AN ACTUAL MANUAL FILE
+        with open(f'{TestTemplate}', 'rb') as manual:
             test1 = client.post(f"/{CreatedAccountCompanyID}/manual", data={'manual_file': (manual, 'test.html')}).status_code
         self.assertEqual(test1, 201)
 
