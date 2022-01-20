@@ -108,7 +108,7 @@ const Template = () => {
     const displayOverlay = () => {
 
         return (
-            <EditOverlay elementText={elementText} overlay={overlay} isTextOverlay={isTextOverlay} setOverlay={setOverlay} setElementText={setElementText} element={element} editable={editable} setEditable={setEditable} editElement={editElement}/>
+            <EditOverlay userData={userData} elementText={elementText} overlay={overlay} isTextOverlay={isTextOverlay} setOverlay={setOverlay} setElementText={setElementText} element={element} editable={editable} setEditable={setEditable} editElement={editElement} editType="template"/>
         )
     }
 
