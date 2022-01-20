@@ -14,8 +14,8 @@ const Products = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [madeProduct, setMadeProduct] = useState(false);
-    const [templateId, setTemplateId] = useState(null);
     const [selectTemplate, setSelectTemplate] = useState(false);
+    const [templateReady, setTemplateReady] = useState(false);
     const [userData, setUserData] = useState(null);
 
     useEffect(() => {
@@ -30,6 +30,7 @@ const Products = () => {
                     window.location.href = "/login";
                 } else {
                     userData = data;
+                    setUserData(data);
                 }
             }
         )
@@ -74,39 +75,68 @@ const Products = () => {
         }
     }
 
-    const createBaseProduct = async (imgArr, cssArr, htmlArr) => {
-      
-        // TODO: select template, get template file, parse file here
+    const loadTemplate = async (template_id) => {
+        setLoading(true);
 
-        // setMadeProduct(true);
-
-        // var templateHTML = parsedTemplate.querySelector("html");
-        // document.querySelector(".templateBodyHidden").appendChild(templateHTML);
-        // let htmlString = document.querySelector(".templateBodyHidden").innerHTML;
-
-        // setMadeProduct(false);
-
-        // let newTemplate = new File([htmlString], htmlArr[0].name, {type: "text/html", lastModified: new Date(0)});
-        // uploadFile(newTemplate);
+        await fetch(`/template/${userData.company_company_id}/${template_id}`, {
+            method: 'GET'
+        }).then(
+            res => res.text()
+          ).then(
+            data => {
+                setLoading(false);
+                DisplayTemplate(data);
+            }
+        )
     }
 
-    const uploadFile = (file) => {
-      const data = new FormData();
-      data.append("template_file", file);
+    const uploadFile = () => {
+        let templateName = document.querySelector(".templateBody html body div").className.split(" ")[0];
+        let htmlString = document.querySelector(".templateBody").innerHTML;
 
-      fetch(`/products/${company_id}`, {
-          method: 'POST',
-          body: data,
-      })
-      .then(res => {
-        res.json();
-        window.location.reload();
-      })
-      .catch(error => console.log('Authorization failed : ' + error.message));
+        console.log(templateName);
+
+        let parser = new DOMParser();
+        let parsedTemplate = parser.parseFromString(htmlString, "text/html");
+
+        let a = parsedTemplate.querySelector(templateName);
+        console.log(a);
+
+        // let children = parsedTemplate.querySelector(templateName).children
+        // console.log(children);
+        // for (var i = 0; i < children.length; i++) {
+        //     var child = children[i];
+  
+        //     if (child.classList.contains("templateText")) {
+        //         child.classList.remove("templateText");
+        //     }
+        //     else if (child.classList.contains("templateImage")) {
+        //         child.classList.remove("templateImage");
+        //     }
+        // }
+
+        // htmlString = document.querySelector(".templateBody").innerHTML;
+
+        // console.log(htmlString);
+
+        // let newTemplate = new File([htmlString], `${templateName}.html`, {type: "text/html", lastModified: new Date(0)});
+
+        // const data = new FormData();
+        // data.append("template_id", newTemplate);
+
+        // fetch(`/products/${company_id}`, {
+        //     method: 'POST',
+        //     body: data,
+        // })
+        // .then(res => {
+        //     res.json();
+        //     window.location.reload();
+        // })
+        // .catch(error => console.log('Authorization failed : ' + error.message));
     }
 
     const deleteProduct = (productID) => {
-      fetch(`/product/${company_id}/${productID}`, {
+      fetch(`/product/${userData.company_company_id}/${productID}`, {
         method: 'DELETE'
       })
       .then(res => {
@@ -124,68 +154,63 @@ const Products = () => {
       )
     }
 
-    const DisplayHidden = () => {
-      return (
-        <div className='templateBodyHidden' style={{display: 'none'}}>
-        </div>
-      )
+    const DisplayTemplate = (template) => {
+        setTemplateReady(true);
+        setSelectTemplate(false);
+        setLoading(false);
+
+        let parser = new DOMParser();
+        let parsedTemplate = parser.parseFromString(template, "text/html");
+
+        var templateHTML = parsedTemplate.querySelector("html");
+        document.querySelector(".templateBody").appendChild(templateHTML);
     }
 
-    const DisplayTemplate = async (template) => {
-        setLoading(true);
-
-        let selectedTemplate;
-
-        await fetch(`/template/${userData.company_company_id}/${template}`, {
-            method: 'GET'
-        }).then(
-            res => res.text()
-          ).then(
-            data => {
-                setLoading(false);
-                selectedTemplate = data;
-            }
-        )
-
-        let html = await readFile(selectedTemplate);
-
+    const TemplatesBody = () => {
         return (
-            <>
-                <div className='selectedTemplateBody'>
-                </div>
-            </>
+            <div className="TemplatesBody">
+                <ul className="TemplateList">
+                    {
+                        products.map((product) => 
+                            <div className="TemplateComp"  key={product.product_id}>
+                                <h2 className="TitleCard">Product {product.product_id}</h2>
+                                <div className="TemplateCard">
+                                    <p className="CardIcon View" onClick={() => navigate(`/product/${company_id}/${product.product_id}`)}><FaRegEye /></p>
+                                    <p className="CardIcon Delete" onClick={() => deleteProduct(product.product_id)}><FaRegTrashAlt /></p>
+                                </div>
+                            </div>
+                        )
+                    }
+                    <div className="NewTempBox">
+                        <FaPlusCircle className="NewTempButton" onClick={() => setSelectTemplate(true)}/>
+                    </div>
+                </ul>
+            </div>
         )
-
     }
 
     const DisplayProducts = () => {
         return (
-          <div className="TemplatesBody">
-            <ul className="TemplateList">
-                {
-                    products.map((product) => 
-                        <div className="TemplateComp"  key={product.product_id}>
-                            <h2 className="TitleCard">Product {product.product_id}</h2>
-                            <div className="TemplateCard">
-                                <p className="CardIcon View" onClick={() => navigate(`/product/${company_id}/${product.product_id}`)}><FaRegEye /></p>
-                                <p className="CardIcon Delete" onClick={() => deleteProduct(product.product_id)}><FaRegTrashAlt /></p>
+            <>
+                { templateReady ? (
+                    <>
+                        <div className='templateBody'></div>
+                        <div className='templateSelectOverlay'>
+                            <div className='templateSelectBtns'>
+                                <button className='selectBackBtn' onClick={() => setTemplateReady(false)}>Ga Terug</button>
+                                <button className='selectTemplateBtn' onClick={() => uploadFile()}>Selecteer Template</button>
                             </div>
                         </div>
-                    )
-                }
-                <div className="NewTempBox">
-                    <FaPlusCircle className="NewTempButton" onClick={() => setSelectTemplate(true)}/>
-                </div>
-            </ul>
-            { madeProduct ? DisplayHidden() : null }
-          </div>
+                    </>
+                ) : TemplatesBody() }
+            </>
         )
     }
 
     const DisplayElement = () => {
         return (
             <>
-                { selectTemplate && templateId === null ? <SelectTemplate setTemplateId={setTemplateId} setSelectTemplate={setSelectTemplate} setSelectTemplate={setSelectTemplate} /> : templateId !== null ? DisplayTemplate(templateId) : DisplayProducts() }
+                { selectTemplate ? <SelectTemplate loadTemplate={loadTemplate} setSelectTemplate={setSelectTemplate}/> : DisplayProducts() }
             </>
         )
     }

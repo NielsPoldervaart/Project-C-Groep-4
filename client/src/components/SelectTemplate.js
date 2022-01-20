@@ -5,7 +5,7 @@ import Loader from '../components/Loader';
 import '../style/Templates.css';
 import '../style/SelectedTemplate.css';
 
-const SelectTemplate = ({setTemplateId, setSelectTemplate}) => {
+const SelectTemplate = ({loadTemplate, setSelectTemplate}) => {
     let navigate = useNavigate();
 
     const [templates, setTemplates] = useState([]);
@@ -70,7 +70,7 @@ const SelectTemplate = ({setTemplateId, setSelectTemplate}) => {
                                 <div className="TemplateComp"  key={template.template_id}>
                                     <h2 className="TitleCard">Template {template.template_id}</h2>
                                     <div className="TemplateCard">
-                                        <p className="CardIcon View" onClick={() => setTemplateId(template.template_id)}><FaRegEye /></p>
+                                        <p className="CardIcon View" onClick={() => loadTemplate(template.template_id)}><FaRegEye /></p>
                                     </div>
                                 </div>
                             )

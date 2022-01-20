@@ -102,8 +102,6 @@ const Template = () => {
             }
         }
         else {
-            console.log(el);
-            console.log(value);
         }
     }
 
@@ -127,21 +125,21 @@ const Template = () => {
 
         let htmlString = document.querySelector(".templateBody").innerHTML;
         let templateName = document.querySelector(".templateBody html body div").className.split(" ")[0];
-        let updatedTemplate = new File([htmlString], templateName, {type: "text/html", lastModified: new Date(0)});
+        let updatedTemplate = new File([htmlString], `${templateName}.html`, {type: "text/html", lastModified: new Date(0)});
 
         const data = new FormData();
-        data.append("file", updatedTemplate);
+        data.append("updated_template", updatedTemplate);
 
-        // fetch(`/template/${userData.company_company_id}/${template_id}`, {
-        //     method: 'POST',
-        //     body: data,
-        // })
-        // .then(res => {
-        //     res.json();
-        //     console.log(res);
-        //     // window.location.href = `/${userData.company_company_id}`;
-        // })
-        // .catch(error => console.log('Authorization failed : ' + error.message));
+        fetch(`/template/${userData.company_company_id}/${template_id}`, {
+            method: 'POST',
+            body: data,
+        })
+        .then(res => {
+            res.json();
+            console.log(res);
+            // window.location.href = `/${userData.company_company_id}`;
+        })
+        .catch(error => console.log('Authorization failed : ' + error.message));
     }
 
     const displayElement = () => {
