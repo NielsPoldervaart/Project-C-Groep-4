@@ -268,14 +268,13 @@ const Templates = () => {
       else {
         return (
           <div className="TemplatesBody">
-            <h1 className="CompanyName">{company.Company_name}</h1>
             <ul className="TemplateList">
                 {
                     templates.templates.map((template) => 
                         <div className="TemplateComp"  key={template.template_id}>
                             <h2 className="TitleCard">Template {template.template_id}</h2>
                             <div className="TemplateCard">
-                                <p className="CardIcon View" onClick={() => navigate(`/${company_id}/${template.template_id}`)}><FaRegEye /></p>
+                                <p className="CardIcon View" onClick={() => navigate(`/template/${company_id}/${template.template_id}`)}><FaRegEye /></p>
                                 <p className="CardIcon Delete" onClick={() => deleteTemplate(template.template_id)}><FaRegTrashAlt /></p>
                             </div>
                         </div>
