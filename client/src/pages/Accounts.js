@@ -6,33 +6,7 @@ import Loader from '../components/Loader';
 const Accounts = () => {
     let navigate = useNavigate();
 
-    const [accountsData, setAccountsData] = useState("")
     const [loading, setLoading] = useState(true);
-
-    const [values, setValues] = useState({
-        accepted: false,
-    });
-
-    const HandleAccept = () => {
-        setValues({...values, accepted: true})
-    }
-
-    const HandleDecline = () => {
-        setValues({...values, accepted: false})
-        YeetUser();
-    }
-
-    const YeetUser = () => {
-        //keeg
-    }
-
-    const DisplayLoader = () => {
-        return (
-          <div className='loaderDiv'>
-            <Loader />
-          </div>
-        )
-    }
 
     useEffect(async () => {
         let userData = {};
@@ -59,10 +33,29 @@ const Accounts = () => {
         )
     });
 
+    const DisplayLoader = () => {
+        return (
+          <div className='loaderDiv'>
+            <Loader />
+          </div>
+        )
+    }
+
+    const DisplayAccounts = () => {
+        return (
+            <div>
+                <div className='accountsList'>
+                    <div className='account'>
+                    </div>
+                </div>
+            </div>
+          )
+    }
+
     return (
         <div className="Accounts">
             <div className="AccountsText">
-                {loading ? DisplayLoader() : null}
+                {loading ? DisplayLoader() : DisplayAccounts}
             </div>
         </div>
     )
