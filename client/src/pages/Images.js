@@ -7,31 +7,32 @@ import '../style/Images.css'
 const Images = () => {
     let navigate = useNavigate();
 
-    const { company_id } = useParams()
-
-    const [images, setImages] = useState([])
-    const [company, setCompany] = useState([])
-    const [imagesData, setImagesData] = useState("")
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetch(`/images/${company_id}`).then(
-          res => res.json()
-        ).then(
-          data => {
-            setImages(data)
-            setLoading(false)
-          }
-        )
+    useEffect(async () => {
+      let userData = {};
 
-        fetch(`/company/${company_id}`).then(
+      await fetch(`/login`).then(
+        res => res.json()
+      ).then(
+        data => {
+            if (data.Code === 500 || data.Code === 404) {
+              window.location.href = "/login";
+            } else {
+              userData = data;
+            }
+        }
+      )
+
+      fetch(`/images/${userData.company_company_id}`).then(
           res => res.json()
-        ).then(
+      ).then(
           data => {
-            setCompany(data)
+              console.log(data)
+              setLoading(false);
           }
-        )
-    }, [company_id])
+      )
+  });
 
     const DisplayLoader = () => {
       return (
@@ -41,10 +42,21 @@ const Images = () => {
       )
     }
 
+    const DisplayElement = () => {
+      return (
+        <div>
+            <div className='imageList'>
+                <div className='image'>
+                </div>
+            </div>
+        </div>
+      )
+    }
+
     return (
         <div className="Images">
             <div className="ImagesText">
-                { loading ? DisplayLoader() :  <div className='loadedAccounts' dangerouslySetInnerHTML={{__html: imagesData}}/>}
+                { loading ? DisplayLoader() :  DisplayElement()}
             </div>
         </div>
     )

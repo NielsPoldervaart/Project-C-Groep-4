@@ -1,6 +1,7 @@
 @import "Variables.css";
 
 .AccountsText {
+    background-color: yellow;
     position: absolute;
     top: 50%;
     left: 50%;

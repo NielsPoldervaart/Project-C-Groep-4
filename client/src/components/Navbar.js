@@ -27,7 +27,7 @@ const Navbar = () => {
                     <ul className="NavLinks">
                         <li><Link className="Link" to="/1">Templates</Link></li>
                         <li><Link className="Link" to="/images">Beeldbank</Link></li>
-                        <li><Link className="Link" to="/accounts">Accounts</Link></li>
+                        <li><Link className="Link" to="/1/accounts">Accounts</Link></li>
                     </ul>
                     <ul className="profilePic">
                         <img src="https://image.flaticon.com/icons/png/512/50/50050.png" alt="pfpIcon" width="50px"/>
@@ -49,7 +49,7 @@ const Navbar = () => {
                 <Route path="/logout" element={<Logout />}/>
                 <Route path="/welcome" element={<Home />}/>
                 <Route path="/images" element={<Images />}/>
-                <Route path="/accounts" element={<Accounts />}/>
+                <Route path="/:company_id/accounts" element={<Accounts />}/>
                 <Route path="/help" element={<Help />}/>
                 <Route path="/manual" element={<Manual />}/>
                 <Route path="/profile" element={<Profile />}/>
