@@ -17,6 +17,7 @@ const Products = () => {
     const [selectTemplate, setSelectTemplate] = useState(false);
     const [templateReady, setTemplateReady] = useState(false);
     const [userData, setUserData] = useState(null);
+    const [templateID, setTemplateID] = useState(null);
 
     useEffect(() => {
       async function fetchData() {
@@ -57,28 +58,11 @@ const Products = () => {
         }
     }
 
-    const readFile = async (file) => {
-        if (checkFile(file) === "html") {
-            return new Promise((resolve, reject) => {
-                let fr = new FileReader();  
-    
-                fr.onload = () => {
-                  resolve(fr.result)
-                };
-                fr.onerror = reject;
-    
-                fr.readAsBinaryString(file);
-            });
-        }
-        else if (checkFile(file) === null) {
-            console.error("Error, checkFile returned null");
-        }
-    }
-
-    const loadTemplate = async (template_id) => {
+    const loadTemplate = async (templateId) => {
         setLoading(true);
+        setTemplateID(templateId);
 
-        await fetch(`/template/${userData.company_company_id}/${template_id}`, {
+        await fetch(`/template/${userData.company_company_id}/${templateId}`, {
             method: 'GET'
         }).then(
             res => res.text()
@@ -90,20 +74,19 @@ const Products = () => {
         )
     }
 
-    const uploadFile = () => {
-        let templateName = document.querySelector(".templateBody html body div").className.split(" ")[0];
-        let htmlString = document.querySelector(".templateBody").innerHTML;
+    const uploadFile = (templateId) => {
+        if (templateId === null) {
+            console.error("No file to upload!");
+            return
+        }
 
-        console.log(templateName);
+        // let templateName = document.querySelector(".templateBody html body div").className.split(" ")[0];
+        // let htmlString = document.querySelector(".templateBody").innerHTML;
 
-        let parser = new DOMParser();
-        let parsedTemplate = parser.parseFromString(htmlString, "text/html");
+        // let parser = new DOMParser();
+        // let parsedTemplate = parser.parseFromString(htmlString, "text/html");
 
-        let a = parsedTemplate.querySelector(templateName);
-        console.log(a);
-
-        // let children = parsedTemplate.querySelector(templateName).children
-        // console.log(children);
+        // let children = parsedTemplate.querySelector(`.${templateName}`).children
         // for (var i = 0; i < children.length; i++) {
         //     var child = children[i];
   
@@ -115,24 +98,24 @@ const Products = () => {
         //     }
         // }
 
-        // htmlString = document.querySelector(".templateBody").innerHTML;
-
-        // console.log(htmlString);
+        // var templateHTML = parsedTemplate.querySelector("html");
+        // document.querySelector(".templateBodyHidden").appendChild(templateHTML);
+        // htmlString = document.querySelector(".templateBodyHidden").innerHTML;
 
         // let newTemplate = new File([htmlString], `${templateName}.html`, {type: "text/html", lastModified: new Date(0)});
 
-        // const data = new FormData();
-        // data.append("template_id", newTemplate);
+        const data = new FormData();
+        data.append("template_id", templateId);
 
-        // fetch(`/products/${company_id}`, {
-        //     method: 'POST',
-        //     body: data,
-        // })
-        // .then(res => {
-        //     res.json();
-        //     window.location.reload();
-        // })
-        // .catch(error => console.log('Authorization failed : ' + error.message));
+        fetch(`/products/${userData.company_company_id}`, {
+            method: 'POST',
+            body: data,
+        })
+        .then(res => {
+            res.json();
+            window.location.reload();
+        })
+        .catch(error => console.log('Authorization failed : ' + error.message));
     }
 
     const deleteProduct = (productID) => {
@@ -175,7 +158,7 @@ const Products = () => {
                             <div className="TemplateComp"  key={product.product_id}>
                                 <h2 className="TitleCard">Product {product.product_id}</h2>
                                 <div className="TemplateCard">
-                                    <p className="CardIcon View" onClick={() => navigate(`/product/${company_id}/${product.product_id}`)}><FaRegEye /></p>
+                                    <p className="CardIcon View" onClick={() => navigate(`/product/${userData.company_company_id}/${product.product_id}`)}><FaRegEye /></p>
                                     <p className="CardIcon Delete" onClick={() => deleteProduct(product.product_id)}><FaRegTrashAlt /></p>
                                 </div>
                             </div>
@@ -189,6 +172,13 @@ const Products = () => {
         )
     }
 
+    const DisplayHidden = () => {
+        return (
+            <div className='templateBodyHidden' style={{display: 'none'}}>
+            </div>
+        )
+    }
+
     const DisplayProducts = () => {
         return (
             <>
@@ -198,7 +188,7 @@ const Products = () => {
                         <div className='templateSelectOverlay'>
                             <div className='templateSelectBtns'>
                                 <button className='selectBackBtn' onClick={() => setTemplateReady(false)}>Ga Terug</button>
-                                <button className='selectTemplateBtn' onClick={() => uploadFile()}>Selecteer Template</button>
+                                <button className='selectTemplateBtn' onClick={() => uploadFile(templateID)}>Selecteer Template</button>
                             </div>
                         </div>
                     </>
@@ -218,6 +208,7 @@ const Products = () => {
     return (
         <>
             { loading ? DisplayLoader() : DisplayElement() }
+            {  DisplayHidden() }
         </>
     );
 };

@@ -137,7 +137,7 @@ const Template = () => {
         .then(res => {
             res.json();
             console.log(res);
-            // window.location.href = `/${userData.company_company_id}`;
+            window.location.href = `/templates/${userData.company_company_id}`;
         })
         .catch(error => console.log('Authorization failed : ' + error.message));
     }
