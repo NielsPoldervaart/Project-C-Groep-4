@@ -1,30 +1,76 @@
-import React, { Component } from 'react'
+import React, { useEffect, useCallback, useRef } from 'react';
+import { MdClose } from 'react-icons/md';
+import '../style/EditOverlay.css';
 
-export class EditOverlay extends Component {
-    constructor(props) {
-        super(props);
+const EditOverlay = ({ elementText, overlay, isTextOverlay, setOverlay, setElementText, element, editable, setEditable, editElement }) => {
+    const overlayRef = useRef();
 
-        this.state = {
-            text: props.el.textContent,
-            editable: true
+    const closeOverlay = (e) => {
+        if (overlayRef.current === e.target) {
+            setOverlay(false);
         }
     }
-    render() {
-        const handleTextElChange = (e) => {
-            this.state.text = e.target.value;
-        }
 
+    const keyPress = useCallback(
+        e => {
+            if (e.key === "Escape" && overlay) {
+                setOverlay(false);
+            }
+        }, [overlay]
+    );
+
+    useEffect(() => {
+        document.addEventListener('keydown', keyPress);
+        return () => document.removeEventListener('keydown', keyPress);
+    }, [keyPress]);
+
+
+
+    const textOverlay = () => {
         return (
-            // is statement for displaying \/ else return null to return empty div for template.js
-            <div className='editOverlay'>
+            // Add blur to onchange event? to reduce lag idk https://delgersaikhann.medium.com/react-input-model-lag-181c22043c29
+            <>
+                {/* <input type="text" value={elementText} onChange={e => setElementText(e.target.value)}/> */}
+                <textarea value={elementText} onChange={e => setElementText(e.target.value)} cols="65" rows="10" wrap="hard"/>
+            </>
+        )
+    }
+
+    const imgOverlay = () => {
+        return (
+            <>
+                <h1>image</h1>
+            </>
+        )
+    }
+
+    const callEditElement = (e) => {
+        e.preventDefault();
+
+        editElement(element, elementText, isTextOverlay, editable);
+        setOverlay(false);
+    }
+
+    return (
+        <div className='overlayContainer' ref={overlayRef} onClick={closeOverlay}>
+            <div className='editBoxContainer'>
                 <div className='editBox'>
-                    <form>
-                        <input value={this.state.text} type="text" onChange={handleTextElChange}/>
+                    <div className='overlayCloseBtn' onClick={() => setOverlay(false)}><MdClose /></div>
+                    <form onSubmit={(e) => callEditElement(e)}>
+                        { isTextOverlay ? textOverlay() : imgOverlay() }
+                        <div className='overlayCheckboxContainer'>
+                            <label for="isEditable">Is bewerkbaar:</label>
+                            <input className='overlayCheckbox' name="isEditable" type="checkbox" checked={editable} onChange={() => setEditable(prev => !prev)}/>
+                        </div>
+                        <div className='overlayFormBtns'>
+                            <input type="reset" value="Annuleren" className='overlayAnnulerenBtn' onClick={() => setOverlay(false)} />
+                            <input type="submit" value="Bewerken" className='overlayBewerkenBtn' />
+                        </div>
                     </form>
                 </div>
             </div>
-        )
-    }
+        </div>
+    );
 }
 
-export default EditOverlay
+export default EditOverlay;

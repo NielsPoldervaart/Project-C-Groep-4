@@ -17,37 +17,41 @@ const Templates = () => {
 
     const inputFile = useRef(null);
 
-    useEffect(async () => {
-      let userData = {};
+    useEffect(() => {
+      async function fetchData() {
+        let userData = {};
 
-      await fetch(`/login`).then(
-        res => res.json()
-      ).then(
-        data => {
-            if (data.Code === 500 || data.Code === 404) {
-              window.location.href = "/login";
-            } else {
-              userData = data;
+        await fetch(`/login`).then(
+            res => res.json()
+        ).then(
+            data => {
+                if (data.Code === 500 || data.Code === 404) {
+                    window.location.href = "/login";
+                } else {
+                    userData = data;
+                }
             }
-        }
-      )
+        )
 
-      fetch(`/templates/${userData.company_company_id}`).then(
-        res => res.json()
-      ).then(
-        data => {
-          setTemplates(data);
-          setLoading(false);
-        }
-      )
+        fetch(`/templates/${userData.company_company_id}`).then(
+          res => res.json()
+        ).then(
+          data => {
+            setTemplates(data);
+            setLoading(false);
+          }
+        )
+  
+        fetch(`/company/${userData.company_company_id}`).then(
+          res => res.json()
+        ).then(
+          data => {
+            setCompany(data)
+          }
+        )
+    }
 
-      fetch(`/company/${userData.company_company_id}`).then(
-        res => res.json()
-      ).then(
-        data => {
-          setCompany(data)
-        }
-      )
+    fetchData();
     }, [company_id]);
 
     const checkFile = (file) => {
@@ -192,10 +196,12 @@ const Templates = () => {
 
       for (var i = 0; i < children.length; i++) {
           var child = children[i];
-          if (child.textContent !== "") {
+          if (child.textContent.trim() !== "") {
               child.classList.add("templateText");
               child.classList.add("editable");
               child.style.pointerEvents = "auto";
+              child.style.whiteSpace = "pre";
+              child.style.overflow = "hidden";
           }
 
           if (!child.classList.contains("templateText") && !child.classList.contains("templateImage") ) {
