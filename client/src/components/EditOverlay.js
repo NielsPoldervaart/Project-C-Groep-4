@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useRef } from 'react';
 import { MdClose } from 'react-icons/md';
 import '../style/EditOverlay.css';
 
-const EditOverlay = ({ elementText, overlay, isTextOverlay, setOverlay, setElementText, element, editable, setEditable, editElement }) => {
+const EditOverlay = ({ userData, elementText, overlay, isTextOverlay, setOverlay, setElementText, element, editable, setEditable, editElement, editType }) => {
     const overlayRef = useRef();
 
     const closeOverlay = (e) => {
@@ -28,9 +28,7 @@ const EditOverlay = ({ elementText, overlay, isTextOverlay, setOverlay, setEleme
 
     const textOverlay = () => {
         return (
-            // Add blur to onchange event? to reduce lag idk https://delgersaikhann.medium.com/react-input-model-lag-181c22043c29
             <>
-                {/* <input type="text" value={elementText} onChange={e => setElementText(e.target.value)}/> */}
                 <textarea value={elementText} onChange={e => setElementText(e.target.value)} cols="65" rows="10" wrap="hard"/>
             </>
         )
@@ -58,10 +56,14 @@ const EditOverlay = ({ elementText, overlay, isTextOverlay, setOverlay, setEleme
                     <div className='overlayCloseBtn' onClick={() => setOverlay(false)}><MdClose /></div>
                     <form onSubmit={(e) => callEditElement(e)}>
                         { isTextOverlay ? textOverlay() : imgOverlay() }
-                        <div className='overlayCheckboxContainer'>
-                            <label htmlFor="isEditable">Is te bewerken door een klant:</label>
-                            <input className='overlayCheckbox' name="isEditable" type="checkbox" checked={editable} onChange={() => setEditable(prev => !prev)}/>
-                        </div>
+                        { userData.role_role_id === 1 && editType !== "product" ? 
+                        (
+                            <div className='overlayCheckboxContainer'>
+                                <label htmlFor="isEditable">Is te bewerken door een klant:</label>
+                                <input className='overlayCheckbox' name="isEditable" type="checkbox" checked={editable} onChange={() => setEditable(prev => !prev)}/>
+                            </div>
+                        ) 
+                        : null }
                         <div className='overlayFormBtns'>
                             <input type="reset" value="Annuleren" className='overlayAnnulerenBtn' onClick={() => setOverlay(false)} />
                             <input type="submit" value="Bewerken" className='overlayBewerkenBtn' />
