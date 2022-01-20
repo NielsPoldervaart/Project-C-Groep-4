@@ -2,16 +2,77 @@
 
 .Accounts {
     position: absolute;
+    font-family: var(--Font);
+    color: var(--Zwart);
     top: 50%;
     left: 50%;
+    width: 1400px;
     transform: translate(-50%, -50%);
 }
 
 .awaitingUsers {
-    background-color: green;
-
+    background-color: var(--Wit);
+    padding: 2%;
+    border-radius: 5%;
+    border-style: solid;
+    border-width: 5px;
 }
 
 .verifiedUsers {
-    background-color: yellow;
+    background-color: var(--Wit);
+    margin-top: 20px;
+    padding: 2%;
+    border-radius: 5%;
+    border-style: solid;
+    border-width: 5px;
+}
+
+.userInfo {
+    position: relative;
+    padding: 10px;
+}
+
+.id {
+    position: absolute;
+    width: 40px;
+    height: 25px;
+    border-style: solid;
+}
+
+.email {
+    position: absolute;
+    left: 50px;
+    width: 950px;
+    height: 25px;
+    border-style: solid;
+}
+
+.username {
+    position: absolute;
+    left: 1000px;
+    width: 200px;
+    height: 25px;
+    border-style: solid;
+}
+
+.role {
+    position: absolute;
+    left: 1200px;
+    width: 40px;
+    height: 25px;
+    border-style: solid;
+}
+
+.acceptButton {
+    position: absolute;
+    left: 1250px;
+    width: 20px;
+    background-color: rgb(22, 224, 22);
+}
+
+.declineButton {
+    position: absolute;
+    left: 1275px;
+    width: 20px;
+    background-color: red;
 }
