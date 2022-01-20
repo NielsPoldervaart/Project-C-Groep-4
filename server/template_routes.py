@@ -111,7 +111,7 @@ def template(company_identifier, template_identifier):
             return {"errorCode": 404, "Message": "No valid file found in request (Name should be same as old product name"}, 404
 
         #Remove the old file from the templates dir
-        attempt_to_remove = try_to_delete_file_ftps(old_template_object.template_file, "template", company_identifier)
+        attempt_to_remove = try_to_delete_file_ftps(old_template_object.template_file, "templates", company_identifier)
         if attempt_to_remove is not "PASSED":
             return attempt_to_remove
         
