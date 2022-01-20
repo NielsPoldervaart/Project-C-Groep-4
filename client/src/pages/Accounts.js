@@ -51,30 +51,40 @@ const Accounts = () => {
         return (
             <div>
                 <div className='accountsList'>
-                    <div className='awaitingUsers'> AWAITING USERS
+                    <div className='awaitingUsers'> Accounts in afwachting
+                        <div className='userInfo'>
+                            <p className='id'>Id</p>
+                            <p className='email'>Email</p>
+                            <p className='username'>Gebruikersnaam</p>
+                            <p className='role'>Rol</p>
+                        </div>
                         {
                             awaitingUsers.map((user) => 
-                                <div className='id'>{user.user_id}
-                                    <div className='email'>{user.email}
-                                        <div className='username'>{user.username}
-                                            <div className='role'>{user.user_role}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <div className='userInfo'>
+                                    <p className='id'>{user.user_id}</p>
+                                    <p className='email'>{user.email}</p>
+                                    <p className='username'>{user.username}</p>
+                                    <p className='role'>{user.user_role}</p>
+                                    <button className='acceptButton'>✓</button>
+                                    <button className='declineButton'>✗</button>
+                                </div> 
                             )
                         }
                     </div>
-                    <div className='verifiedUsers'> VERIFIED USERS
+                    <div className='verifiedUsers'> Bestaande accounts
+                        <div className='userInfo'>
+                            <p className='id'>Id</p>
+                            <p className='email'>Email</p>
+                            <p className='username'>Gebruikersnaam</p>
+                            <p className='role'>Rol</p>
+                        </div>
                         {
                             verifiedUsers.map((user) => 
-                                <div className='id'>{user.user_id}
-                                    <div className='email'>{user.email}
-                                        <div className='username'>{user.username}
-                                            <div className='role'>{user.user_role}
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div className='userInfo'>
+                                    <p className='id'>{user.user_id}</p>
+                                    <p className='email'>{user.email}</p>
+                                    <p className='username'>{user.username}</p>
+                                    <p className='role'>{user.user_role}</p>
                                 </div>
                             )
                         }
