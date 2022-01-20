@@ -11,7 +11,6 @@
 body {
     width: 100%;
     height: 100vh;
-    background: linear-gradient(180deg, #ff00ba, transparent), linear-gradient(93deg, transparent, rgba(19,43,200,.89)), linear-gradient(60deg, #d22e12, transparent);
     z-index: -1;
 }
 
@@ -31,7 +30,7 @@ li, .Link {
     min-height: var(--NavBarHeight);
     background-color: var(--Wit);
     filter: drop-shadow(0px 5px 7.5px rgba(0, 0, 0, 0.25));
-    z-index: 999;
+    z-index: 998;
 }
 
 .NavLogo {
