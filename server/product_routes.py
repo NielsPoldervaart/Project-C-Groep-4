@@ -56,7 +56,7 @@ def products(company_identifier):
 
         return attempt_to_upload_product
 
-@product_api.route("/product/<int:company_identifier>/<int:product_identifier>", methods=["GET", "DELETE", "PUT"])
+@product_api.route("/product/<int:company_identifier>/<int:product_identifier>", methods=["GET", "DELETE", "POST"])
 def product(company_identifier, product_identifier):
 
     user_verification = verify_user(company_identifier)
@@ -80,7 +80,7 @@ def product(company_identifier, product_identifier):
 
 
 
-    if request.method == "PUT": #Update a specific product
+    if request.method == "POST": #Update a specific product
         updated_product = request.files["updated_product"]
 
         with create_db_session() as db_session:
