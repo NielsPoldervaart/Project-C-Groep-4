@@ -7,14 +7,14 @@ import '../style/Template.css';
 const Template = () => {
     const { company_id, template_id } = useParams();
 
-    const overlayRef = useRef();
-
     const [loading, setLoading] = useState(true);
     const [overlay, setOverlay] = useState(false);
     const [isTextOverlay, setIsTextOverlay] = useState(null);
     const [elementText, setElementText] = useState("");
     const [element, setElement] = useState(null);
     const [editable, setEditable] = useState(true);
+
+    const [userData, setUserData] = useState({});
 
     useEffect(() => {
         async function fetchData() {
@@ -28,6 +28,7 @@ const Template = () => {
                         window.location.href = "/login";
                     } else {
                         userData = data;
+                        setUserData(data);
                     }
                 }
             )
@@ -119,11 +120,23 @@ const Template = () => {
         )
     }
 
+    const uploadEdit = (e) => {
+        e.preventDefault();
+
+        console.log("post!");
+    }
+
     const displayElement = () => {
         return (
             <div>
                 <div className='editPage'>
                     <div className="templateBody">
+                    </div>
+                    <div className='editFunctionBtns'>
+                        <form onSubmit={(e) => uploadEdit(e)}>
+                            <input type="button" value="Annuleren" className='editAnnulerenBtn' onClick={() => window.location.href = `/${userData.company_company_id}`}/>
+                            <input type="submit" value="Opslaan" className='editOpslaanBtn'/>
+                        </form>
                     </div>
                 </div>
                 { overlay ? displayOverlay() : null }
