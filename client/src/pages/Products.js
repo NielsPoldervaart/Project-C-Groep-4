@@ -13,7 +13,6 @@ const Products = () => {
 
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [madeProduct, setMadeProduct] = useState(false);
     const [selectTemplate, setSelectTemplate] = useState(false);
     const [templateReady, setTemplateReady] = useState(false);
     const [userData, setUserData] = useState(null);
