@@ -54,7 +54,6 @@ const Accounts = () => {
                     <div className='awaitingUsers'> Accounts in afwachting
                         <div className='userInfo'>
                             <p className='id'>Id</p>
-                            <p className='email'>Email</p>
                             <p className='username'>Gebruikersnaam</p>
                             <p className='role'>Rol</p>
                         </div>
@@ -62,7 +61,6 @@ const Accounts = () => {
                             awaitingUsers.map((user) => 
                                 <div className='userInfo'>
                                     <p className='id'>{user.user_id}</p>
-                                    <p className='email'>{user.email}</p>
                                     <p className='username'>{user.username}</p>
                                     <p className='role'>{user.user_role}</p>
                                     <button className='acceptButton'>✓</button>
@@ -74,7 +72,6 @@ const Accounts = () => {
                     <div className='verifiedUsers'> Bestaande accounts
                         <div className='userInfo'>
                             <p className='id'>Id</p>
-                            <p className='email'>Email</p>
                             <p className='username'>Gebruikersnaam</p>
                             <p className='role'>Rol</p>
                         </div>
@@ -82,7 +79,6 @@ const Accounts = () => {
                             verifiedUsers.map((user) => 
                                 <div className='userInfo'>
                                     <p className='id'>{user.user_id}</p>
-                                    <p className='email'>{user.email}</p>
                                     <p className='username'>{user.username}</p>
                                     <p className='role'>{user.user_role}</p>
                                 </div>
