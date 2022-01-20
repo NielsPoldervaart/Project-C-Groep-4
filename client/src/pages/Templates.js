@@ -200,7 +200,7 @@ const Templates = () => {
               child.classList.add("templateText");
               child.classList.add("editable");
               child.style.pointerEvents = "auto";
-              child.style.whiteSpace = "pre";
+              child.style.whiteSpace = "pre-wrap";
               child.style.overflow = "hidden";
           }
 
