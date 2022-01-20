@@ -6,7 +6,7 @@
     color: var(--Zwart);
     top: 50%;
     left: 50%;
-    width: 1400px;
+    width: 640px;
     transform: translate(-50%, -50%);
 }
 
@@ -29,50 +29,44 @@
 
 .userInfo {
     position: relative;
-    padding: 10px;
+    padding: 15px;
 }
 
 .id {
     position: absolute;
-    width: 40px;
-    height: 25px;
-    border-style: solid;
-}
-
-.email {
-    position: absolute;
-    left: 50px;
-    width: 950px;
+    text-align: center;
+    width: 50px;
     height: 25px;
     border-style: solid;
 }
 
 .username {
     position: absolute;
-    left: 1000px;
-    width: 200px;
+    left: 70px;
+    width: 400px;
     height: 25px;
     border-style: solid;
 }
 
 .role {
     position: absolute;
-    left: 1200px;
-    width: 40px;
+    text-align: center;
+    left: 475px;
+    width: 50px;
     height: 25px;
     border-style: solid;
 }
 
 .acceptButton {
     position: absolute;
-    left: 1250px;
+    left: 540px;
     width: 20px;
     background-color: rgb(22, 224, 22);
 }
 
 .declineButton {
     position: absolute;
-    left: 1275px;
+    left: 570px;
     width: 20px;
     background-color: red;
 }
