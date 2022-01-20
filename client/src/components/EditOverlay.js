@@ -59,7 +59,7 @@ const EditOverlay = ({ elementText, overlay, isTextOverlay, setOverlay, setEleme
                     <form onSubmit={(e) => callEditElement(e)}>
                         { isTextOverlay ? textOverlay() : imgOverlay() }
                         <div className='overlayCheckboxContainer'>
-                            <label for="isEditable">Is te bewerken door een klant:</label>
+                            <label htmlFor="isEditable">Is te bewerken door een klant:</label>
                             <input className='overlayCheckbox' name="isEditable" type="checkbox" checked={editable} onChange={() => setEditable(prev => !prev)}/>
                         </div>
                         <div className='overlayFormBtns'>
