@@ -9,9 +9,8 @@ const Accounts = () => {
 
     const { company_id } = useParams();
 
-    const [accounts, setAccounts] = useState([]);
-    const [company, setCompany] = useState([]);
-    const [acceptedAccount, setAcceptedAccount] = useState(false);
+    const [awaitingUsers, setAwaitingUsers] = useState([]);
+    const [verifiedUsers, setVerifiedUsers] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(async () => {
@@ -33,17 +32,9 @@ const Accounts = () => {
             res => res.json()
         ).then(
             data => {
-                setAccounts(data);
-                console.log(data);
+                setAwaitingUsers(data.Awaiting_users);
+                setVerifiedUsers(data.Verified_users);
                 setLoading(false);
-            }
-        )
-
-        fetch(`/company/${userData.company_company_id}`).then(
-            res => res.json()
-          ).then(
-            data => {
-              setCompany(data)
             }
         )
     }, [company_id]);
@@ -57,31 +48,46 @@ const Accounts = () => {
     }
 
     const DisplayAccounts = () => {
-        if (accounts.errorCode === 401 || accounts.errorCode === 403) {
-            window.location.href = "/login";
-          }
-        else {
-            return (
-                <div>
-                    <div className='accountsList'>
-                        <div className='nonAcceptedAccount'>
-                            <div className='account'>
-                            </div>
-                        </div>
-                        <div className='acceptedAccount'>
-                            <div className='account'>
-                            </div>
-                        </div>
+        return (
+            <div>
+                <div className='accountsList'>
+                    <div className='awaitingUsers'> AWAITING USERS
+                        {
+                            awaitingUsers.map((user) => 
+                                <div className='id'>{user.user_id}
+                                    <div className='email'>{user.email}
+                                        <div className='username'>{user.username}
+                                            <div className='role'>{user.user_role}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        }
+                    </div>
+                    <div className='verifiedUsers'> VERIFIED USERS
+                        {
+                            verifiedUsers.map((user) => 
+                                <div className='id'>{user.user_id}
+                                    <div className='email'>{user.email}
+                                        <div className='username'>{user.username}
+                                            <div className='role'>{user.user_role}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        }
                     </div>
                 </div>
-            )
-        }
+            </div>
+        )
     }
 
     return (
         <div className="Accounts">
             <div className="AccountsText">
-                {loading ? DisplayLoader() : DisplayAccounts}
+                {loading ? DisplayLoader() : DisplayAccounts()}
             </div>
         </div>
     )
