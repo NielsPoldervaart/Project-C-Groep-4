@@ -7,7 +7,7 @@ skinparam linetype ortho
 
 file **login_routes.py** as file_login #FEFECE {
     rectangle **/login** as login #ffffff{
-    rectangle "<color:grey>**GET**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as a #lightgrey
+    rectangle "**GET**\nRetrieve logged in user's information\t\t\t" as a #Application
     rectangle "<color:grey>**DELETE**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as b #lightgrey
     rectangle "**POST**\n(Login to session)\t\t\t\t\t\t\t" as c #technology
     rectangle "<color:grey>**PUT**\n<color:grey>(NOT IMPLEMENTED)\t\t\t\t\t\t" as d #lightgrey

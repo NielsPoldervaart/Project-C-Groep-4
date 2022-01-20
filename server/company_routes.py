@@ -9,9 +9,7 @@ company_api = Blueprint('company_api', __name__)
 
 @company_api.route("/company/<int:company_identifier>", methods=["GET"])
 def company(company_identifier):
-
     if request.method == "GET":
-
         user_verification = verify_user(company_identifier)
         if user_verification != "PASSED":
             return user_verification
@@ -24,7 +22,7 @@ def company(company_identifier):
                 company_id = company_information.company_id,
                 company_name = company_information.company_name
             ), 200
-        return {"errorCode": 404, "Message": "Company Does not exist"""}, 404
+        return {"errorCode": 404, "Message": "Company Does not exist"}, 404
 
 @company_api.route("/<int:company_identifier>/accounts", methods=["GET", "POST"])
 def company_accounts(company_identifier):

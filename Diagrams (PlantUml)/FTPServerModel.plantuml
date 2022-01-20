@@ -1,37 +1,21 @@
 @startuml FTPServerModel
 rectangle "FTP Server (Windows 2019)" {
-    component A [
+    file A [
         kyndaftp
         |_ 1
           |_ templates
-            |_ template1
-              |_ template.html
-              |_ templatefolder
-                |_ css
-                |_ image
-                |_ script
+            |_ template.html
             |_ etc...
           |_ products
-            |_ product1
-              |_ template.html
-              |_ templatefolder
-                |_ css
-                |_ image
-                |_ script
+            |_ product.html
             |_ etc...
-          |_ private gallery
-            |_ collection X
-              |_ example.png
-              |_ etc...
+          |_ manual
+            |_ manual.html
+          |_ gallery
+            |_ image.png
             |_ etc...
         |_ 2
           |_ etc...
-        |_ gallery dir
-          |_ gallery Fotos
-            |_ collection 1
-              |_ example.png
-              |_ etc...
-            |_ etc...
     ]
 }
 note right of A
