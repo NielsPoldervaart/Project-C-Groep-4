@@ -168,3 +168,10 @@ def company_manual(company_identifier):
 @company_api.route("/", methods=["GET"])
 def index():
     return {}
+
+@company_api.route("/put", methods=["PUT"])
+def puttest():
+    received_file = request.files["file"]
+    return {"filename:": received_file.filename}
+
+    
