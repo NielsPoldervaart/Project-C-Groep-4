@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import Loader from '../components/Loader';
 import EditOverlay from '../components/EditOverlay';
+import ReadFile from '../components/ReadFile';
 import '../style/Product.css';
 
 const Product = () => {
@@ -92,19 +93,6 @@ const Product = () => {
         setOverlay(prev => !prev);
     }
 
-    const readFile = async (file) => {
-        return new Promise((resolve, reject) => {
-            let fr = new FileReader();  
-
-            fr.onload = () => {
-                resolve(fr.result)
-            };
-            fr.onerror = reject;
-
-            fr.readAsDataURL(file);
-        });
-    }
-
     const editElement = async (el, value, isText) => {
         if (isText === true) {
             let className = el.className.split(" ")[0];
@@ -115,7 +103,7 @@ const Product = () => {
             let className = el.className.split(" ")[0];
             var element = document.getElementsByClassName(className)[0];
 
-            let dataUrl = await readFile(value);
+            let dataUrl = await ReadFile(value);
 
             element.style.backgroundImage = `url(${dataUrl})`;
 

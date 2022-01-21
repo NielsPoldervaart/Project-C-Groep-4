@@ -3,6 +3,8 @@ import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { FaRegTrashAlt, FaRegEye, FaPlusCircle } from 'react-icons/fa';
 import Loader from '../components/Loader';
+import ReadFile from '../components/ReadFile';
+import CheckFile from '../components/CheckFile';
 import '../style/Templates.css';
 
 const Templates = () => {
@@ -45,45 +47,6 @@ const Templates = () => {
     fetchData();
     }, [company_id]);
 
-    const checkFile = (file) => {
-        if (file.name.includes('.png') || file.name.includes('.jpg') || file.name.includes('.jpeg')) {
-            return "image"
-        }
-        else if (file.name.includes('.css')) {
-            return "css"
-        }
-        else if (file.name.includes('.html')) {
-            return "html"
-        }
-    }
-
-    const readFile = async (file) => {
-        if (checkFile(file) === "image") {
-            return new Promise((resolve, reject) => {
-                let fr = new FileReader();  
-    
-                fr.onload = () => {
-                  resolve(fr.result)
-                };
-                fr.onerror = reject;
-    
-                fr.readAsDataURL(file);
-            });
-        }
-        else if (checkFile(file) === "html" || checkFile(file) === "css") {
-            return new Promise((resolve, reject) => {
-                let fr = new FileReader();  
-    
-                fr.onload = () => {
-                  resolve(fr.result)
-                };
-                fr.onerror = reject;
-    
-                fr.readAsBinaryString(file);
-            });
-        }
-    }
-
     const splitFiles = async (e) => {
       let arr = Object.entries(e.target.files);
       let hasCSS = false;
@@ -97,22 +60,22 @@ const Templates = () => {
           const el = arr[i];
 
           // Image Files
-          if (checkFile(el[1]) === "image") {
-              let data = await readFile(el[1]);
+          if (CheckFile(el[1]) === "image") {
+              let data = await ReadFile(el[1]);
               imgArr.push({name: el[1].name, data: data});
           }
           // CSS File
-          else if (checkFile(el[1]) === "css") {
+          else if (CheckFile(el[1]) === "css") {
               hasCSS = true;
 
-              let data = await readFile(el[1]);
+              let data = await ReadFile(el[1]);
               cssArr.push({name: el[1].name, data: data});
           }
           // HTML Files
-          else if (checkFile(el[1]) === "html") {
+          else if (CheckFile(el[1]) === "html") {
               hasHTML = true;
 
-              let data = await readFile(el[1]);
+              let data = await ReadFile(el[1]);
               htmlArr.push({name: el[1].name, data: data});
           }
       }

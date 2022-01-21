@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import Loader from '../components/Loader';
 import EditOverlay from '../components/EditOverlay';
+import ReadFile from '../components/ReadFile';
 import '../style/Template.css';
 
 const Template = () => {
@@ -89,19 +90,6 @@ const Template = () => {
         setOverlay(prev => !prev);
     }
 
-    const readFile = async (file) => {
-        return new Promise((resolve, reject) => {
-            let fr = new FileReader();  
-
-            fr.onload = () => {
-                resolve(fr.result)
-            };
-            fr.onerror = reject;
-
-            fr.readAsDataURL(file);
-        });
-    }
-
     const editElement = async (el, value, isText, editable) => {
         if (isText === true) {
 
@@ -127,7 +115,7 @@ const Template = () => {
                 element.classList.add("editableImg");
             }
 
-            let dataUrl = await readFile(value);
+            let dataUrl = await ReadFile(value);
 
             element.style.backgroundImage = `url(${dataUrl})`;
 
