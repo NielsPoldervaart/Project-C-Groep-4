@@ -238,8 +238,18 @@ const Templates = () => {
     }
 
     const DisplayElement = () => {
-      if (templates.errorCode === 401 || templates.errorCode === 403) {
-        window.location.href = "/login";
+      if (templates.errorCode === 404) {
+        return (
+          <div className="TemplatesBody">
+            <ul className="TemplateList">
+                <div className="NewTempBox">
+                    <FaPlusCircle className="NewTempButton" onClick={() => inputFile.current.click()}/>
+                    <input name='Dir' id='DirInput' type='file' multiple="" directory="" webkitdirectory="" mozdirectory="" ref={inputFile} style={{display: 'none'}} onChange={splitFiles} />
+                </div>
+            </ul>
+            { madeTemplate ? DisplayHidden() : null }
+          </div>
+        )
       }
       else {
         return (

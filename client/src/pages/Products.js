@@ -122,26 +122,39 @@ const Products = () => {
     }
 
     const TemplatesBody = () => {
-        return (
-            <div className="TemplatesBody">
+        if (products.errorCode === 404) {
+            return (
+                <div className="TemplatesBody">
                 <ul className="TemplateList">
-                    {
-                        products.map((product) => 
-                            <div className="TemplateComp"  key={product.product_id}>
-                                <h2 className="TitleCard">Product {product.product_id}</h2>
-                                <div className="TemplateCard">
-                                    <p className="CardIcon View" onClick={() => navigate(`/product/${userData.company_company_id}/${product.product_id}`)}><FaRegEye /></p>
-                                    <p className="CardIcon Delete" onClick={() => deleteProduct(product.product_id)}><FaRegTrashAlt /></p>
-                                </div>
-                            </div>
-                        )
-                    }
                     <div className="NewTempBox">
                         <FaPlusCircle className="NewTempButton" onClick={() => setSelectTemplate(true)}/>
                     </div>
                 </ul>
             </div>
-        )
+            )
+        }
+        else {
+            return (
+                <div className="TemplatesBody">
+                    <ul className="TemplateList">
+                        {
+                            products.map((product) => 
+                                <div className="TemplateComp"  key={product.product_id}>
+                                    <h2 className="TitleCard">Product {product.product_id}</h2>
+                                    <div className="TemplateCard">
+                                        <p className="CardIcon View" onClick={() => navigate(`/product/${userData.company_company_id}/${product.product_id}`)}><FaRegEye /></p>
+                                        <p className="CardIcon Delete" onClick={() => deleteProduct(product.product_id)}><FaRegTrashAlt /></p>
+                                    </div>
+                                </div>
+                            )
+                        }
+                        <div className="NewTempBox">
+                            <FaPlusCircle className="NewTempButton" onClick={() => setSelectTemplate(true)}/>
+                        </div>
+                    </ul>
+                </div>
+            )
+        }
     }
 
     const DisplayHidden = () => {
