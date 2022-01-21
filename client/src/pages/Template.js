@@ -6,8 +6,10 @@ import ReadFile from '../components/ReadFile';
 import '../style/Template.css';
 
 const Template = () => {
+    // URL Parameters
     const { company_id, template_id } = useParams();
 
+    // State variables
     const [loading, setLoading] = useState(true);
     const [overlay, setOverlay] = useState(false);
     const [isTextOverlay, setIsTextOverlay] = useState(null);
@@ -15,7 +17,6 @@ const Template = () => {
     const [elementImage, setElementImage] = useState(null);
     const [element, setElement] = useState(null);
     const [editable, setEditable] = useState(true);
-
     const [userData, setUserData] = useState({});
 
     useEffect(() => {
@@ -50,13 +51,16 @@ const Template = () => {
         fetchData();
     }, [company_id, template_id]);
 
+    // Edits the template after the fetch is complete
     const editTemplate = (data) => {
         let parser = new DOMParser();
         let parsedTemplate = parser.parseFromString(data, "text/html");
 
+        // Displays the template in the window
         var templateHTML = parsedTemplate.querySelector("html");
         document.querySelector(".templateBody").appendChild(templateHTML);
 
+        // EventListener to see if a editable element has been clicked
         document.querySelector(".templateBody").addEventListener('click', (e) => {
             if (e.target.classList.contains("templateText")) {
                 setElementText(e.target.innerText);
@@ -86,10 +90,12 @@ const Template = () => {
         });
     }
 
+    // Sets the setOverlay state to the opposite of the current boolean value
     const showOverlay = () => {
         setOverlay(prev => !prev);
     }
 
+    // Edits the element with the values set inside the <EditOverlay /> component
     const editElement = async (el, value, isText, editable) => {
         if (isText === true) {
 
@@ -118,10 +124,11 @@ const Template = () => {
             let dataUrl = await ReadFile(value);
 
             element.style.backgroundImage = `url(${dataUrl})`;
-
         }
     }
 
+    // Calls the <EditOverlay /> component with all the props required
+    // In this case the props are State values, Function references or a string
     const displayOverlay = () => {
         return (
             <EditOverlay 
@@ -142,6 +149,7 @@ const Template = () => {
         )
     }
 
+    // Displays the <Loader /> component while setLoading === true
     const displayLoader = () => {
         return (
           <div className='loaderDiv'>
@@ -150,16 +158,22 @@ const Template = () => {
         )
     }
 
+    // Makes a POST request to upload the edited template to the FTP server
     const uploadEdit = (e, userData) => {
         e.preventDefault();
 
+        // Creates htmlString from the elements inside ".templateBody"
         let htmlString = document.querySelector(".templateBody").innerHTML;
         let templateName = document.querySelector(".templateBody html body div").className.split(" ")[0];
+
+        // Creates new file with the html code
         let updatedTemplate = new File([htmlString], `${templateName}.html`, {type: "text/html", lastModified: new Date(0)});
 
+        // Creates a FormData object with the key "updated_template" and the value updatedTemplate
         const data = new FormData();
         data.append("updated_template", updatedTemplate);
 
+        // Creates the POST request to the backend
         fetch(`/template/${userData.company_company_id}/${template_id}`, {
             method: 'POST',
             body: data,

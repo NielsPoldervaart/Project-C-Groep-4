@@ -1,4 +1,5 @@
 export default function CheckFile(file) {
+    //Checks what kind of file is recieved as parameter
     if (file.name.includes('.png') || file.name.includes('.jpg') || file.name.includes('.jpeg')) {
         return "image"
     }

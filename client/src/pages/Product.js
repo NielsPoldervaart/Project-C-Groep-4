@@ -49,17 +49,17 @@ const Product = () => {
         fetchData();
     }, [company_id, product_id]);
 
-    // Edits the products after the fetch is complete
+    // Edits the product after the fetch is complete
     const editProduct = (data) => {
         let parser = new DOMParser();
         let parsedProduct = parser.parseFromString(data, "text/html");
         let productHTML = parsedProduct.querySelector("html");
         document.querySelector(".hiddenProduct").appendChild(productHTML);
         
-        // Gets the name of the template by getting the first class of the div inside the querySelector
+        // Gets the name of the product by getting the first class of the div inside the querySelector
         let templateName = document.querySelector(".hiddenProduct html body div").className.split(" ")[0];
 
-        // Gets all children elements inside the template
+        // Gets all children elements inside the product
         let children = document.querySelector(`.${templateName}`).children;
         for (var i = 0; i < children.length; i++) {
             var child = children[i];
@@ -73,7 +73,7 @@ const Product = () => {
             }
         }
 
-        // Removes Loader from screen and appends the html of the template to the page
+        // Removes Loader from screen and appends the html of the product to the page
         setLoading(false);
         document.querySelector(".productBody").appendChild(productHTML);
 

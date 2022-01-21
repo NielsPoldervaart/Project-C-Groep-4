@@ -10,12 +10,15 @@ import '../style/Templates.css';
 const Templates = () => {
     let navigate = useNavigate();
 
+    // URL Paramaters
     const { company_id } = useParams();
 
+    // State variables
     const [templates, setTemplates] = useState([]);
     const [loading, setLoading] = useState(true);
     const [madeTemplate, setMadeTemplate] = useState(false);
 
+    // Reference named inputFile
     const inputFile = useRef(null);
 
     useEffect(() => {
@@ -47,6 +50,7 @@ const Templates = () => {
     fetchData();
     }, [company_id]);
 
+    // Splits the files after uploading them to the site
     const splitFiles = async (e) => {
       let arr = Object.entries(e.target.files);
       let hasCSS = false;
@@ -56,18 +60,22 @@ const Templates = () => {
       let cssArr = [];
       let htmlArr = [];
 
+      // For all the uploaded files
       for (let i = 0; i < arr.length; i++) {
           const el = arr[i];
 
           // Image Files
           if (CheckFile(el[1]) === "image") {
-              let data = await ReadFile(el[1]);
-              imgArr.push({name: el[1].name, data: data});
+
+            // Gets the file data from ReadFile and adds it to the imgArr
+            let data = await ReadFile(el[1]);
+            imgArr.push({name: el[1].name, data: data});
           }
           // CSS File
           else if (CheckFile(el[1]) === "css") {
               hasCSS = true;
 
+              // Gets the file data from ReadFile and adds it to the cssArr
               let data = await ReadFile(el[1]);
               cssArr.push({name: el[1].name, data: data});
           }
@@ -75,11 +83,13 @@ const Templates = () => {
           else if (CheckFile(el[1]) === "html") {
               hasHTML = true;
 
+              // Gets the file data from ReadFile and adds it to the htmlArr
               let data = await ReadFile(el[1]);
               htmlArr.push({name: el[1].name, data: data});
           }
       }
 
+      // Return if the uploaded files do not contains a HTML or CSS file
       if (!hasHTML || !hasCSS) {
           const input = document.getElementById('DirInput');
           input.value = null;
@@ -92,6 +102,7 @@ const Templates = () => {
       }
     }
 
+    // Overwrites the CSS file to incluse the DataURL of the images
     const overwriteCss = async (cssArr, imgArr) => {
       let css = cssArr[0].data;
 
@@ -104,6 +115,7 @@ const Templates = () => {
       return css
     }
 
+    // Overwrites the HTML file to incluse the DataURL of the images
     const overwriteHtml = async (htmlArr, imgArr) => {
       let html = htmlArr[0].data;
 
@@ -117,17 +129,21 @@ const Templates = () => {
     }
 
     const createBaseTemplate = async (imgArr, cssArr, htmlArr) => {
+      // Waits for the newCSS and the newHTML files
       let newCss = await overwriteCss(cssArr, imgArr);
       let newHtml = await overwriteHtml(htmlArr, imgArr);
 
+      // Removes the css reference from the html head
       let parser = new DOMParser();
       let parsedTemplate = parser.parseFromString(newHtml, "text/html");
       parsedTemplate.querySelector("head link").remove();
 
+      // Adds the newCss to the html head
       let styleElement = document.createElement("STYLE");
       styleElement.textContent = newCss; 
       parsedTemplate.querySelector("head").appendChild(styleElement);
 
+      // Sets some styling to the html elements
       let templateName = htmlArr[0].name;
       templateName = `.${templateName.replace('.html', '')}`;
       parsedTemplate.querySelector("html body").style.display = "flex";
@@ -135,8 +151,12 @@ const Templates = () => {
       parsedTemplate.querySelector(templateName).style.overflow = "hidden";
       parsedTemplate.querySelector(templateName).style.position = "unset";
 
+
+      // Gets all children elements inside the template
       let children = parsedTemplate.querySelector(templateName).children
       imgArr.forEach(img => {
+
+        // For all the html elements that are images, add classes and set pointer-event
         let className = `${img.name.replace('.png', '')}`;
         for (var i = 0; i < children.length; i++) {
           var child = children[i];
@@ -148,6 +168,7 @@ const Templates = () => {
         }
       });
 
+      // For all the html elements that are images, add classes and set pointer-event
       for (var i = 0; i < children.length; i++) {
           var child = children[i];
           if (child.textContent.trim() !== "") {
@@ -164,6 +185,7 @@ const Templates = () => {
       }
       setMadeTemplate(true);
 
+      // Gets the HTML of the template
       var templateHTML = parsedTemplate.querySelector("html");
       document.querySelector(".templateBodyHidden").appendChild(templateHTML);
       let htmlString = document.querySelector(".templateBodyHidden").innerHTML;

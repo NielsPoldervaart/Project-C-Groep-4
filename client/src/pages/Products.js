@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { FaRegTrashAlt, FaRegEye, FaPlusCircle } from 'react-icons/fa';
@@ -9,8 +9,10 @@ import '../style/Products.css';
 const Products = () => {
     let navigate = useNavigate();
 
+    // URL Parameters
     const { company_id } = useParams();
 
+    // State variables
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectTemplate, setSelectTemplate] = useState(false);
@@ -48,15 +50,7 @@ const Products = () => {
     fetchData();
     }, [company_id]);
 
-    const checkFile = (file) => {
-        if (file.name.includes('.html')) {
-            return "html"
-        }
-        else {
-            return null
-        }
-    }
-
+    // Loads the template when this function is called inside the <SelectTemplate /> component
     const loadTemplate = async (templateId) => {
         setLoading(true);
         setTemplateID(templateId);
@@ -73,6 +67,7 @@ const Products = () => {
         )
     }
 
+    // Makes a POST request with the templateId to make a product based of off the template with the id of templateId
     const uploadFile = (templateId) => {
         if (templateId === null) {
             console.error("No file to upload!");
@@ -93,6 +88,7 @@ const Products = () => {
         .catch(error => console.log('Authorization failed : ' + error.message));
     }
 
+    // Deletes the product
     const deleteProduct = (productID) => {
       fetch(`/product/${userData.company_company_id}/${productID}`, {
         method: 'DELETE'
@@ -112,6 +108,7 @@ const Products = () => {
       )
     }
 
+    // Displays the template in the window after the fetch request is complete
     const DisplayTemplate = (template) => {
         setTemplateReady(true);
         setSelectTemplate(false);
