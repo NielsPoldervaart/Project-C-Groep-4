@@ -2,31 +2,7 @@
 
 .editPage {
     display: flex;
-    padding-top: var(--NavBarHeight);
     justify-content: space-between;
-}
-
-/* .editOverlay {
-    height: 100vh;
-    width: 100%;
-    background-color: rgba(0, 0, 0, .25);
-    position: fixed;
-    z-index: 999;
-    top: 0;
-    display: none;
-    justify-content: center;
-    align-items: center;
-} */
-
-.editBox {
-    width: 25%;
-    height: 25%;
-    background-color: #FFFFFF;
-}
-
-.editBox input {
-    height: 32px;
-    width: 75%;
 }
 
 .templateBody {
@@ -38,4 +14,57 @@
     cursor: pointer!important;
     filter: invert(15%);
     box-shadow:inset 0 0 0 2000px rgba(0, 0, 0, 0.35)!important;
+}
+
+.editFunctionBtns {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 15%;
+    height: 5%;
+    box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.50);
+    -webkit-box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.50);
+    -moz-box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.50);
+}
+
+.editFunctionBtns form {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+.editAnnulerenBtn {
+    width: 100%;
+    height: 100%;
+    color: #FFFFFF;
+    border: 2px solid #CF1020;
+    background-color: #CF1020;
+    transition: all 0.2s ease 0s;
+}
+
+.editAnnulerenBtn:hover {
+    cursor: pointer;
+    color: #CF1020;
+    background-color: #FFFFFF;
+}
+
+.editOpslaanBtn {
+    width: 100%;
+    height: 100%;
+    color: #FFFFFF;
+    border: 2px solid #03C03C;
+    background-color: #03C03C;
+    transition: all 0.2s ease 0s;
+}
+
+.editOpslaanBtn:hover {
+    cursor: pointer;
+    color: #03C03C;
+    background-color: #FFFFFF;
+}
+
+.editFunctionBtns form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
