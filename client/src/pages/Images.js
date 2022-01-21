@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router';
-import { useNavigate } from 'react-router-dom';
 import Loader from '../components/Loader';
 import '../style/Images.css'
 
 const Images = () => {
-    let navigate = useNavigate();
-
     const { company_id } = useParams();
 
     const [userData, setUserData] = useState({});
