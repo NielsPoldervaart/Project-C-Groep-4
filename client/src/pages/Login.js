@@ -43,7 +43,7 @@ const Login = () => {
                         if (data.Code === 500 || data.Code === 404) {
                             window.location.href = "/login";
                         } else {
-                            navigate(`/${data.company_company_id}`)
+                            navigate(`/templates/${data.company_company_id}`)
                         }
                     }
                 )

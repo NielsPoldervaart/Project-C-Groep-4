@@ -78,14 +78,14 @@ def company_accounts(company_identifier):
             return user_verification
 
         form_user_id = request.form['user_id'] #STRING: WHICH USER TO BE ADDED / DECLINED
-        form_accepted = request.form['accepted'] #BOOLEAN: WHETHER USER SHOULD BE ADDED TO COMPANY (APPROVED)
+        form_accepted = request.form['accepted'] #STRING ("True"/"False"): WHETHER USER SHOULD BE ADDED TO COMPANY (APPROVED)
         with create_db_session() as db_session:
             extracted_user = db_session.query(User).filter_by(Company_company_id = company_identifier).filter_by(user_id = form_user_id).first()
 
             if extracted_user is None:
                 return {"errorCode": 404, "Message": "User does not exist within company"} , 404
 
-            if form_accepted:
+            if form_accepted == "True":
                 #change user to verified in DB
                 extracted_user.verified = True
                 db_session.commit()

@@ -82,16 +82,15 @@ def template(company_identifier, template_identifier):
         with create_db_session() as db_session:
             template_file_location_ftp = db_session.query(Template.template_file).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
 
-        if template_file_location_ftp is not None:
-            #print(type(template_file_location_ftp.template_file), template_file_location_ftp.template_file)
+        if template_file_location_ftp is None:
+            return {"errorCode": 404, "Message": "Template Does not exist"""}, 404
 
-            template_bytes = try_to_get_file_ftps_binary(template_file_location_ftp.template_file, "templates", company_identifier)
-            if type(template_bytes) is tuple: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
-                return template_bytes
+        template_bytes = try_to_get_file_ftps_binary(template_file_location_ftp.template_file, "templates", company_identifier)
+        if type(template_bytes) is tuple: #Tuple means something went wrong, the error code + message defined in try_to_get_text_file will be returned
+            return template_bytes
 
-            return send_file(template_bytes, mimetype="text/html")
+        return send_file(template_bytes, mimetype="text/html")
 
-        return {"errorCode": 404, "Message": "Template Does not exist"""}, 404
 
 
     if request.method == "POST": #Update a specific product as KYNDA_ADMIN

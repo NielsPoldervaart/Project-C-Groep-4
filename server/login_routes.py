@@ -8,7 +8,6 @@ login_api = Blueprint('login_api', __name__)
 
 @login_api.route("/login", methods=["POST", "GET"])
 def login():
-    #db_session = create_db_session(current_app.config["DATABASE_URI"])
 
     if request.method == "POST":
         #JSON METHOD
@@ -20,17 +19,16 @@ def login():
             #REQUESTS `user_id`, `Company_company_id`, `Role_role_id`, `password` FROM DATABASE WHERE EMAIL IS INSERTED EMAIL. RETURNS NONE IF CANNOT FIND MATCH
             user = db_session.query(User.user_id, User.Company_company_id, User.Role_role_id, User.password, User.email).filter_by(username =f'{inserted_username}').first()
 
-        if user: #IF USER OBJECT IS NOT NONE (COULD FIND CORRECT DATA IN DB)
-            if not check_password_hash(user.password, inserted_password):
-                return {"Code": 406, "Message": "Incorrect User credentials (PASSWORD)"}, 406 #TODO: REMOVE "(PASSWORD)" FROM RESPONSE"
+        if user is None: #IF USER OBJECT IS NOT NONE (COULD FIND CORRECT DATA IN DB)
+            return {"Code": 406, "Message": "Incorrect User credentials"}, 406 
 
-            session["user_id"] = user.user_id
-            session["company_company_id"] = user.Company_company_id
-            session["role_role_id"] = user.Role_role_id
-            return {"Code": 200, "Message": "User logged in"}, 200
+        if not check_password_hash(user.password, inserted_password):
+            return {"Code": 406, "Message": "Incorrect User credentials"}, 406
 
-        else:
-           return {"Code": 406, "Message": "Incorrect User credentials (NAME)"}, 406 #TODO: REMOVE "(NAME) FROM RESPONSE"
+        session["user_id"] = user.user_id
+        session["company_company_id"] = user.Company_company_id
+        session["role_role_id"] = user.Role_role_id
+        return {"Code": 200, "Message": "User logged in"}, 200
 
 
     if request.method == "GET":
