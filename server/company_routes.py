@@ -85,7 +85,7 @@ def company_accounts(company_identifier):
             if extracted_user is None:
                 return {"errorCode": 404, "Message": "User does not exist within company"} , 404
 
-            if form_accepted:
+            if form_accepted == "True":
                 #change user to verified in DB
                 extracted_user.verified = True
                 db_session.commit()

@@ -4,7 +4,7 @@
     position: absolute;
     font-family: var(--Font);
     color: var(--Zwart);
-    top: 50%;
+    top: 70vh;
     left: 50%;
     width: 640px;
     transform: translate(-50%, -50%);

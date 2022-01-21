@@ -36,7 +36,6 @@ const Accounts = () => {
             data => {
                 setAwaitingUsers(data.Awaiting_users);
                 setVerifiedUsers(data.Verified_users);
-                console.log(data)
                 setLoading(false);
             }
         )
@@ -45,7 +44,7 @@ const Accounts = () => {
     const acceptUser = (id) => {
         const data = new FormData();
         data.append("user_id", `${id}`);
-        data.append("accepted", JSON.stringify(true));
+        data.append("accepted", "True");
 
         fetch(`/${userData.company_company_id}/accounts`, {
             method : "POST",
@@ -60,7 +59,7 @@ const Accounts = () => {
     const declineUser = (id) => {
         const data = new FormData();
         data.append("user_id", `${id}`);
-        data.append("accepted", JSON.stringify(false));
+        data.append("accepted", "False");
 
         fetch(`/${userData.company_company_id}/accounts`, {
             method : "POST",
