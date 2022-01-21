@@ -6,11 +6,9 @@ import '../style/Templates.css';
 import '../style/SelectedTemplate.css';
 
 const SelectTemplate = ({loadTemplate, setSelectTemplate}) => {
-    let navigate = useNavigate();
 
     const [templates, setTemplates] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [company, setCompany] = useState(null);
 
     useEffect(() => {
       async function fetchData() {
@@ -34,14 +32,6 @@ const SelectTemplate = ({loadTemplate, setSelectTemplate}) => {
           data => {
             setTemplates(data);
             setLoading(false);
-          }
-        )
-  
-        fetch(`/company/${userData.company_company_id}`).then(
-          res => res.json()
-        ).then(
-          data => {
-            setCompany(data)
           }
         )
     }

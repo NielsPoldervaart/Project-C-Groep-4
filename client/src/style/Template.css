@@ -2,7 +2,6 @@
 
 .editPage {
     display: flex;
-    padding-top: var(--NavBarHeight);
     justify-content: space-between;
 }
 

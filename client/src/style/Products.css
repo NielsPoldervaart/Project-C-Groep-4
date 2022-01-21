@@ -47,3 +47,7 @@
     color: #03C03C;
     background-color: #FFFFFF;
 }
+
+.templateBody {
+    padding-top: calc(var(--NavBarHeight) + 19px);
+}

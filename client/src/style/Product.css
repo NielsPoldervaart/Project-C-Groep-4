@@ -1,0 +1,11 @@
+@import "Variables.css";
+
+.productBody {
+    position: relative;
+    width: 100%;
+}
+
+.editableTxt, .editableImg {
+    pointer-events: auto!important;
+    cursor: pointer!important;
+}

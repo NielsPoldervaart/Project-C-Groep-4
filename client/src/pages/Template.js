@@ -60,7 +60,7 @@ const Template = () => {
                 setElementText(e.target.innerText);
                 setIsTextOverlay(true);
                 setElement(e.target);
-                if (e.target.classList.contains("editable")) {
+                if (e.target.classList.contains("editableTxt")) {
                     setEditable(true);
                 }
                 else {
@@ -72,7 +72,7 @@ const Template = () => {
             else if (e.target.classList.contains("templateImage")) {
                 setIsTextOverlay(false);
                 setElement(e.target);
-                if (e.target.classList.contains("editable")) {
+                if (e.target.classList.contains("editableImg")) {
                     setEditable(true);
                 }
                 else {
@@ -90,15 +90,16 @@ const Template = () => {
 
     const editElement = (el, value, isText, editable) => {
         if (isText === true) {
+
             let className = el.className.split(" ")[0];
             var element = document.getElementsByClassName(className)[0];
             element.textContent = value
 
-            if (element.classList.contains("editable") && !editable) {
-                element.classList.remove("editable");
+            if (element.classList.contains("editableTxt") && !editable) {
+                element.classList.remove("editableTxt");
             }
-            else if (!element.classList.contains("editable") && editable) {
-                element.classList.add("editable");
+            else if (!element.classList.contains("editableTxt") && editable) {
+                element.classList.add("editableTxt");
             }
         }
         else {
@@ -106,7 +107,6 @@ const Template = () => {
     }
 
     const displayOverlay = () => {
-
         return (
             <EditOverlay userData={userData} elementText={elementText} overlay={overlay} isTextOverlay={isTextOverlay} setOverlay={setOverlay} setElementText={setElementText} element={element} editable={editable} setEditable={setEditable} editElement={editElement} editType="template"/>
         )

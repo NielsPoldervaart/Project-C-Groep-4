@@ -56,7 +56,7 @@ const EditOverlay = ({ userData, elementText, overlay, isTextOverlay, setOverlay
                     <div className='overlayCloseBtn' onClick={() => setOverlay(false)}><MdClose /></div>
                     <form onSubmit={(e) => callEditElement(e)}>
                         { isTextOverlay ? textOverlay() : imgOverlay() }
-                        { userData.role_role_id === 1 && editType !== "product" ? 
+                        { userData.role_role_id === 1 && editType !== "product" && editable !== null ? 
                         (
                             <div className='overlayCheckboxContainer'>
                                 <label htmlFor="isEditable">Is te bewerken door een klant:</label>

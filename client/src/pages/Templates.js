@@ -188,7 +188,7 @@ const Templates = () => {
           var child = children[i];
           if (child.classList.contains(a)) {
             child.classList.add("templateImage");
-            child.classList.add("editable");
+            child.classList.add("editableImg");
             child.style.pointerEvents = "auto";
           }
         }
@@ -198,7 +198,7 @@ const Templates = () => {
           var child = children[i];
           if (child.textContent.trim() !== "") {
               child.classList.add("templateText");
-              child.classList.add("editable");
+              child.classList.add("editableTxt");
               child.style.pointerEvents = "auto";
               child.style.whiteSpace = "pre-wrap";
               child.style.overflow = "hidden";
