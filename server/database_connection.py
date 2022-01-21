@@ -128,19 +128,7 @@ def init_db_structure():
         Column('manual_file', String(length=255), nullable=False)
             )
 
-
     metadata.create_all(engine)
-
-    """
-    table_gallery = Table('Gallery', metadata, autoload=True)
-    table_company = Table('Company', metadata, autoload=True)
-    table_role = Table('Role', metadata, autoload=True)
-    table_user = Table('User', metadata, autoload=True)
-    table_template = Table('Template', metadata, autoload=True)
-    table_product = Table('Product', metadata, autoload=True)
-    table_image = Table('Image', metadata, autoload=True)
-    table_manual = Table('Manual', metadata, autoload=True)
-    """
 
     mapper(Gallery, gallery_table)
     mapper(Company, company_table)
@@ -151,33 +139,11 @@ def init_db_structure():
     mapper(Image, image_table)
     mapper(Manual, manual_table)
 
-    #return engine
-
 def create_db_session():   
     engine = create_engine(current_app.config["DATABASE_URI"], echo=True)
     Session = sessionmaker(bind=engine)
     session = Session()
     return session
-
-"""
-def createSession():
-    create_connection_sqlite(db_location)
-    init_db_structure(current_app.config["DATABASE_URI"])
-    session = create_db_session()
-    new_gallery = Gallery(None, "test_gal")
-    new_gallery2 = Gallery(None, "test_gal2")
-    session.add(new_gallery)
-    session.add(new_gallery2)
-    session.flush()
-    res = session.query(Gallery).all()
-    print(res[0].gallery_id, res[0].name)
-    print(res[1].gallery_id, res[1].name)
-
-def close_current_sessions():
-    close_all_sessions()
-
-#createSession()
-"""
 
 def close_current_sessions():
     close_all_sessions()
