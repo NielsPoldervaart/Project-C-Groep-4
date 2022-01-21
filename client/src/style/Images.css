@@ -6,3 +6,14 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+.imageList {
+    position: absolute;
+    top: -150px;
+    left: -500px;
+    width: 1000px;
+}
+
+.image {
+    position: relative;
+}

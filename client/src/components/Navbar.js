@@ -27,7 +27,7 @@ const Navbar = () => {
                     <ul className="NavLinks">
                         <li><Link className="Link" to="/templates/1">Templates</Link></li>
                         <li><Link className="Link" to="/products/1">Products</Link></li>
-                        <li><Link className="Link" to="/images">Beeldbank</Link></li>
+                        <li><Link className="Link" to="/gallery/1/1">Beeldbank</Link></li>
                         <li><Link className="Link" to="/1/accounts">Accounts</Link></li>
                     </ul>
                     <ul className="profilePic">
@@ -51,7 +51,7 @@ const Navbar = () => {
                 <Route path="/forgotpassword" element={<Password />}/>
                 <Route path="/logout" element={<Logout />}/>
                 <Route path="/welcome" element={<Home />}/>
-                <Route path="/images" element={<Images />}/>
+                <Route path="/gallery/:company_id/:gallery_id" element={<Images />}/>
                 <Route path="/:company_id/accounts" element={<Accounts />}/>
                 <Route path="/help" element={<Help />}/>
                 <Route path="/manual" element={<Manual />}/>
