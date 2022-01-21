@@ -36,7 +36,7 @@
 .editBox textarea {
     min-height: 25%;
     max-height: 75%;
-    width: 75%;
+    width: 100%;
     resize: vertical;
 }
 
@@ -106,4 +106,19 @@
 
 .overlayCloseBtn:hover {
     color: var(--Magenta);
+}
+
+.newImgBtn {
+    border-radius: 50%;
+    color: var(--Magenta);
+    width: 150px;
+    height: 150px;
+    position: relative;
+    cursor: pointer;
+}
+
+.textareaContainer {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }

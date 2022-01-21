@@ -11,6 +11,7 @@ const Template = () => {
     const [overlay, setOverlay] = useState(false);
     const [isTextOverlay, setIsTextOverlay] = useState(null);
     const [elementText, setElementText] = useState("");
+    const [elementImage, setElementImage] = useState(null);
     const [element, setElement] = useState(null);
     const [editable, setEditable] = useState(true);
 
@@ -88,12 +89,25 @@ const Template = () => {
         setOverlay(prev => !prev);
     }
 
-    const editElement = (el, value, isText, editable) => {
+    const readFile = async (file) => {
+        return new Promise((resolve, reject) => {
+            let fr = new FileReader();  
+
+            fr.onload = () => {
+                resolve(fr.result)
+            };
+            fr.onerror = reject;
+
+            fr.readAsDataURL(file);
+        });
+    }
+
+    const editElement = async (el, value, isText, editable) => {
         if (isText === true) {
 
             let className = el.className.split(" ")[0];
             var element = document.getElementsByClassName(className)[0];
-            element.textContent = value
+            element.textContent = value;
 
             if (element.classList.contains("editableTxt") && !editable) {
                 element.classList.remove("editableTxt");
@@ -103,12 +117,40 @@ const Template = () => {
             }
         }
         else {
+            let className = el.className.split(" ")[0];
+            var element = document.getElementsByClassName(className)[0];
+
+            if (element.classList.contains("editableImg") && !editable) {
+                element.classList.remove("editableImg");
+            }
+            else if (!element.classList.contains("editableImg") && editable) {
+                element.classList.add("editableImg");
+            }
+
+            let dataUrl = await readFile(value);
+
+            element.style.backgroundImage = `url(${dataUrl})`;
+
         }
     }
 
     const displayOverlay = () => {
         return (
-            <EditOverlay userData={userData} elementText={elementText} overlay={overlay} isTextOverlay={isTextOverlay} setOverlay={setOverlay} setElementText={setElementText} element={element} editable={editable} setEditable={setEditable} editElement={editElement} editType="template"/>
+            <EditOverlay 
+                userData={userData} 
+                elementText={elementText} 
+                overlay={overlay} 
+                isTextOverlay={isTextOverlay} 
+                setOverlay={setOverlay} 
+                setElementText={setElementText} 
+                element={element} 
+                editable={editable} 
+                setEditable={setEditable} 
+                editElement={editElement} 
+                editType="template" 
+                setElementImage={setElementImage}
+                elementImage={elementImage}
+            />
         )
     }
 
@@ -150,7 +192,7 @@ const Template = () => {
                     </div>
                     <div className='editFunctionBtns'>
                         <form onSubmit={(e) => uploadEdit(e)}>
-                            <input type="button" value="Annuleren" className='editAnnulerenBtn' onClick={() => window.location.href = `/${userData.company_company_id}`}/>
+                            <input type="button" value="Annuleren" className='editAnnulerenBtn' onClick={() => window.location.href = `/templates/${userData.company_company_id}`}/>
                             <input type="submit" value="Opslaan" className='editOpslaanBtn' onClick={(e) => uploadEdit(e, userData)}/>
                         </form>
                     </div>

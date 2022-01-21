@@ -11,6 +11,7 @@ const Product = () => {
     const [overlay, setOverlay] = useState(false);
     const [isTextOverlay, setIsTextOverlay] = useState(null);
     const [elementText, setElementText] = useState("");
+    const [elementImage, setElementImage] = useState(null);
     const [element, setElement] = useState(null);
 
     const [userData, setUserData] = useState({});
@@ -78,6 +79,7 @@ const Product = () => {
                 showOverlay();
             }
             else if (e.target.classList.contains("editableImg")) {
+                setElementText(e.target.innerText);
                 setIsTextOverlay(false);
                 setElement(e.target);
 
@@ -94,7 +96,7 @@ const Product = () => {
         if (isText === true) {
             let className = el.className.split(" ")[0];
             var element = document.getElementsByClassName(className)[0];
-            element.textContent = value
+            element.textContent = value;
         }
         else {
         }
@@ -102,7 +104,21 @@ const Product = () => {
 
     const displayOverlay = () => {
         return (
-            <EditOverlay userData={userData} elementText={elementText} overlay={overlay} isTextOverlay={isTextOverlay} setOverlay={setOverlay} setElementText={setElementText} element={element} editable={null} setEditable={null} editElement={editElement} editType="product"/>
+          <EditOverlay 
+            userData={userData} 
+            elementText={elementText} 
+            overlay={overlay} 
+            isTextOverlay={isTextOverlay} 
+            setOverlay={setOverlay} 
+            setElementText={setElementText} 
+            element={element} 
+            editable={null} 
+            setEditable={null} 
+            editElement={editElement} 
+            editType="product" 
+            setElementImage={setElementImage}
+            elementImage={elementImage}
+          />
         )
     }
 

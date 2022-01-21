@@ -11,7 +11,6 @@ const Templates = () => {
     const { company_id } = useParams();
 
     const [templates, setTemplates] = useState([]);
-    const [company, setCompany] = useState([]);
     const [loading, setLoading] = useState(true);
     const [madeTemplate, setMadeTemplate] = useState(false);
 
@@ -39,14 +38,6 @@ const Templates = () => {
           data => {
             setTemplates(data);
             setLoading(false);
-          }
-        )
-  
-        fetch(`/company/${userData.company_company_id}`).then(
-          res => res.json()
-        ).then(
-          data => {
-            setCompany(data)
           }
         )
     }
@@ -183,10 +174,10 @@ const Templates = () => {
 
       let children = parsedTemplate.querySelector(templateName).children
       imgArr.forEach(img => {
-        let a = `${img.name.replace('.png', '')}`;
+        let className = `${img.name.replace('.png', '')}`;
         for (var i = 0; i < children.length; i++) {
           var child = children[i];
-          if (child.classList.contains(a)) {
+          if (child.classList.contains(className)) {
             child.classList.add("templateImage");
             child.classList.add("editableImg");
             child.style.pointerEvents = "auto";

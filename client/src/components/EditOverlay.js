@@ -1,9 +1,11 @@
 import React, { useEffect, useCallback, useRef } from 'react';
+import { FaPlusCircle } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
 import '../style/EditOverlay.css';
 
-const EditOverlay = ({ userData, elementText, overlay, isTextOverlay, setOverlay, setElementText, element, editable, setEditable, editElement, editType }) => {
+const EditOverlay = ({ userData, elementText, overlay, isTextOverlay, setOverlay, setElementText, element, editable, setEditable, editElement, editType, setElementImage, elementImage }) => {
     const overlayRef = useRef();
+    const imgFile = useRef(null);
 
     const closeOverlay = (e) => {
         if (overlayRef.current === e.target) {
@@ -28,24 +30,32 @@ const EditOverlay = ({ userData, elementText, overlay, isTextOverlay, setOverlay
 
     const textOverlay = () => {
         return (
-            <>
-                <textarea value={elementText} onChange={e => setElementText(e.target.value)} cols="65" rows="10" wrap="hard"/>
-            </>
+            <div className='textareaContainer'>
+                <label htmlFor="textElement">Tekst</label>
+                <textarea name="textElement" value={elementText} onChange={e => setElementText(e.target.value)} cols="65" rows="10" wrap="hard"/>
+            </div>
         )
     }
 
     const imgOverlay = () => {
         return (
-            <>
-                <h1>image</h1>
-            </>
+            <div className='textareaContainer'>
+                <label htmlFor="textElement">Afbeelding</label>
+                <FaPlusCircle className="newImgBtn" onClick={() => imgFile.current.click()}/>
+                <input name='imgElement' id='DirInput' type='file' accept="image/png, image/jpeg" ref={imgFile} style={{display: 'none'}} onChange={(e) => setElementImage(e.target.files[0])} />
+            </div>
         )
     }
 
     const callEditElement = (e) => {
         e.preventDefault();
 
-        editElement(element, elementText, isTextOverlay, editable);
+        if (isTextOverlay) {
+            console.log(elementText);
+            editElement(element, elementText, isTextOverlay, editable);
+        } else {
+            editElement(element, elementImage, isTextOverlay, editable);
+        }
         setOverlay(false);
     }
 
