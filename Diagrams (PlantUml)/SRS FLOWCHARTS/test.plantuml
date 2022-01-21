@@ -1,0 +1,11 @@
+@startuml activity diagram
+start
+    :Enter credentials;
+        if (correct credentials?) then(yes)
+            :Logged in;
+            stop
+        endif
+        ->no;
+        :"Error";
+stop
+@enduml

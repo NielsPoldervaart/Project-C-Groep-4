@@ -70,7 +70,7 @@ def templates(company_identifier):
 
         return {"Code": 201, "Message": "Template added to company"}, 201
 
-@template_api.route("/template/<int:company_identifier>/<int:template_identifier>", methods=["GET", "DELETE"])
+@template_api.route("/template/<int:company_identifier>/<int:template_identifier>", methods=["GET", "DELETE", "POST"])
 def template(company_identifier, template_identifier):
 
     if request.method == "GET": #Open specific template (to view or to create a product)
@@ -82,19 +82,54 @@ def template(company_identifier, template_identifier):
         with create_db_session() as db_session:
             template_file_location_ftp = db_session.query(Template.template_file).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
 
-        if template_file_location_ftp is not None:
-            #print(type(template_file_location_ftp.template_file), template_file_location_ftp.template_file)
+        if template_file_location_ftp is None:
+            return {"errorCode": 404, "Message": "Template Does not exist"""}, 404
 
-            template_bytes = try_to_get_file_ftps_binary(template_file_location_ftp.template_file, "templates", company_identifier)
-            if type(template_bytes) is tuple: #Dict means something went wrong, the error code + message defined in try_to_get_text_file will be returned
-                return template_bytes
+        template_bytes = try_to_get_file_ftps_binary(template_file_location_ftp.template_file, "templates", company_identifier)
+        if type(template_bytes) is tuple: #Tuple means something went wrong, the error code + message defined in try_to_get_text_file will be returned
+            return template_bytes
 
-            return send_file(template_bytes, mimetype="text/html")
+        return send_file(template_bytes, mimetype="text/html")
 
-        return {"errorCode": 404, "Message": "Template Does not exist"""}, 404
 
-    if request.method == "DELETE" : #Delete a specific template as KYNDA_ADMIN or COMPANY_ADMIN
-        user_verification = verify_user(company_identifier, [1,2])
+
+    if request.method == "POST": #Update a specific product as KYNDA_ADMIN
+        user_verification = verify_user(company_identifier, [1])
+        if user_verification != "PASSED":
+            return user_verification
+
+        updated_template = request.files["updated_template"]
+
+        with create_db_session() as db_session:
+            old_template_object = db_session.query(Template).filter_by(template_id = template_identifier).first()
+
+        if old_template_object is None:
+            return {"errorCode": 404, "Message": "No template with this ID in company found in database"}, 404
+
+        if updated_template.filename != old_template_object.template_file: 
+            return {"errorCode": 404, "Message": "No valid file found in request (Name should be same as old product name"}, 404
+
+        #Remove the old file from the templates dir
+        attempt_to_remove = try_to_delete_file_ftps(old_template_object.template_file, "templates", company_identifier)
+        if attempt_to_remove is not "PASSED":
+            return attempt_to_remove
+        
+        #Add the new file to templates dir
+        random_file_path = generate_random_path(24, 'html') #Generate random file path for temp storage + create an empty file with given length + extension
+        if os.path.exists(f'temporary_ftp_storage/{random_file_path}'): #Check for extreme edge case, if path is same as a different parallel request path
+            random_file_path = generate_random_path(24, 'html')
+
+        updated_template.save(random_file_path) #Save template to created storage
+
+        upload_attempt = try_to_upload_file_ftps(random_file_path, f"{updated_template.filename}", "templates", company_identifier)
+        os.remove(random_file_path)
+        if upload_attempt is not "PASSED":
+            return upload_attempt
+
+        return {"Code": 201, "Message": "File succesfully updated"}, 201
+
+    if request.method == "DELETE" : #Delete a specific template as KYNDA_ADMIN
+        user_verification = verify_user(company_identifier, [1])
         if user_verification != "PASSED":
             return user_verification
             

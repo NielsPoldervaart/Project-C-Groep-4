@@ -27,7 +27,6 @@ const Login = () => {
     const verifyUser = (e) => {
         e.preventDefault()
 
-        console.log(formData)
         fetch('/login', {
             method: 'POST',
             body: JSON.stringify(formData),
@@ -36,7 +35,18 @@ const Login = () => {
         .then(res =>  res.json())
         .then(data => {
             if (data.Code === 200) {
-                navigate('/1')
+
+                fetch(`/login`).then(
+                    res => res.json()
+                ).then(
+                    data => {
+                        if (data.Code === 500 || data.Code === 404) {
+                            window.location.href = "/login";
+                        } else {
+                            navigate(`/templates/${data.company_company_id}`)
+                        }
+                    }
+                )
             }
             else {
                 alert("Error, Wrong credentials!")

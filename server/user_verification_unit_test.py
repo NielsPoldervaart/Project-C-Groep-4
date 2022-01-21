@@ -42,24 +42,27 @@ class Test_user_verification_module(unittest.TestCase):
             db_session.add(User(None, "admin", generate_password_hash("admin@hr.nl"), generate_password_hash("KYNDA"), True, 1, 1))
             db_session.commit()
 
+    #CHECK IF MODULE WORKS WHEN NOT LOGGED IN
+    def verify_user_fail(self):
+        test = verify_user(ExistingAccountCompanyID)
+        expected_result = {"errorCode" : 401, "Message" : "Login not authorized"}, 401
+        self.assertEqual(test, expected_result)
+
 ###Login Existing account (KYNDA_ADMIN (ROLE=1))
     #POST Login pass
-    def verify_user_fail(self):
-        test = verify_user(ExistingAccountCompanyID) 
-        self.assertEqual(test, ({"errorCode" : 401, "Message" : "Login not authorized"}, 401))
-
     def login_pass(self, client):
         response = client.post("/login", json={"name": ExistingAccountName, "password": ExistingAccountPassword})
         statuscode = response.status_code
         self.assertEqual(statuscode, 200)
         return response
 
-    #CHECK IF MODULE WORKS WITH ALL ROLES ENABLED AND CORRECT COMPANY_ID
+    #CHECK IF MODULE WORKS WHEN LOGGED IN, WITH ALL ROLES ENABLED AND CORRECT COMPANY_ID
     def verify_user_pass(self):
-        test = verify_user(ExistingAccountCompanyID) 
-        self.assertEqual(test, "PASSED")
+        test = verify_user(ExistingAccountCompanyID)
+        expected_result = "PASSED"
+        self.assertEqual(test, expected_result)
 
-    #CHECK IF MODULE WORKS WITH ROLES ENABLED THAT ARE NOT IN USER HIS ROLE, BUT WITH CORRECT COMPANY_ID
+    #CHECK IF MODULE WORKS WHEN LOGGED IN, WITH ROLES ENABLED THAT ARE NOT IN USER HIS ROLE, BUT WITH CORRECT COMPANY_ID
     def verify_user_fail_access(self):
         test = verify_user(ExistingAccountCompanyID, [2,3])
         expected_result = ({"errorCode" : 403, "Message" : "Required Role not within User's roles"}, 403)
@@ -67,14 +70,15 @@ class Test_user_verification_module(unittest.TestCase):
 
     #CHECK IF MODULE WORKS WHEN LOGGED INTO THE WRONG COMPANY, BUT WITH ALL ROLES ENABLED
     def verify_user_fail_company(self):
-        test = verify_user(-1) 
-        self.assertEqual(test, ({"errorCode" : 403, "Message" : "Company not within User's companies"}, 403))
+        test = verify_user(-1)
+        expected_result = {"errorCode" : 403, "Message" : "Company not within User's companies"}, 403
+        self.assertEqual(test, expected_result)
 
     #CHECK IF MODULE WORKS WHEN LOGGED INTO THE WRONG COMPANY AND WITH ROLES ENABLED THAT ARE NOT IN USER HIS ROLE
     def verify_user_fail_company_access(self):
-        test = verify_user(-1, [4,5]) 
-        self.assertEqual(test, ({"errorCode" : 403, "Message" : "Company not within User's companies"}, 403))
-
+        test = verify_user(-1, [4,5])
+        expected_result = {"errorCode" : 403, "Message" : "Company not within User's companies"}, 403
+        self.assertEqual(test, expected_result)
 
     def tearDown(self):
         os.remove("test_sqlite.db")

@@ -1,0 +1,70 @@
+@startuml
+
+
+
+participant "React client" as Rct
+participant "Flask server" as flsk
+participant "user_verification.py (file)" as usr
+participant "template_routes.py (file)" as tmplt
+database "Amazon Database" as db
+participant "ftp_controller.py (file)"  as ftp
+database "FTP Server" as ftps
+
+'group yeetus
+Rct -> flsk: GET REQUEST (file)
+activate Rct
+activate flsk
+
+flsk -> usr: verify_user()
+activate usr
+usr -> db: Query with client info
+activate db
+db --> usr: Return result
+deactivate db
+alt successful case 
+    usr --> flsk: Accepted
+    flsk -> tmplt: Request file
+    activate tmplt
+else User not logged in (correctly)
+    usr --> flsk: Denied
+deactivate usr
+flsk --> Rct: Return error
+end
+
+
+db -[hidden]-> db
+activate db
+tmplt -> db: Check if file exists in database
+alt successful case
+    db --> tmplt: File exists in database
+else File not found in Database
+
+    db --> tmplt: File not found in database
+    deactivate db
+    tmplt --> flsk: File not found in database
+    flsk --> Rct: Return error
+end
+    tmplt -> ftp: Check if file exists in FTP Server
+    activate ftp
+'ftp -> db: Query Database
+
+alt successful case
+    ftp -> ftp: Check if file exists in FTP Server
+    ftp -> ftps: Retrieve file data FTP
+    activate ftps
+    ftps --> ftp: Return file byte data
+    deactivate ftps
+    ftp --> tmplt: Return file byte data
+    tmplt --> flsk: Return file byte data
+    flsk --> Rct: Return file contents 
+
+else File not found in FTP Server
+    ftp --> tmplt: File not found in FTP Server
+    deactivate ftp
+    tmplt --> flsk: File not found in FTP Server
+    deactivate tmplt
+    flsk --> Rct: Return error
+    deactivate Rct
+    deactivate flsk
+end
+@enduml

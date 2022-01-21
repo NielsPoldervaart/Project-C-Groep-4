@@ -6,7 +6,7 @@ import Template from '../pages/Template';
 import Templates from '../pages/Templates';
 import Logout from '../pages/Logout';
 import Product from '../pages/Product';
-// import Products from '../pages/Products';
+import Products from '../pages/Products';
 import Register from '../pages/Register';
 import Password from '../pages/Password';
 import Home from '../pages/Home';
@@ -25,10 +25,10 @@ const Navbar = () => {
                     </Link></h1>
                 <nav>
                     <ul className="NavLinks">
-                        <li><Link className="Link" to="/1">Templates</Link></li>
-                        <li><Link className="Link" to="/template">Template</Link></li>
-                        <li><Link className="Link" to="/images">Beeldbank</Link></li>
-                        <li><Link className="Link" to="/accounts">Accounts</Link></li>
+                        <li><Link className="Link" to="/templates/1">Templates</Link></li>
+                        <li><Link className="Link" to="/products/1">Products</Link></li>
+                        <li><Link className="Link" to="/gallery/1/1">Beeldbank</Link></li>
+                        <li><Link className="Link" to="/1/accounts">Accounts</Link></li>
                     </ul>
                     <ul className="profilePic">
                         <img src="https://image.flaticon.com/icons/png/512/50/50050.png" alt="pfpIcon" width="50px"/>
@@ -42,16 +42,17 @@ const Navbar = () => {
                 </nav>
             </header>
             <Routes>
-                <Route path="/:company_id" element={<Templates />}/>
-                <Route path="/template" element={<Template />}/>
-                <Route path="/:company_id/:template_id" element={<Product />}/>
+                <Route path="/templates/:company_id" element={<Templates />}/>
+                <Route path="/products/:company_id" element={<Products />}/>
+                <Route path="/product/:company_id/:product_id" element={<Product />}/>
+                <Route path="/template/:company_id/:template_id" element={<Template />}/>
                 <Route path="/login" element={<Login />}/>
                 <Route path="/register" element={<Register />}/>
                 <Route path="/forgotpassword" element={<Password />}/>
                 <Route path="/logout" element={<Logout />}/>
                 <Route path="/welcome" element={<Home />}/>
-                <Route path="/images" element={<Images />}/>
-                <Route path="/accounts" element={<Accounts />}/>
+                <Route path="/gallery/:company_id/:gallery_id" element={<Images />}/>
+                <Route path="/:company_id/accounts" element={<Accounts />}/>
                 <Route path="/help" element={<Help />}/>
                 <Route path="/manual" element={<Manual />}/>
                 <Route path="/profile" element={<Profile />}/>
