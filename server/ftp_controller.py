@@ -12,8 +12,7 @@ accepted_extensions_image = [".jpg", ".jpeg", ".png"]
 
 
 def try_to_get_file_ftps_binary(file_name, file_type, company_id):
-    #session = FTP('145.24.222.235') #Create session with FTP
-    with FTP('145.24.222.235') as session:
+    with FTP('145.24.222.235') as session: #Create session with FTP
         session.login("Controller", "cC2G'Q_&3qY@=D!@")
 
         if current_app.config["USING_TEST_FTP"]: #If testing == True, we dont want to use regular storage, change to specific ftp storage
@@ -53,8 +52,7 @@ def try_to_get_file_ftps_binary(file_name, file_type, company_id):
         return return_data #Return the extracted Bytes
 
 def try_to_get_image_ftps(file_name, file_type, company_id):
-    #session = FTP('145.24.222.235')
-    with FTP('145.24.222.235') as session:
+    with FTP('145.24.222.235') as session: #Create session with FTP
         session.login("Controller", "cC2G'Q_&3qY@=D!@")
 
         if current_app.config["USING_TEST_FTP"]: #If testing == True, we dont want to use regular storage, change to specific ftp storage
@@ -131,9 +129,7 @@ def try_to_copy_template_to_product(template_name, company_id):
 
 #try_to_upload_file_ftps () name of file, file type (gallery OR templates)
 def try_to_upload_file_ftps(file_path, file_name, file_type, company_id):
-
-    #session = FTP('145.24.222.235') #Create session with FTP
-    with FTP('145.24.222.235') as session:
+    with FTP('145.24.222.235') as session: #Create session with FTP
         session.login("Controller", "cC2G'Q_&3qY@=D!@") #Login to FTP
 
         if current_app.config["USING_TEST_FTP"]: #If testing == True, we dont want to use regular storage, change to specific ftp storage
@@ -175,8 +171,7 @@ def try_to_upload_file_ftps(file_path, file_name, file_type, company_id):
             return "PASSED"
 
 def try_to_delete_file_ftps(file_path, file_type, company_id):
-    #session = FTP('145.24.222.235')
-    with FTP('145.24.222.235') as session:
+    with FTP('145.24.222.235') as session: #Create session with FTP
         session.login("Controller", "cC2G'Q_&3qY@=D!@")
         if current_app.config["USING_TEST_FTP"]: #If testing == True, we dont want to use regular storage, change to specific ftp storage
             if "testfolder" not in session.nlst():
@@ -217,10 +212,3 @@ def deletedir(dirname, ftp):
             deletedir(file, ftp)
     ftp.cwd("..")
     ftp.rmd(dirname)
-
-#try_to_download_text_file(filename, 1)
-#try_to_get_image_ftps("picture.jpg")
-#try_to_upload_file_ftps("template1.html", "templates")
-#a = getFileContents(filename)
-#ftp.dir()
-#delete_file("picture.jpg")

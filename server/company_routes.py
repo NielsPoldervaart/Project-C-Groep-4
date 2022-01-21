@@ -101,13 +101,10 @@ def company_accounts(company_identifier):
                 return {"returnCode": 201, "Message": "User deleted from system"} , 201
 
 
-    #return {"errorCode": 500, "Message": "Internal server error"} , 500 #Something went wrong
-
-
 @company_api.route("/<int:company_identifier>/manual", methods=["GET", "POST"])
 def company_manual(company_identifier):
 
-    if request.method == "GET": #Open specific manual (to view)
+    if request.method == "GET": #Retrieve specific manual as html file
 
         user_verification = verify_user(company_identifier)
         if user_verification != "PASSED":
@@ -127,7 +124,7 @@ def company_manual(company_identifier):
 
         return {"errorCode": 404, "Message": "Manual Does not exist"""}
 
-    if request.method == "POST": #Upload a manual to Company
+    if request.method == "POST": #Upload a html manual to company
 
         user_verification = verify_user(company_identifier, [1,2])
         if user_verification != "PASSED":
@@ -141,8 +138,8 @@ def company_manual(company_identifier):
             return  {"errorCode": 405, "Message": "No manual file found in request, OR File has no valid extension (.html OR .htm)"}, 405
 
         with create_db_session() as db_session:
-            #Check if company already has a manual, if so, return error code TODO: Should be able to update manual
-            company_info = db_session.query(Company).filter_by(company_id = company_identifier).first() #TODO: check if can be safer (query only necessary info)
+            #Check if company already has a manual, if so, return error code
+            company_info = db_session.query(Company).filter_by(company_id = company_identifier).first()
             if company_info.Manual_manual_id is not None:
                 return {"errorCode": 400, "Message": "Company already has a manual connected. Contact Kynda for more information"}, 400
 
@@ -165,13 +162,7 @@ def company_manual(company_identifier):
 
         return {"Code": 201, "Message": "Manual added to company"}, 201
 
+#INDEX ROUTE
 @company_api.route("/", methods=["GET"])
 def index():
     return {}
-
-@company_api.route("/put", methods=["PUT"])
-def puttest():
-    received_file = request.files["file"]
-    return {"filename:": received_file.filename}
-
-    
