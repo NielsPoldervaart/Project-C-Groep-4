@@ -1,0 +1,18 @@
+@startuml activity diagram downloaden grafisch product
+start
+->//Hoofdgebruiker heeft een account,//
+//hoofdgebruiker is ingelogd//;
+:afbeelding toevoegen;
+if(wordt er een correct bestand doorgestuurd?) then (Nee)
+        #orangered:"Error";
+        stop
+        endif
+        ->Ja;
+        if(bestaat de filenaam al in de database?) then (Ja)
+        #orangered:"Error";
+        stop
+        endif
+        ->Nee;
+        #palegreen:Upload afbeelding van computer;
+stop
+@enduml

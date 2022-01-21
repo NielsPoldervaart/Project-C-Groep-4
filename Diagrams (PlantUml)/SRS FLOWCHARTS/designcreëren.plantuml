@@ -1,0 +1,14 @@
+@startuml activity diagram downloaden grafisch product
+start
+->//klant heeft een account,//
+//klant is ingelogd//;
+:template kiezen voor basis design;
+:design bewerken;
+if(wordt er een correct bestand doorgestuurd?) then (Nee)
+        #orangered:"Error";
+        stop
+        endif
+        ->Ja;
+        #palegreen:sla gecreëerde design op;
+stop
+@enduml

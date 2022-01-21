@@ -1,12 +1,14 @@
 @startuml activity diagram downloaden grafisch product
 start
-->//Klant heeft een account, klant is ingelogd in applicatie, klant heeft grafische ontwerp gemaakt//;
+->//Klant heeft een account,//
+//klant is ingelogd in applicatie,//
+//klant heeft grafische ontwerp gemaakt//;
 repeat
-        if (Goedgekeurd door tussenpersoon van bedrijf?) then(Ja)
-            :Download optie en transactie;
+        if (goedgekeurd door Kynda medewerker?) then(Ja)
+            #palegreen:Download optie en transactie;
             stop
         endif
         ->Nee;
-        :"Error";
-repeat while (Toestemming vragen aan tussenpersoon))
+        #orangered:"Error";
+repeat while (Goedkeuring vragen aan Kynda medewerker door hoofdgebruiker)
 @enduml

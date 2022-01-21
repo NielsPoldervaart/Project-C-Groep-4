@@ -1,0 +1,15 @@
+@startuml activity diagram downloaden grafisch product
+start
+->//klant heeft een grafisch ontwerp gemaakt,//
+//medewerker heeft een account,//
+//medewerker is ingelogd//;
+repeat
+        if(voldoet het ontwerp aan de huisstijl van de klant?) then (Ja)
+                #palegreen:keur het design goed;
+                stop
+                endif
+                ->Nee;
+                #orangered:keur het design af;
+repeat while(Aanvraag ontwerp aan te passen met redenen waarom het afgekeurd is)
+stop
+@enduml
