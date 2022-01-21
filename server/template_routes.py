@@ -133,7 +133,6 @@ def template(company_identifier, template_identifier):
         if user_verification != "PASSED":
             return user_verification
             
-    #TODO: FIND A WAY TO ACCESS THE TEMPLATE FILE WITH ONE QUERY FOR DELETION, INSTEAD OF HAVING TO QUERY TWICE (SPEED INCR, OPTIONAL)
         with create_db_session() as db_session:
             template_to_delete = db_session.query(Template).filter_by(template_id = template_identifier).filter_by(Company_company_id = company_identifier).first()
             if template_to_delete is None:
