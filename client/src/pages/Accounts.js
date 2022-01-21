@@ -9,6 +9,7 @@ const Accounts = () => {
 
     const { company_id } = useParams();
 
+    const [userData, setUserData] = useState({});
     const [awaitingUsers, setAwaitingUsers] = useState([]);
     const [verifiedUsers, setVerifiedUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -24,6 +25,7 @@ const Accounts = () => {
                 window.location.href = "/login";
               } else {
                 userData = data;
+                setUserData(data);
               }
           }
         )
@@ -34,11 +36,42 @@ const Accounts = () => {
             data => {
                 setAwaitingUsers(data.Awaiting_users);
                 setVerifiedUsers(data.Verified_users);
+                console.log(data)
                 setLoading(false);
             }
         )
     }, [company_id]);
 
+    const acceptUser = (id) => {
+        const data = new FormData();
+        data.append("user_id", `${id}`);
+        data.append("accepted", JSON.stringify(true));
+
+        fetch(`/${userData.company_company_id}/accounts`, {
+            method : "POST",
+            body : data,
+        }).then(res => {
+            res.json();
+            window.location.reload();
+        })
+        .catch(error => console.log('Authorization failed : ' + error.message));
+    }
+
+    const declineUser = (id) => {
+        const data = new FormData();
+        data.append("user_id", `${id}`);
+        data.append("accepted", JSON.stringify(false));
+
+        fetch(`/${userData.company_company_id}/accounts`, {
+            method : "POST",
+            body : data,
+        }).then(res => {
+            res.json();
+            window.location.reload();
+        })
+        .catch(error => console.log('Authorization failed : ' + error.message));
+    }
+    
     const DisplayLoader = () => {
         return (
           <div className='loaderDiv'>
@@ -59,12 +92,12 @@ const Accounts = () => {
                         </div>
                         {
                             awaitingUsers.map((user) => 
-                                <div className='userInfo'>
+                                <div className='userInfo' key={user.user_id}>
                                     <p className='id'>{user.user_id}</p>
                                     <p className='username'>{user.username}</p>
                                     <p className='role'>{user.user_role}</p>
-                                    <button className='acceptButton'>✓</button>
-                                    <button className='declineButton'>✗</button>
+                                    <button className='acceptButton' onClick={() => acceptUser(user.user_id)}>✓</button>
+                                    <button className='declineButton' onClick={() => declineUser(user.user_id)}>✗</button>
                                 </div> 
                             )
                         }
@@ -77,7 +110,7 @@ const Accounts = () => {
                         </div>
                         {
                             verifiedUsers.map((user) => 
-                                <div className='userInfo'>
+                                <div className='userInfo' key={user.user_id}>
                                     <p className='id'>{user.user_id}</p>
                                     <p className='username'>{user.username}</p>
                                     <p className='role'>{user.user_role}</p>
