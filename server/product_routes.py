@@ -48,13 +48,11 @@ def products(company_identifier):
         if attempt_to_upload_product != ({"Code": 201, "Message": "Product succesfully created"}, 201):
             return attempt_to_upload_product
         #New Product object is created, None is used for id as it is auto-incremented by SQLAlchemy
-
-        if attempt_to_upload_product is ({"Code": 201, "Message": "Product succesfully created"}, 201):
-            new_product = Product(None, f"{requested_template_file_name.template_file}", 0, False, 0, requested_template_id, session["user_id"], company_identifier)
-            
-            with create_db_session() as db_session:
-                db_session.add(new_product)
-                db_session.commit()
+        new_product = Product(None, f"{requested_template_file_name.template_file}", 0, False, 0, requested_template_id, session["user_id"], company_identifier)
+        
+        with create_db_session() as db_session:
+            db_session.add(new_product)
+            db_session.commit()
 
         return attempt_to_upload_product
 
