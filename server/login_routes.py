@@ -1,6 +1,5 @@
-from flask import request, session, Blueprint, current_app
+from flask import request, session, Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
-from user_verification import verify_user
 from database_connection import *
 
 
@@ -10,7 +9,6 @@ login_api = Blueprint('login_api', __name__)
 def login():
 
     if request.method == "POST":
-        #JSON METHOD
         jsonInput = request.json
         inserted_username = jsonInput["name"]
         inserted_password = jsonInput["password"]
@@ -42,9 +40,6 @@ def login():
             return {"Code": 404, "Message": "Session data not found"}, 404
         except:
             return {"Code": 500, "Message": "Internal server error (Session)"}, 500
-
-
-
 
 
 @login_api.route("/logout", methods = ["GET"])

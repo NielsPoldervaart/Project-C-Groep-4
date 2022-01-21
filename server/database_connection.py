@@ -1,7 +1,6 @@
 from flask import current_app
 from sqlalchemy import create_engine, MetaData, Table, Column, String, Integer, ForeignKey, Boolean, DECIMAL
 from sqlalchemy.orm import mapper, sessionmaker, close_all_sessions
-from sqlite_db_creation import create_connection_sqlite
 
 #CLASSES, INIT DEFINED FOR OBJECT CREATION (NEEDED FOR INSERTING INTO DB)
 class Gallery(object):

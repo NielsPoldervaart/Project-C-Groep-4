@@ -1,10 +1,6 @@
-from werkzeug.wrappers import response
 from server import app
 import unittest
-#import requests
-import json
 from db_controller import setup_basic_db
-from user_verification import verify_user
 from database_connection import *
 from werkzeug.security import generate_password_hash
 import os

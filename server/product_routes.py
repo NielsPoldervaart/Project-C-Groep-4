@@ -1,8 +1,5 @@
 import os
-from os import path
-
 from flask import Blueprint, jsonify, request, send_file, session
-
 from database_connection import *
 from ftp_controller import try_to_delete_file_ftps, try_to_copy_template_to_product, try_to_get_file_ftps_binary, try_to_upload_file_ftps
 from generate_random_path import generate_random_path
