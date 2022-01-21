@@ -1,0 +1,28 @@
+@import "Variables.css";
+
+.productsBackBtnContainer {
+    position: absolute;
+    top: calc(var(--NavBarHeight) + 19px);
+    left: 0;
+    width: 7.5%;
+    height: 5%;
+}
+
+.productsBackBtn {
+    width: 100%;
+    height: 100%;
+    background-color: #FFFFFF;
+    color: #000000;
+    border: 2px solid #FFFFFF;
+    transition: all 0.2s ease 0s;
+}
+
+.productsBackBtn:hover {
+    color: #FFFFFF;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.TemplatesBody ul {
+    margin-top: 5%;
+}

@@ -11,43 +11,38 @@ const Templates = () => {
     const { company_id } = useParams();
 
     const [templates, setTemplates] = useState([]);
-    const [company, setCompany] = useState([]);
     const [loading, setLoading] = useState(true);
     const [madeTemplate, setMadeTemplate] = useState(false);
 
     const inputFile = useRef(null);
 
-    useEffect(async () => {
-      let userData = {};
+    useEffect(() => {
+      async function fetchData() {
+        let userData = {};
 
-      await fetch(`/login`).then(
-        res => res.json()
-      ).then(
-        data => {
-            if (data.Code === 500 || data.Code === 404) {
-              window.location.href = "/login";
-            } else {
-              userData = data;
+        await fetch(`/login`).then(
+            res => res.json()
+        ).then(
+            data => {
+                if (data.Code === 500 || data.Code === 404) {
+                    window.location.href = "/login";
+                } else {
+                    userData = data;
+                }
             }
-        }
-      )
+        )
 
-      fetch(`/templates/${userData.company_company_id}`).then(
-        res => res.json()
-      ).then(
-        data => {
-          setTemplates(data);
-          setLoading(false);
-        }
-      )
+        fetch(`/templates/${userData.company_company_id}`).then(
+          res => res.json()
+        ).then(
+          data => {
+            setTemplates(data);
+            setLoading(false);
+          }
+        )
+    }
 
-      fetch(`/company/${userData.company_company_id}`).then(
-        res => res.json()
-      ).then(
-        data => {
-          setCompany(data)
-        }
-      )
+    fetchData();
     }, [company_id]);
 
     const checkFile = (file) => {
@@ -179,12 +174,12 @@ const Templates = () => {
 
       let children = parsedTemplate.querySelector(templateName).children
       imgArr.forEach(img => {
-        let a = `${img.name.replace('.png', '')}`;
+        let className = `${img.name.replace('.png', '')}`;
         for (var i = 0; i < children.length; i++) {
           var child = children[i];
-          if (child.classList.contains(a)) {
+          if (child.classList.contains(className)) {
             child.classList.add("templateImage");
-            child.classList.add("editable");
+            child.classList.add("editableImg");
             child.style.pointerEvents = "auto";
           }
         }
@@ -192,10 +187,12 @@ const Templates = () => {
 
       for (var i = 0; i < children.length; i++) {
           var child = children[i];
-          if (child.textContent !== "") {
+          if (child.textContent.trim() !== "") {
               child.classList.add("templateText");
-              child.classList.add("editable");
+              child.classList.add("editableTxt");
               child.style.pointerEvents = "auto";
+              child.style.whiteSpace = "pre-wrap";
+              child.style.overflow = "hidden";
           }
 
           if (!child.classList.contains("templateText") && !child.classList.contains("templateImage") ) {
@@ -262,14 +259,13 @@ const Templates = () => {
       else {
         return (
           <div className="TemplatesBody">
-            <h1 className="CompanyName">{company.Company_name}</h1>
             <ul className="TemplateList">
                 {
                     templates.templates.map((template) => 
                         <div className="TemplateComp"  key={template.template_id}>
                             <h2 className="TitleCard">Template {template.template_id}</h2>
                             <div className="TemplateCard">
-                                <p className="CardIcon View" onClick={() => navigate(`/${company_id}/${template.template_id}`)}><FaRegEye /></p>
+                                <p className="CardIcon View" onClick={() => navigate(`/template/${company_id}/${template.template_id}`)}><FaRegEye /></p>
                                 <p className="CardIcon Delete" onClick={() => deleteTemplate(template.template_id)}><FaRegTrashAlt /></p>
                             </div>
                         </div>
