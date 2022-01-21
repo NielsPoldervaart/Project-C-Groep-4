@@ -1,0 +1,12 @@
+@startuml activity diagram downloaden grafisch product
+start
+->//Klant heeft een account, klant is ingelogd in applicatie//;
+repeat
+        if (Heeft de klant zijn huisstijl opties ingevoerd?) then(Ja)
+            #palegreen:Download optie en transactie;
+            stop
+        endif
+        ->Nee;
+        #orangered:"Error";
+repeat while (Huisstijl opties invoeren)
+@enduml

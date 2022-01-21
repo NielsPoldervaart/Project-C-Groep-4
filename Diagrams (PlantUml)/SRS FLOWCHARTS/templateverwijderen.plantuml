@@ -1,0 +1,12 @@
+@startuml activity diagram downloaden grafisch product
+start
+->//Medewerker heeft een account, medewerker is ingelogd//;
+:Template verwijderen;
+if(Is er meer dan 1 template?) then (Nee)
+        #orangered:"Error";
+        stop
+        endif
+        ->Ja;
+        #palegreen:Selecteer de template om te verwijderen;
+stop
+@enduml

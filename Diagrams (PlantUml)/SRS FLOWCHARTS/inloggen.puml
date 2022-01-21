@@ -1,0 +1,14 @@
+@startuml activity diagram
+start
+->//gebruiker heeft al account//;
+repeat
+    :Voer gegevens in;
+        if (Correcte gegevens?) then(Ja)
+            :Ingelogd;
+            stop
+        endif
+        ->Nee;
+        :"Error";
+repeat while (Opnieuw proberen?) is (Ja) not (Nee)
+stop
+@enduml
