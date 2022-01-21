@@ -81,7 +81,7 @@ const Accounts = () => {
 
     const DisplayAccounts = () => {
         return (
-            <div>
+            <div style={{marginTop: "100px"}}>
                 <div className='accountsList'>
                     <div className='awaitingUsers'> Accounts in afwachting
                         <div className='userInfo'>
