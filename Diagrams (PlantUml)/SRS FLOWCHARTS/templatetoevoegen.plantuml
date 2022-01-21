@@ -1,0 +1,13 @@
+@startuml activity diagram downloaden grafisch product
+start
+->//Hoofdgebruiker heeft een account,//
+//hoofdgebruiker is ingelogd//;
+:afbeelding verwijderen;
+if(bestaat de afbeelding in de database en de ftp server?) then (Nee)
+        #orangered:"Error";
+        stop
+        endif
+        ->Ja;
+        #palegreen:Verwijder de afbeelding;
+stop
+@enduml

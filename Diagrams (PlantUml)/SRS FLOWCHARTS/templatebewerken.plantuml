@@ -1,0 +1,18 @@
+@startuml activity diagram downloaden grafisch product
+start
+->//medewerker heeft een account,//
+//medewerker is ingelogd//;
+:template bewerken;
+if(wordt er een correct bestand doorgestuurd?) then (Nee)
+        #orangered:"Error";
+        stop
+        endif
+        ->Ja;
+        if(heeft het bestand dezelfde filenaam als de oude template?) then (Nee)
+                #orangered:"Error";
+                stop
+                endif
+                ->Ja;
+                #palegreen:sla bewerkte template op;
+stop
+@enduml
