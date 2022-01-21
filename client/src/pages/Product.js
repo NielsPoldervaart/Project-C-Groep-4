@@ -92,13 +92,33 @@ const Product = () => {
         setOverlay(prev => !prev);
     }
 
-    const editElement = (el, value, isText) => {
+    const readFile = async (file) => {
+        return new Promise((resolve, reject) => {
+            let fr = new FileReader();  
+
+            fr.onload = () => {
+                resolve(fr.result)
+            };
+            fr.onerror = reject;
+
+            fr.readAsDataURL(file);
+        });
+    }
+
+    const editElement = async (el, value, isText) => {
         if (isText === true) {
             let className = el.className.split(" ")[0];
             var element = document.getElementsByClassName(className)[0];
             element.textContent = value;
         }
         else {
+            let className = el.className.split(" ")[0];
+            var element = document.getElementsByClassName(className)[0];
+
+            let dataUrl = await readFile(value);
+
+            element.style.backgroundImage = `url(${dataUrl})`;
+
         }
     }
 
